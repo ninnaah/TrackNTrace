@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Juna.SKS.Package.Services.DTOs.Models;
 
-namespace Juna.SKS.Package.Services.DTOs.Models
+
+namespace Juna.SKS.Package.Services.DTOs.Converter
 {
     public class HopJsonConverter : JsonCreationConverter<Hop>
     {
