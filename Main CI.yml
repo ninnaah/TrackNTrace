@@ -34,6 +34,8 @@ steps:
     projects: '**/**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
+- task: PublishPipelineArtifact@1
+
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'Azure für Bildungseinrichtungen(0ff09fc7-6be4-41e3-b0b3-fd54586d1c42)'
@@ -41,4 +43,4 @@ steps:
     appName: 'app-service-plan'
     package: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
-- task: PublishPipelineArtifact@1
+
