@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
 
 variables:
   solution: '**/*.sln'
@@ -36,11 +36,5 @@ steps:
 
 - task: PublishPipelineArtifact@1
 
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'Azure für Bildungseinrichtungen(0ff09fc7-6be4-41e3-b0b3-fd54586d1c42)'
-    appType: 'webAppLinux'
-    appName: 'app-dotnet-win'
-    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
 
