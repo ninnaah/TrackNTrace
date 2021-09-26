@@ -32,7 +32,8 @@ steps:
   inputs:
     command: 'test'
     projects: '**/**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+
 
 - task: PublishPipelineArtifact@1
 
