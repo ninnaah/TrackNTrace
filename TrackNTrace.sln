@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.Services.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.Services.Interfaces", "src\Juna.SKS.Package.Services.Interfaces\Juna.SKS.Package.Services.Interfaces.csproj", "{00CC092A-C0EB-4581-BC73-3B261FCBC3BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.Services.Test", "src\Juna.SKS.Package.Service.Test\Juna.SKS.Package.Services.Test.csproj", "{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{00CC092A-C0EB-4581-BC73-3B261FCBC3BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00CC092A-C0EB-4581-BC73-3B261FCBC3BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00CC092A-C0EB-4581-BC73-3B261FCBC3BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
