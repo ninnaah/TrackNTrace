@@ -19,7 +19,7 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Juna.SKS.Package.Services.DTOs\Juna.SKS.Package.Services.DTOs.csproj" />
-    <ProjectReference Include="..\Juna.SKS.Package.Services.DTOs\Juna.SKS.Package.Services.DTOs.csproj" />
+    <ProjectReference Include="..\..\src\Juna.SKS.Package.Services.DTOs\Juna.SKS.Package.Services.DTOs.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.Services.DTOs\Juna.SKS.Package.Services.DTOs.csproj" /> 
   </ItemGroup>
 </Project>
