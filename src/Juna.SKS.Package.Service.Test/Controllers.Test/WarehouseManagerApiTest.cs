@@ -29,8 +29,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 ex = e;
             }
 
-            //Assert.IsNull(ex);
-            Assert.AreEqual(ex.Message, "Error reading JObject from JsonReader. Current JsonReader item is not an object: String. Path '', line 1, position 2.");
+            Assert.IsNull(ex);
         }
 
 
