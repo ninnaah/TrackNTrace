@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Juna.SKS.Package.Services.DTOs.Models
 { 
@@ -24,6 +25,7 @@ namespace Juna.SKS.Package.Services.DTOs.Models
     /// 
     /// </summary>
     [DataContract]
+    [ExcludeFromCodeCoverage]
     public partial class HopArrival
     { 
         /// <summary>

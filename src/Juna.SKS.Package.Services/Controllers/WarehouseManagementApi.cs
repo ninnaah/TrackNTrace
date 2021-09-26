@@ -74,7 +74,7 @@ namespace Juna.SKS.Package.Services.Controllers
         [SwaggerResponse(statusCode: 200, type: typeof(Warehouse), description: "Successful response")]
         [SwaggerResponse(statusCode: 400, type: typeof(Error), description: "An error occurred loading.")]
         public virtual IActionResult GetWarehouse([FromRoute][Required]string code)
-        { 
+        {
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default(Warehouse));
 
@@ -83,6 +83,16 @@ namespace Juna.SKS.Package.Services.Controllers
 
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
+
+            if (code == null)
+            {
+                throw new Exception("Code cannot be null");
+            }
+            else if (code.Length <= 0)
+            {
+                throw new Exception("Code cannot have zero or negative length");
+            }
+
             string exampleJson = null;
             exampleJson = "\"\"";
             
@@ -104,12 +114,21 @@ namespace Juna.SKS.Package.Services.Controllers
         [SwaggerOperation("ImportWarehouses")]
         [SwaggerResponse(statusCode: 400, type: typeof(Error), description: "The operation failed due to an error.")]
         public virtual IActionResult ImportWarehouses([FromBody]Warehouse body)
-        { 
+        {
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200);
 
             //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(400, default(Error));
+
+            if (body.Level == null)
+            {
+                throw new Exception("Level cannot be null");
+            }
+            else if (body.Level <= 0)
+            {
+                throw new Exception("Zero or negative level is not valid");
+            }
 
             throw new NotImplementedException();
         }

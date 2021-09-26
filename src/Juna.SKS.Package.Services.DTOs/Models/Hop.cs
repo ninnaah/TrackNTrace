@@ -18,6 +18,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Juna.SKS.Package.Services.DTOs.Converter;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Juna.SKS.Package.Services.DTOs.Models
 { 
@@ -26,6 +27,7 @@ namespace Juna.SKS.Package.Services.DTOs.Models
     /// </summary>
     [DataContract]
     [JsonConverter(typeof(HopJsonConverter))]
+    [ExcludeFromCodeCoverage]
     public partial class Hop
     { 
         /// <summary>

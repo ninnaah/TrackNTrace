@@ -40,12 +40,23 @@ namespace Juna.SKS.Package.Services.Controllers
         [SwaggerResponse(statusCode: 201, type: typeof(NewParcelInfo), description: "Successfully submitted the new parcel")]
         [SwaggerResponse(statusCode: 400, type: typeof(Error), description: "The operation failed due to an error.")]
         public virtual IActionResult SubmitParcel([FromBody]Parcel body)
-        { 
+        {
             //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(201, default(NewParcelInfo));
 
             //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(400, default(Error));
+
+
+            if (body.Weight == null)
+            {
+                throw new Exception("Empty weight is not valid");
+            }
+            else if (body.Weight <= 0)
+            {
+                throw new Exception("Zero or negative weight is not valid");
+            }
+
             string exampleJson = null;
             exampleJson = "{\n  \"trackingId\" : \"PYJRB4HZ6\"\n}";
             
