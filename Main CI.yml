@@ -34,15 +34,16 @@ steps:
     command: 'test'
     projects: '**/**/*.csproj'
     arguments: '--configuration $(buildConfiguration) --collect "XPlat Code coverage" --RunConfiguration.DisableAppDomain=true'
+    testRunTitle: 'Juna-TrackNTrace Test $(Build.BuildNumber)'
 
 - script: 'dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.5.8'  
-  displayName: 'Install ReportGenerator tool'
+  displayName: 'ReportGenerator'
 
 - script: 'reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -reporttypes:"Cobertura"'  
-  displayName: 'Create reports'  
+  displayName: 'create reports'  
 
 - task: PublishCodeCoverageResults@1
-  displayName: Publish code coverage
+  displayName: Code coverage
   inputs:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml'
