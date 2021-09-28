@@ -33,8 +33,7 @@ steps:
   inputs:
     command: 'test'
     projects: '**/**/*.csproj'
-    arguments: '--configuration $(buildConfiguration) --collect "XPlat Code coverage" --RunConfiguration.DisableAppDomain=true'
-    testRunTitle: 'Juna-TrackNTrace Test $(Build.BuildNumber)'
+    arguments: '--configuration $(buildConfiguration) --collect "XPlat Code coverage"'
 
 - script: 'dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.5.8'  
   displayName: 'ReportGenerator'
