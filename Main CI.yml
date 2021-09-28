@@ -34,8 +34,20 @@ steps:
     projects: '**/**/*.csproj'
     arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
 
-
 - task: PublishPipelineArtifact@1
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'Luna.SKS' 
+
 
 
 
