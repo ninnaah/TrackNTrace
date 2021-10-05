@@ -12,7 +12,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.Services.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.Services.Interfaces", "src\Juna.SKS.Package.Services.Interfaces\Juna.SKS.Package.Services.Interfaces.csproj", "{00CC092A-C0EB-4581-BC73-3B261FCBC3BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.Services.Test", "src\Juna.SKS.Package.Service.Test\Juna.SKS.Package.Services.Test.csproj", "{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.Services.Test", "src\Juna.SKS.Package.Service.Test\Juna.SKS.Package.Services.Test.csproj", "{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.BusinessLogic.Entities", "src\Juna.SKS.Package.BusinessLogic.Entities\Juna.SKS.Package.BusinessLogic.Entities.csproj", "{C5995E31-1325-438C-88BB-D49293FEEE11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.BusinessLogic.Interfaces", "src\Juna.SKS.Package.BusinessLogic.Interfaces\Juna.SKS.Package.BusinessLogic.Interfaces.csproj", "{50B1678D-145B-4A3E-80C5-9D68C51FBDC1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C5995E31-1325-438C-88BB-D49293FEEE11} = {C5995E31-1325-438C-88BB-D49293FEEE11}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.BusinessLogic", "src\Juna.SKS.Package.BusinessLogic\Juna.SKS.Package.BusinessLogic.csproj", "{D1513A47-00B1-4FB9-9FD5-34D9B004F049}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.BusinessLogic.Tests", "src\Juna.SKS.Package.BusinessLogic.Tests\Juna.SKS.Package.BusinessLogic.Tests.csproj", "{7F25F7C1-6CB7-46EE-9F36-A476E5859A84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +47,22 @@ Global
 		{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5995E31-1325-438C-88BB-D49293FEEE11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5995E31-1325-438C-88BB-D49293FEEE11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5995E31-1325-438C-88BB-D49293FEEE11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5995E31-1325-438C-88BB-D49293FEEE11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50B1678D-145B-4A3E-80C5-9D68C51FBDC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50B1678D-145B-4A3E-80C5-9D68C51FBDC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50B1678D-145B-4A3E-80C5-9D68C51FBDC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50B1678D-145B-4A3E-80C5-9D68C51FBDC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1513A47-00B1-4FB9-9FD5-34D9B004F049}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1513A47-00B1-4FB9-9FD5-34D9B004F049}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1513A47-00B1-4FB9-9FD5-34D9B004F049}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1513A47-00B1-4FB9-9FD5-34D9B004F049}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F25F7C1-6CB7-46EE-9F36-A476E5859A84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F25F7C1-6CB7-46EE-9F36-A476E5859A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F25F7C1-6CB7-46EE-9F36-A476E5859A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F25F7C1-6CB7-46EE-9F36-A476E5859A84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

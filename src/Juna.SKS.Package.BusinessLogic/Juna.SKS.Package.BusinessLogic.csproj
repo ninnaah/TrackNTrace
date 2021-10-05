@@ -6,7 +6,10 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Juna.SKS.Package.BusinessLogic.Interfaces\Juna.SKS.Package.BusinessLogic.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

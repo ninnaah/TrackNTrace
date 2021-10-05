@@ -53,6 +53,8 @@ namespace Juna.SKS.Package.Services
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddAutoMapper();
+
             // Add framework services.
             services
                 .AddMvc(options =>
@@ -91,6 +93,7 @@ namespace Juna.SKS.Package.Services
                     // Use [ValidateModelState] on Actions to actually validate it in C# as well!
                     c.OperationFilter<GeneratePathParamsValidationFilter>();
                 });
+
         }
 
         /// <summary>
