@@ -13,14 +13,14 @@ namespace Juna.SKS.Package.BusinessLogic
         {
 
         }
-        public string ReportParcelDelivery(string trackingId)
+        public bool ReportParcelDelivery(string trackingId)
         {
-            return null;
+            return true;
         }
 
-        public string ReportParcelHop(string trackingId, string code)
+        public bool ReportParcelHop(string trackingId, string code)
         {
-            return null;
+            return true;
         }
     }
 }

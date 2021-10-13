@@ -14,19 +14,40 @@ namespace Juna.SKS.Package.BusinessLogic
         {
 
         }
-        public string ExportWarehouses()
+        public Warehouse ExportWarehouses()
         {
-            return null;
+            List <Hop> nextHops = new List<Hop>
+            {
+                new Hop("truck", "123", "aHop", 23, "Vienna", 2.3, 3.1, 45),
+                new Hop("truck", "321", "anotherHop", 13, "Vienna", 1.3, 3.4, 75)
+            };
+
+            Warehouse warehouse = new Warehouse(0, nextHops, "warehouse", "111", "aWarehouse", 11, "Vienna", 1.1, 1.1, 111);
+            return warehouse;
         }
 
-        public string GetWarehouse(string code)
+        public Warehouse GetWarehouse(string code)
         {
-            return null;
+            List<Hop> nextHops = new List<Hop>
+            {
+                new Hop("truck", "123", "aHop", 23, "Vienna", 2.3, 3.1, 45),
+                new Hop("truck", "321", "anotherHop", 13, "Vienna", 1.3, 3.4, 75)
+            };
+
+            Warehouse warehouse = new Warehouse(0, nextHops, "warehouse", "111", "aWarehouse", 11, "Vienna", 1.1, 1.1, 111);
+            return warehouse;
         }
 
-        public string ImportWarehouses(Warehouse warehouse)
+        public Warehouse ImportWarehouses()
         {
-            return null;
+            List<Hop> nextHops = new List<Hop>
+            {
+                new Hop("truck", "123", "aHop", 23, "Vienna", 2.3, 3.1, 45),
+                new Hop("truck", "321", "anotherHop", 13, "Vienna", 1.3, 3.4, 75)
+            };
+
+            Warehouse warehouse = new Warehouse(0, nextHops, "warehouse", "111", "aWarehouse", 11, "Vienna", 1.1, 1.1, 111);
+            return warehouse;
         }
     }
 }

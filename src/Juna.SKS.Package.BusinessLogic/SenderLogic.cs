@@ -16,7 +16,7 @@ namespace Juna.SKS.Package.BusinessLogic
         }
         public string SubmitParcel(Parcel parcel)
         {
-            return null;
+            return "PYJRB4HZ6";
         }
     }
 }

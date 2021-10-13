@@ -18,6 +18,11 @@ using Juna.SKS.Package.Services.Attributes;
 
 using Microsoft.AspNetCore.Authorization;
 using Juna.SKS.Package.Services.DTOs.Models;
+using Juna.SKS.Package.BusinessLogic.Interfaces;
+using Juna.SKS.Package.BusinessLogic;
+using AutoMapper;
+using Juna.SKS.Package.Services.AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -26,7 +31,23 @@ namespace Juna.SKS.Package.Services.Controllers
     /// </summary>
     [ApiController]
     public class RecipientApiController : ControllerBase
-    { 
+    {
+        private readonly IMapper _mapper;
+        private readonly IRecipientLogic _recipientLogic;
+
+        [ActivatorUtilitiesConstructor]
+        public RecipientApiController()
+        {
+            this._recipientLogic = new RecipientLogic();
+            this._mapper = AutoMapperProvider.GetMapper();
+        }
+        
+        public RecipientApiController(IRecipientLogic recipientLogic, IMapper mapper)
+        {
+            this._recipientLogic = recipientLogic;
+            this._mapper = mapper;
+        }
+
         /// <summary>
         /// Find the latest state of a parcel by its tracking ID. 
         /// </summary>
@@ -50,8 +71,14 @@ namespace Juna.SKS.Package.Services.Controllers
 
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
+            
+            BusinessLogic.Entities.Parcel BLparcel = this._recipientLogic.TrackParcel(trackingId);
+            DTOs.Models.TrackingInformation trackingInfo = this._mapper.Map<DTOs.Models.TrackingInformation>(BLparcel);
 
-            if (trackingId == null)
+            return new ObjectResult(trackingInfo);
+
+
+            /*if (trackingId == null)
             {
                 throw new Exception("TrackingID cannot be null");
             }
@@ -66,7 +93,7 @@ namespace Juna.SKS.Package.Services.Controllers
                         var example = exampleJson != null
                         ? JsonConvert.DeserializeObject<TrackingInformation>(exampleJson)
                         : default(TrackingInformation);            //TODO: Change the data returned
-            return new ObjectResult(example);
+            return new ObjectResult(example);*/
         }
     }
 }

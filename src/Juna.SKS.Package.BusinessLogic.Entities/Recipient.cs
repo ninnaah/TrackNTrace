@@ -8,6 +8,18 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
 {
     public class Recipient
     {
+        public Recipient()
+        {
+
+        }
+        public Recipient(string name, string street, string postalCode, string city, string country)
+        {
+            Name = name;
+            Street = street;
+            PostalCode = postalCode;
+            City = city;
+            Country = country;
+        }
         public string Name { get; set; }
 
         public string Street { get; set; }

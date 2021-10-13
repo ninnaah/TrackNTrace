@@ -21,6 +21,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Juna.SKS.Package.Services.DTOs\Juna.SKS.Package.Services.DTOs.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.BusinessLogic.Entities\Juna.SKS.Package.BusinessLogic.Entities.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.BusinessLogic.Interfaces\Juna.SKS.Package.BusinessLogic.Interfaces.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.BusinessLogic\Juna.SKS.Package.BusinessLogic.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.Services.AutoMapper\Juna.SKS.Package.Services.AutoMapper.csproj" />
     <ProjectReference Include="..\Juna.SKS.Package.Services.DTOs\Juna.SKS.Package.Services.DTOs.csproj" /> 
   </ItemGroup>
 </Project>

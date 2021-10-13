@@ -11,9 +11,9 @@ namespace Juna.SKS.Package.BusinessLogic
         {
 
         }
-        public string TransitionParcel(Parcel parcel, string trackingId)
+        public string TransitionParcel(Parcel parcel)
         {
-            return null;
+            return "PYJRB4HZ6";
         }
     }
 }

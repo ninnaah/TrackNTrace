@@ -19,6 +19,11 @@ using Juna.SKS.Package.Services.Attributes;
 
 using Microsoft.AspNetCore.Authorization;
 using Juna.SKS.Package.Services.DTOs.Models;
+using Juna.SKS.Package.BusinessLogic.Interfaces;
+using Juna.SKS.Package.BusinessLogic;
+using AutoMapper;
+using Juna.SKS.Package.Services.AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -27,7 +32,22 @@ namespace Juna.SKS.Package.Services.Controllers
     /// </summary>
     [ApiController]
     public class StaffApiController : ControllerBase
-    { 
+    {
+        private readonly IMapper _mapper;
+        private readonly IStaffLogic _staffLogic;
+
+        [ActivatorUtilitiesConstructor]
+        public StaffApiController()
+        {
+            this._staffLogic = new StaffLogic();
+            this._mapper = AutoMapperProvider.GetMapper();
+        }
+
+        public StaffApiController(IStaffLogic staffLogic, IMapper mapper)
+        {
+            this._staffLogic = staffLogic;
+            this._mapper = mapper;
+        }
         /// <summary>
         /// Report that a Parcel has been delivered at it&#x27;s final destination address. 
         /// </summary>
@@ -51,7 +71,13 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
 
-            if (trackingId == null)
+
+            bool reported = this._staffLogic.ReportParcelDelivery(trackingId);
+
+            return new EmptyResult();
+
+
+            /*if (trackingId == null)
             {
                 throw new Exception("TrackingID cannot be null");
             }
@@ -60,8 +86,7 @@ namespace Juna.SKS.Package.Services.Controllers
                 throw new Exception("TrackingID cannot have zero or negative length");
             }
 
-
-            throw new NotImplementedException();
+            throw new NotImplementedException();*/
         }
 
         /// <summary>
@@ -88,7 +113,11 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
 
-            if (trackingId == null)
+            bool reported = this._staffLogic.ReportParcelHop(trackingId, code);
+
+            return new EmptyResult();
+
+            /*if (trackingId == null)
             {
                 throw new Exception("TrackingID cannot be null");
             }
@@ -96,9 +125,8 @@ namespace Juna.SKS.Package.Services.Controllers
             {
                 throw new Exception("TrackingID cannot have zero or negative length");
             }
-
-
-            throw new NotImplementedException();
+            
+            throw new NotImplementedException();*/
         }
     }
 }

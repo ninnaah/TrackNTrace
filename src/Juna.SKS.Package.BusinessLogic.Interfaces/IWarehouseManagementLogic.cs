@@ -9,10 +9,10 @@ namespace Juna.SKS.Package.BusinessLogic.Interfaces
 {
     public interface IWarehouseManagementLogic
     {
-        string ExportWarehouses();
+        Warehouse ExportWarehouses();
 
-        string GetWarehouse(string code);
+        Warehouse GetWarehouse(string code);
 
-        string ImportWarehouses(Warehouse warehouse);
+        Warehouse ImportWarehouses();
     }
 }

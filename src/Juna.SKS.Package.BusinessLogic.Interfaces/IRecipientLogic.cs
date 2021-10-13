@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Juna.SKS.Package.BusinessLogic.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace Juna.SKS.Package.BusinessLogic.Interfaces
 {
     public interface IRecipientLogic
     {
-        string TrackParcel(string trackingId);
+        Parcel TrackParcel(string trackingId);
     }
 }

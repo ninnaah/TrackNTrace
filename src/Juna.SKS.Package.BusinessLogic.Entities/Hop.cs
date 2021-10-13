@@ -8,7 +8,10 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
 {
     public class Hop
     {
-        /*public Hop(string hopType, string code, string description, int processingDelayMins, string locationName, double lat, double lon, int traveltimemins)
+        public Hop()
+        {
+        }
+        public Hop(string hopType, string code, string description, int processingDelayMins, string locationName, double lat, double lon, int traveltimeMins)
         {
             HopType = hopType;
             Code = code;
@@ -17,8 +20,8 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
             LocationName = locationName;
             Lat = lat;
             Lon = lon;
-            TraveltimeMins = traveltimemins;
-        }*/
+            TraveltimeMins = traveltimeMins;
+        }
         public string HopType { get; set; }
 
         public string Code { get; set; }

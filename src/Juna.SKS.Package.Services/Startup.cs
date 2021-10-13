@@ -22,7 +22,11 @@ using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Juna.SKS.Package.Services.Filters;
+using Juna.SKS.Package.Services.AutoMapper;
 using System.Diagnostics.CodeAnalysis;
+using AutoMapper;
+using Juna.SKS.Package.BusinessLogic.Interfaces;
+using Juna.SKS.Package.BusinessLogic;
 
 namespace Juna.SKS.Package.Services
 {
@@ -53,7 +57,8 @@ namespace Juna.SKS.Package.Services
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddAutoMapper();
+            services.AddAutoMapper(typeof(Startup).Assembly);
+            //services.AddMvc();
 
             // Add framework services.
             services
@@ -93,6 +98,7 @@ namespace Juna.SKS.Package.Services
                     // Use [ValidateModelState] on Actions to actually validate it in C# as well!
                     c.OperationFilter<GeneratePathParamsValidationFilter>();
                 });
+
 
         }
 

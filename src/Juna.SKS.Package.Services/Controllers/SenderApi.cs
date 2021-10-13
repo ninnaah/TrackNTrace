@@ -18,6 +18,11 @@ using Juna.SKS.Package.Services.Attributes;
 
 using Microsoft.AspNetCore.Authorization;
 using Juna.SKS.Package.Services.DTOs.Models;
+using Juna.SKS.Package.BusinessLogic.Interfaces;
+using Juna.SKS.Package.BusinessLogic;
+using AutoMapper;
+using Juna.SKS.Package.Services.AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -26,7 +31,24 @@ namespace Juna.SKS.Package.Services.Controllers
     /// </summary>
     [ApiController]
     public class SenderApiController : ControllerBase
-    { 
+    {
+        private readonly IMapper _mapper;
+        private readonly ISenderLogic _senderLogic;
+
+        [ActivatorUtilitiesConstructor]
+        public SenderApiController()
+        {
+            this._senderLogic = new SenderLogic();
+            this._mapper = AutoMapperProvider.GetMapper();
+        }
+        
+
+        public SenderApiController(ISenderLogic senderLogic, IMapper mapper)
+        {
+            this._senderLogic = senderLogic;
+            this._mapper = mapper;
+        }
+
         /// <summary>
         /// Submit a new parcel to the logistics service. 
         /// </summary>
@@ -47,8 +69,14 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(400, default(Error));
 
+            BusinessLogic.Entities.Parcel BLparcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(body);
+            NewParcelInfo info = new NewParcelInfo();
+            info.TrackingId = this._senderLogic.SubmitParcel(BLparcel);
 
-            if (body.Weight == null)
+            return new ObjectResult(info);
+
+
+            /*if (body.Weight == null)
             {
                 throw new Exception("Empty weight is not valid");
             }
@@ -63,7 +91,7 @@ namespace Juna.SKS.Package.Services.Controllers
                         var example = exampleJson != null
                         ? JsonConvert.DeserializeObject<NewParcelInfo>(exampleJson)
                         : default(NewParcelInfo);            //TODO: Change the data returned
-            return new ObjectResult(example);
+            return new ObjectResult(example);*/
         }
     }
 }

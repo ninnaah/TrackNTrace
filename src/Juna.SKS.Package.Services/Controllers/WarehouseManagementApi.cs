@@ -20,6 +20,11 @@ using Juna.SKS.Package.Services.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Juna.SKS.Package.Services;
 using Juna.SKS.Package.Services.DTOs.Models;
+using Juna.SKS.Package.BusinessLogic.Interfaces;
+using Juna.SKS.Package.BusinessLogic;
+using AutoMapper;
+using Juna.SKS.Package.Services.AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -28,7 +33,22 @@ namespace Juna.SKS.Package.Services.Controllers
     /// </summary>
     [ApiController]
     public class WarehouseManagementApiController : ControllerBase
-    { 
+    {
+        private readonly IMapper _mapper;
+        private readonly IWarehouseManagementLogic _warehouseManagementLogic;
+
+        [ActivatorUtilitiesConstructor]
+        public WarehouseManagementApiController()
+        {
+            this._warehouseManagementLogic = new WarehouseManagementLogic();
+            this._mapper = AutoMapperProvider.GetMapper();
+        }
+
+        public WarehouseManagementApiController(IWarehouseManagementLogic warehouseManagementLogic, IMapper mapper)
+        {
+            this._warehouseManagementLogic = warehouseManagementLogic;
+            this._mapper = mapper;
+        }
         /// <summary>
         /// Exports the hierarchy of Warehouse and Truck objects. 
         /// </summary>
@@ -42,7 +62,7 @@ namespace Juna.SKS.Package.Services.Controllers
         [SwaggerResponse(statusCode: 200, type: typeof(Warehouse), description: "Successful response")]
         [SwaggerResponse(statusCode: 400, type: typeof(Error), description: "An error occurred loading.")]
         public virtual IActionResult ExportWarehouses()
-        { 
+        {
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default(Warehouse));
 
@@ -51,14 +71,20 @@ namespace Juna.SKS.Package.Services.Controllers
 
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
-            string exampleJson = null;
-            //exampleJson = "\"\"";
+
+            BusinessLogic.Entities.Warehouse BLwarehouse = this._warehouseManagementLogic.ExportWarehouses();
+
+            DTOs.Models.Warehouse warehouse = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
+
+            return new ObjectResult(warehouse);
+
+            /*string exampleJson = null;
             exampleJson = "";
 
             var example = exampleJson != null
                         ? JsonConvert.DeserializeObject<Warehouse>(exampleJson)
                         : default(Warehouse);            //TODO: Change the data returned
-            return new ObjectResult(example);
+            return new ObjectResult(example);*/
         }
 
         /// <summary>
@@ -85,14 +111,18 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
 
-            if (code == null)
+            BusinessLogic.Entities.Warehouse BLwarehouse = this._warehouseManagementLogic.GetWarehouse(code);
+            code = BLwarehouse.Code;
+
+
+            /*if (code == null)
             {
                 throw new Exception("Code cannot be null");
             }
             else if (code.Length <= 0)
             {
                 throw new Exception("Code cannot have zero or negative length");
-            }
+            }*/
 
             string exampleJson = null;
             //exampleJson = "\"\"";
@@ -123,14 +153,18 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(400, default(Error));
 
-            if (body.Level == null)
+            BusinessLogic.Entities.Warehouse BLwarehouse = this._mapper.Map<BusinessLogic.Entities.Warehouse>(body);
+            BLwarehouse = this._warehouseManagementLogic.ImportWarehouses();
+            body = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
+
+            /*if (body.Level == null)
             {
                 throw new Exception("Level cannot be null");
             }
             else if (body.Level <= 0)
             {
                 throw new Exception("Zero or negative level is not valid");
-            }
+            }*/
 
             throw new NotImplementedException();
         }
