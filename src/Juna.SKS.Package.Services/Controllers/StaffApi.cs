@@ -74,19 +74,13 @@ namespace Juna.SKS.Package.Services.Controllers
 
             bool reported = this._staffLogic.ReportParcelDelivery(trackingId);
 
-            return new EmptyResult();
-
-
-            /*if (trackingId == null)
+            if (reported == false)
             {
-                throw new Exception("TrackingID cannot be null");
-            }
-            else if (trackingId.Length <= 0)
-            {
-                throw new Exception("TrackingID cannot have zero or negative length");
+                return StatusCode(400, new Error("Inputs are invalid"));
             }
 
-            throw new NotImplementedException();*/
+            return StatusCode(200);
+
         }
 
         /// <summary>
@@ -102,7 +96,7 @@ namespace Juna.SKS.Package.Services.Controllers
         [ValidateModelState]
         [SwaggerOperation("ReportParcelHop")]
         [SwaggerResponse(statusCode: 400, type: typeof(Error), description: "The operation failed due to an error.")]
-        public virtual IActionResult ReportParcelHop([FromRoute][Required][RegularExpression("^[A-Z0-9]{9}$")]string trackingId, [FromRoute][Required][RegularExpression("^[A-Z]{4}d{1,4}$")]string code)
+        public virtual IActionResult ReportParcelHop([FromRoute][Required][RegularExpression("^[A-Z0-9]{9}$")]string trackingId, [FromRoute][Required][RegularExpression(@"^[A-Z]{4}\d{1,4}$")]string code)
         {
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200);
@@ -115,18 +109,12 @@ namespace Juna.SKS.Package.Services.Controllers
 
             bool reported = this._staffLogic.ReportParcelHop(trackingId, code);
 
-            return new EmptyResult();
+            if (reported == false)
+            {
+                return StatusCode(400, new Error("Inputs are invalid"));
+            }
 
-            /*if (trackingId == null)
-            {
-                throw new Exception("TrackingID cannot be null");
-            }
-            else if (trackingId.Length <= 0)
-            {
-                throw new Exception("TrackingID cannot have zero or negative length");
-            }
-            
-            throw new NotImplementedException();*/
+            return StatusCode(200);
         }
     }
 }

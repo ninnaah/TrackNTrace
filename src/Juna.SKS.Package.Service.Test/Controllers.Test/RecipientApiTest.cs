@@ -6,74 +6,66 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Juna.SKS.Package.Services.DTOs.Models;
 using Juna.SKS.Package.Services.Controllers;
+using Moq;
+using Juna.SKS.Package.BusinessLogic.Interfaces;
+using AutoMapper;
+using FizzWare.NBuilder;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
     public class RecipientApiTest
     {
-        [Test]
-        public void TrackParcel_ValidTrackingId_NoArgumentExceptionThrown()
+        Mock<IRecipientLogic> mockLogic;
+        Mock<IMapper> mockMapper;
+
+        [SetUp]
+        public void Setup()
         {
-            RecipientApiController recipient = new RecipientApiController();
-
-            string trackingId = "H7Z4R2DF5";
-            Exception ex = null;
-
-            try
-            {
-                recipient.TrackParcel(trackingId);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
-
-            Assert.IsNull(ex);
-
+            mockLogic = new Mock<IRecipientLogic>();
+            mockMapper = new Mock<IMapper>();
         }
 
         [Test]
-        public void TrackParcel_TrackingIdLengthZero_ArgumentExceptionThrown()
+        public void TrackParcel_ValidTrackingId_ReturnCode200()
         {
-            RecipientApiController recipient = new RecipientApiController();
+            var returnParcel = Builder<BusinessLogic.Entities.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = Builder<BusinessLogic.Entities.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<BusinessLogic.Entities.Recipient>.CreateNew().Build())
+                .Build();
 
-            string trackingId = "";
-            Exception ex = null;
+            mockLogic.Setup(m => m.TrackParcel(It.IsAny<string>()))
+                .Returns(returnParcel);
 
-            try
-            {
-                recipient.TrackParcel(trackingId);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
+            RecipientApiController recipient = new(mockLogic.Object, mockMapper.Object);
 
-            Assert.AreEqual(ex.Message, "TrackingID cannot have zero or negative length");
+            var validTrackingId = "PYJRB4HZ6";
 
+            var testResult = recipient.TrackParcel(validTrackingId);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(200, testResultCode.StatusCode);
         }
-
 
         [Test]
-        public void TrackParcel_EmptyTrackingId_ArgumentExceptionThrown()
+        public void TrackParcel_InvalidTrackingId_ReturnCode400()
         {
-            RecipientApiController recipient = new RecipientApiController();
+            mockLogic.Setup(m => m.TrackParcel(It.IsAny<string>()))
+                .Returns(value: null);
 
-            string trackingId = null;
-            Exception ex = null;
+            RecipientApiController recipient = new(mockLogic.Object, mockMapper.Object);
 
-            try
-            {
-                recipient.TrackParcel(trackingId);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
+            var invalidTrackingId = "12";
 
-            Assert.AreEqual(ex.Message, "TrackingID cannot be null");
+            var testResult = recipient.TrackParcel(invalidTrackingId);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
 
+            Assert.AreEqual(400, testResultCode.StatusCode);
         }
+
 
     }
 }

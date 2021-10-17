@@ -1,4 +1,6 @@
-﻿using Juna.SKS.Package.BusinessLogic.Entities;
+﻿using FluentValidation;
+using Juna.SKS.Package.BusinessLogic.Entities;
+using Juna.SKS.Package.BusinessLogic.Entities.Validators;
 using Juna.SKS.Package.BusinessLogic.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,7 +18,15 @@ namespace Juna.SKS.Package.BusinessLogic
         }
         public string SubmitParcel(Parcel parcel)
         {
-            return "PYJRB4HZ6";
+            IValidator<Parcel> validator = new ParcelValidator();
+            var result = validator.Validate(parcel);
+
+            if (result.IsValid == true)
+            {
+                return "PYJRB4HZ6";
+            }
+
+            return null;
         }
     }
 }

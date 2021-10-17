@@ -6,140 +6,136 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Juna.SKS.Package.Services.DTOs.Models;
 using Juna.SKS.Package.Services.Controllers;
+using Moq;
+using Juna.SKS.Package.BusinessLogic.Interfaces;
+using AutoMapper;
+using FizzWare.NBuilder;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
     public class WarehouseManagerApiTest
     {
+        Mock<IWarehouseManagementLogic> mockLogic;
+        Mock<IMapper> mockMapper;
+
+        [SetUp]
+        public void Setup()
+        {
+            mockLogic = new Mock<IWarehouseManagementLogic>();
+            mockMapper = new Mock<IMapper>();
+        }
 
         [Test]
-        public void GetWarehouse_ValidCode_NoArgumentExceptionThrown()
+        public void ExportWarehouses_ValidWarehouses_ReturnCode200()
         {
-            WarehouseManagementApiController manager = new WarehouseManagementApiController();
-            
-            string code = "WTTA01";
-            Exception ex = null;
+            var returnWarehouse = Builder<BusinessLogic.Entities.Warehouse>.CreateNew()
+                .With(p => p.Code = "ABCD1234")
+                .With(p => p.Level = 1)
+                .With(p => p.Description = "Hauptlager 27-12")
+                .With(p => p.NextHops = Builder<BusinessLogic.Entities.WarehouseNextHops> .CreateListOfSize(3).Build().ToList())
+                .Build();
 
-            try
-            {
-                manager.GetWarehouse(code);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
+            mockLogic.Setup(m => m.ExportWarehouses())
+                .Returns(returnWarehouse);
 
-            Assert.IsNull(ex);
+            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object);
+
+            var testResult = warehouseManagement.ExportWarehouses();
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(200, testResultCode.StatusCode);
         }
 
 
         [Test]
-        public void GetWarehouse_EmptyCode_ArgumentExceptionThrown()
+        public void GetWarehouse_ValidCode_ReturnCode200()
         {
-            WarehouseManagementApiController manager = new WarehouseManagementApiController();
+            var returnWarehouse = Builder<BusinessLogic.Entities.Warehouse>.CreateNew()
+                .With(p => p.Code = "ABCD1234")
+                .With(p => p.Level = 1)
+                .With(p => p.Description = "Hauptlager 27-12")
+                .With(p => p.NextHops = Builder<BusinessLogic.Entities.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
+                .Build();
 
-            string code = null;
-            Exception ex = null;
+            mockLogic.Setup(m => m.GetWarehouse(It.IsAny<string>()))
+                .Returns(returnWarehouse);
 
-            try
-            {
-                manager.GetWarehouse(code);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
+            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object);
 
-            Assert.AreEqual(ex.Message, "Code cannot be null");
+            string validCode = "ABCD1234";
 
-        }
+            var testResult = warehouseManagement.GetWarehouse(validCode);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
 
-        [Test]
-        public void GetWarehouse_CodeLenthZero_ArgumentExceptionThrown()
-        {
-            WarehouseManagementApiController manager = new WarehouseManagementApiController();
-
-            string code = "";
-            Exception ex = null;
-
-            try
-            {
-                manager.GetWarehouse(code);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
-
-            Assert.AreEqual(ex.Message, "Code cannot have zero or negative length");
-
-        }
-
-        [Test]
-        public void ImportWarehouses_ValidWarehouse_NoArgumentExceptionThrown()
-        {
-            WarehouseManagementApiController manager = new WarehouseManagementApiController();
-
-            Warehouse warehouse = new Warehouse();
-            warehouse.Level = 1;
-            Exception ex = null;
-
-            try
-            {
-                manager.ImportWarehouses(warehouse);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
-
-            //Assert.IsNull(ex);
-            Assert.AreEqual(ex.Message, "The method or operation is not implemented.");
-
+            Assert.AreEqual(200, testResultCode.StatusCode);
         }
 
 
         [Test]
-        public void ImportWarehouses_EmptyLevel_ArgumentExceptionThrown()
+        public void GetWarehouse_InvalidCode_ReturnCode400()
         {
-            WarehouseManagementApiController manager = new WarehouseManagementApiController();
+            mockLogic.Setup(m => m.GetWarehouse(It.IsAny<string>()))
+                .Returns(value : null);
 
-            Warehouse warehouse = new Warehouse();
-            warehouse.Level = null;
-            Exception ex = null;
+            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object);
 
-            try
-            {
-                manager.ImportWarehouses(warehouse);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
+            string invalidCode = "12";
 
-            Assert.AreEqual(ex.Message, "Level cannot be null");
+            var testResult = warehouseManagement.GetWarehouse(invalidCode);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(400, testResultCode.StatusCode);
 
         }
 
         [Test]
-        public void ImportWarehouses_LevelZero_ArgumentExceptionThrown()
+        public void ImportWarehouses_ValidWarehouse_ReturnCode200()
         {
-            WarehouseManagementApiController manager = new WarehouseManagementApiController();
+            mockLogic.Setup(m => m.ImportWarehouses(It.IsAny<BusinessLogic.Entities.Warehouse>()))
+                .Returns(true);
 
-            Warehouse warehouse = new Warehouse();
-            warehouse.Level = 0;
-            Exception ex = null;
+            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object);
 
-            try
-            {
-                manager.ImportWarehouses(warehouse);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
+            var validWarehouse = Builder<DTOs.Models.Warehouse>.CreateNew()
+                .With(p => p.Code = "ABCD1234")
+                .With(p => p.Level = 1)
+                .With(p => p.Description = "Hauptlager 27-12")
+                .With(p => p.NextHops = Builder<DTOs.Models.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
+                .Build();
 
-            Assert.AreEqual(ex.Message, "Zero or negative level is not valid");
+            var testResult = warehouseManagement.ImportWarehouses(validWarehouse);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(200, testResultCode.StatusCode);
+
+        }
+
+
+        [Test]
+        public void ImportWarehouses_InvalidWarehouse_ReturnCode400()
+        {
+            mockLogic.Setup(m => m.ImportWarehouses(It.IsAny<BusinessLogic.Entities.Warehouse>()))
+                 .Returns(false);
+
+            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object);
+
+            var invalidWarehouse = Builder<DTOs.Models.Warehouse>.CreateNew()
+                .With(p => p.Code = "12")
+                .With(p => p.Level = 1)
+                .With(p => p.Description = "Hauptlager 27-12")
+                .With(p => p.NextHops = Builder<DTOs.Models.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
+                .Build();
+
+            var testResult = warehouseManagement.ImportWarehouses(invalidWarehouse);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(400, testResultCode.StatusCode);
 
         }
 

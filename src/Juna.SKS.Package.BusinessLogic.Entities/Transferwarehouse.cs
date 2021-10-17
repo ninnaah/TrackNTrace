@@ -20,7 +20,7 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
             LogisticsPartnerUrl = logisticsPartnerUrl;
         }
         public Transferwarehouse(string regionGeoJson, string logisticsPartner, string logisticsPartnerUrl, string hopType, string code, 
-            string description, int processingDelayMins, string locationName, double lat, double lon, int traveltimeMins)
+            string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates)
         {
             RegionGeoJson = regionGeoJson;
             LogisticsPartner = logisticsPartner;
@@ -30,9 +30,7 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
             Description = description;
             ProcessingDelayMins = processingDelayMins;
             LocationName = locationName;
-            Lat = lat;
-            Lon = lon;
-            TraveltimeMins = traveltimeMins;
+            LocationCoordinates = locationCoordinates;
         }
         public string RegionGeoJson { get; set; }
 

@@ -19,7 +19,7 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
             NumberPlate = numberPlate;
         }
 
-        public Truck(string regionGeoJson, string numberPlate, string hopType, string code, string description, int processingDelayMins, string locationName, double lat, double lon, int traveltimeMins)
+        public Truck(string regionGeoJson, string numberPlate, string hopType, string code, string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates)
         {
             RegionGeoJson = regionGeoJson;
             NumberPlate = numberPlate;
@@ -28,9 +28,7 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
             Description = description;
             ProcessingDelayMins = processingDelayMins;
             LocationName = locationName;
-            Lat = lat;
-            Lon = lon;
-            TraveltimeMins = traveltimeMins;
+            LocationCoordinates = locationCoordinates;
         }
         public string RegionGeoJson { get; set; }
 

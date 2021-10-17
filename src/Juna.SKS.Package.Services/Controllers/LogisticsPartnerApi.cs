@@ -72,28 +72,17 @@ namespace Juna.SKS.Package.Services.Controllers
 
 
             BusinessLogic.Entities.Parcel BLparcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(body);
-            NewParcelInfo info = new NewParcelInfo();
-            info.TrackingId = this._logisticsPartnerLogic.TransitionParcel(BLparcel);
+            var response = this._logisticsPartnerLogic.TransitionParcel(BLparcel, trackingId);
 
-            return new ObjectResult(info);
-
-
-            /*if (body.Weight == null)
+            if(response == null)
             {
-                throw new Exception("Empty weight is not valid");
+                return StatusCode(400, new Error("Inputs are invalid"));
             }
-            else if (body.Weight <= 0)
-            {
-                throw new Exception("Zero or negative weight is not valid");
-            }
-
-            string exampleJson = null;
-            exampleJson = "{\n  \"trackingId\" : \"PYJRB4HZ6\"\n}";
             
-                        var example = exampleJson != null
-                        ? JsonConvert.DeserializeObject<NewParcelInfo>(exampleJson)
-                        : default(NewParcelInfo);            //TODO: Change the data returned
-            return new ObjectResult(example);*/
+            NewParcelInfo info = new NewParcelInfo();
+            info.TrackingId = response;
+            return StatusCode(200, info);
+            
 
         }
     }

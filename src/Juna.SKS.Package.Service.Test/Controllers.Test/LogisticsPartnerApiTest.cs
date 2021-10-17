@@ -6,77 +6,114 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Juna.SKS.Package.Services.DTOs.Models;
 using Juna.SKS.Package.Services.Controllers;
+using Moq;
+using Microsoft.AspNetCore.Mvc;
+using Juna.SKS.Package.BusinessLogic.Interfaces;
+using Juna.SKS.Package.BusinessLogic.Entities;
+using AutoMapper;
+using FizzWare.NBuilder;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
     public class LogisticsPartnerApiTest
     {
-        [Test]
-        public void TransitionParcel_ValidParcel_NoExceptionThrown()
+        Mock<ILogisticsPartnerLogic> mockLogic;
+        Mock<IMapper> mockMapper;
+
+        [SetUp]
+        public void Setup()
         {
-            Parcel parcel = new Parcel();
-            LogisticsPartnerApiController logisticsPartner = new LogisticsPartnerApiController();
-
-            string trackingId = "H7Z4R2DF5";
-            parcel.Weight = 25;
-            Exception ex = null;
-
-            try
-            {
-                logisticsPartner.TransitionParcel(parcel, trackingId);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
-
-            Assert.IsNull(ex);
+            mockLogic = new Mock<ILogisticsPartnerLogic>();
+            mockMapper = new Mock<IMapper>();
         }
 
         [Test]
-        public void TransitionParcel_ZeroWeight_ArgumentExceptionThrown()
+        public void TransitionParcel_ValidParcel_ReturnCode200()
         {
-            Parcel parcel = new Parcel();
-            LogisticsPartnerApiController logisticsPartner = new LogisticsPartnerApiController();
+            mockLogic.Setup(m => m.TransitionParcel(It.IsAny<BusinessLogic.Entities.Parcel>(), It.IsAny<string>()))
+                .Returns("PYJRB4HZ6");
 
-            string trackingId = "H7Z4R2DF5";
-            parcel.Weight = 0;
-            Exception ex = null;
+            LogisticsPartnerApiController logisticsPartner = new(mockLogic.Object, mockMapper.Object);
 
-            try
-            {
-                logisticsPartner.TransitionParcel(parcel, trackingId);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
+            var validParcel = Builder<DTOs.Models.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .Build();
+            var validTrackingId = "PYJRB4HZ6";
 
-            Assert.AreEqual(ex.Message, "Zero or negative weight is not valid");
+            var testResult = logisticsPartner.TransitionParcel(validParcel, validTrackingId);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
 
+            Assert.AreEqual(200, testResultCode.StatusCode);
         }
 
         [Test]
-        public void TransitionParcel_EmptyWeight_ArgumentExceptionThrown()
+        public void TransitionParcel_InvalidParcelZeroWeight_ReturnCode400()
         {
-            Parcel parcel = new Parcel();
-            LogisticsPartnerApiController logisticsPartner = new LogisticsPartnerApiController();
+            mockLogic.Setup(m => m.TransitionParcel(It.IsAny<BusinessLogic.Entities.Parcel>(), It.IsAny<string>()))
+                .Returns(value: null);
 
-            string trackingId = "H7Z4R2DF5";
-            parcel.Weight = null;
-            Exception ex = null;
+            LogisticsPartnerApiController logisticsPartner = new(mockLogic.Object, mockMapper.Object);
 
-            try
-            {
-                logisticsPartner.TransitionParcel(parcel, trackingId);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
+            var invalidParcel = Builder<DTOs.Models.Parcel>.CreateNew()
+                .With(p => p.Weight = 0)
+                .With(p => p.Recipient = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .Build();
+            var validTrackingId = "PYJRB4HZ6";
 
-            Assert.AreEqual(ex.Message, "Empty weight is not valid");
+            var testResult = logisticsPartner.TransitionParcel(invalidParcel, validTrackingId);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
 
+            Assert.AreEqual(400, testResultCode.StatusCode);
         }
+
+        /*[Test]
+        public void TransitionParcel_InvalidParcelRecipientIsNull_ReturnCode400()
+        {
+            mockLogic.Setup(m => m.TransitionParcel(It.IsAny<BusinessLogic.Entities.Parcel>(), It.IsAny<string>()))
+                .Returns(value: null);
+
+            LogisticsPartnerApiController logisticsPartner = new(mockLogic.Object, mockMapper.Object);
+
+            var invalidParcel = Builder<DTOs.Models.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = null)
+                .With(p => p.Sender = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .Build();
+            var trackingId = "PYJRB4HZ6";
+
+            var testResult = logisticsPartner.TransitionParcel(invalidParcel, trackingId);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(400, testResultCode.StatusCode);
+        }
+
+        [Test]
+        public void TransitionParcel_InvalidParcelSenderIsNull_ReturnCode400()
+        {
+            mockLogic.Setup(m => m.TransitionParcel(It.IsAny<BusinessLogic.Entities.Parcel>(), It.IsAny<string>()))
+                .Returns(value: null);
+
+            LogisticsPartnerApiController logisticsPartner = new(mockLogic.Object, mockMapper.Object);
+
+            var invalidParcel = Builder<DTOs.Models.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = null)
+                .Build();
+            var trackingId = "PYJRB4HZ6";
+
+            var testResult = logisticsPartner.TransitionParcel(invalidParcel, trackingId);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(400, testResultCode.StatusCode);
+        }*/
+
     }
 }

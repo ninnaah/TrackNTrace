@@ -13,6 +13,6 @@ namespace Juna.SKS.Package.BusinessLogic.Interfaces
 
         Warehouse GetWarehouse(string code);
 
-        Warehouse ImportWarehouses();
+        bool ImportWarehouses(Warehouse warehouse);
     }
 }

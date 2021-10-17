@@ -1,4 +1,6 @@
-﻿using Juna.SKS.Package.BusinessLogic.Entities;
+﻿using FluentValidation;
+using Juna.SKS.Package.BusinessLogic.Entities;
+using Juna.SKS.Package.BusinessLogic.Entities.Validators;
 using Juna.SKS.Package.BusinessLogic.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,38 +18,55 @@ namespace Juna.SKS.Package.BusinessLogic
         }
         public Warehouse ExportWarehouses()
         {
-            List <Hop> nextHops = new List<Hop>
+            GeoCoordinate locationCoodinates = new GeoCoordinate(3.1, 4.5);
+            Hop hop1 = new Hop("truck", "123", "aHop", 23, "Vienna", locationCoodinates);
+            Hop hop2 = new Hop("truck", "321", "anotherHop", 13, "Vienna", locationCoodinates);
+            List <WarehouseNextHops> nextHops = new List<WarehouseNextHops>
             {
-                new Hop("truck", "123", "aHop", 23, "Vienna", 2.3, 3.1, 45),
-                new Hop("truck", "321", "anotherHop", 13, "Vienna", 1.3, 3.4, 75)
+                new WarehouseNextHops(123, hop1),
+                new WarehouseNextHops(456, hop2)
             };
 
-            Warehouse warehouse = new Warehouse(0, nextHops, "warehouse", "111", "aWarehouse", 11, "Vienna", 1.1, 1.1, 111);
+            Warehouse warehouse = new Warehouse(0, nextHops, "warehouse", "111", "Hauptlager 27-12", 11, "Vienna", locationCoodinates);
             return warehouse;
         }
 
         public Warehouse GetWarehouse(string code)
         {
-            List<Hop> nextHops = new List<Hop>
+            HopArrival wrapHopArrival = new HopArrival(code, "aHop", DateTime.Now);
+            
+            IValidator<HopArrival> validator = new HopArrivalValidator();
+            var result = validator.Validate(wrapHopArrival);
+
+            if (result.IsValid == false)
             {
-                new Hop("truck", "123", "aHop", 23, "Vienna", 2.3, 3.1, 45),
-                new Hop("truck", "321", "anotherHop", 13, "Vienna", 1.3, 3.4, 75)
+                return null;
+            }
+
+            GeoCoordinate locationCoodinates = new GeoCoordinate(3.1, 4.5);
+            Hop hop1 = new Hop("truck", "123", "aHop", 23, "Vienna", locationCoodinates);
+            Hop hop2 = new Hop("truck", "321", "anotherHop", 13, "Vienna", locationCoodinates);
+            List<WarehouseNextHops> nextHops = new List<WarehouseNextHops>
+            {
+                new WarehouseNextHops(123, hop1),
+                new WarehouseNextHops(456, hop2)
             };
 
-            Warehouse warehouse = new Warehouse(0, nextHops, "warehouse", "111", "aWarehouse", 11, "Vienna", 1.1, 1.1, 111);
+            Warehouse warehouse = new Warehouse(0, nextHops, "warehouse", code, "Hauptlager 27-12", 11, "Vienna", locationCoodinates);
             return warehouse;
         }
 
-        public Warehouse ImportWarehouses()
+        public bool ImportWarehouses(Warehouse warehouse)
         {
-            List<Hop> nextHops = new List<Hop>
-            {
-                new Hop("truck", "123", "aHop", 23, "Vienna", 2.3, 3.1, 45),
-                new Hop("truck", "321", "anotherHop", 13, "Vienna", 1.3, 3.4, 75)
-            };
+            IValidator<Warehouse> validator = new WarehouseValidator();
+            var result = validator.Validate(warehouse);
 
-            Warehouse warehouse = new Warehouse(0, nextHops, "warehouse", "111", "aWarehouse", 11, "Vienna", 1.1, 1.1, 111);
-            return warehouse;
+            if (result.IsValid == false)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

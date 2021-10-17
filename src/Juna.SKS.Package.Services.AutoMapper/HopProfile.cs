@@ -18,8 +18,6 @@ namespace Juna.SKS.Package.Services.AutoMapper
                .Include<BusinessLogic.Entities.Truck, DTOs.Models.Truck>()
                .Include<BusinessLogic.Entities.Transferwarehouse, DTOs.Models.Transferwarehouse>()
                .ReverseMap();
-            CreateMap<BusinessLogic.Entities.Hop, DTOs.Models.WarehouseNextHops>().ReverseMap();
-            CreateMap<BusinessLogic.Entities.Hop, DTOs.Models.GeoCoordinate>().ReverseMap();
         }
     }
 }

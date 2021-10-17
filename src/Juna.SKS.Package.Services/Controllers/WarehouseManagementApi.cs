@@ -76,15 +76,7 @@ namespace Juna.SKS.Package.Services.Controllers
 
             DTOs.Models.Warehouse warehouse = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
 
-            return new ObjectResult(warehouse);
-
-            /*string exampleJson = null;
-            exampleJson = "";
-
-            var example = exampleJson != null
-                        ? JsonConvert.DeserializeObject<Warehouse>(exampleJson)
-                        : default(Warehouse);            //TODO: Change the data returned
-            return new ObjectResult(example);*/
+            return StatusCode(200,warehouse);
         }
 
         /// <summary>
@@ -111,27 +103,18 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
 
-            BusinessLogic.Entities.Warehouse BLwarehouse = this._warehouseManagementLogic.GetWarehouse(code);
-            code = BLwarehouse.Code;
+            var response = this._warehouseManagementLogic.GetWarehouse(code);
 
-
-            /*if (code == null)
+            if (response == null)
             {
-                throw new Exception("Code cannot be null");
+                return StatusCode(400, new Error("Inputs are invalid"));
             }
-            else if (code.Length <= 0)
-            {
-                throw new Exception("Code cannot have zero or negative length");
-            }*/
 
-            string exampleJson = null;
-            //exampleJson = "\"\"";
-            exampleJson = "";
+            BusinessLogic.Entities.Warehouse BLwarehouse = response;
+            DTOs.Models.Warehouse warehouse = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
 
-            var example = exampleJson != null
-                        ? JsonConvert.DeserializeObject<Warehouse>(exampleJson)
-                        : default(Warehouse);            //TODO: Change the data returned
-            return new ObjectResult(example);
+            return StatusCode(200, warehouse);
+
         }
 
         /// <summary>
@@ -154,19 +137,14 @@ namespace Juna.SKS.Package.Services.Controllers
             // return StatusCode(400, default(Error));
 
             BusinessLogic.Entities.Warehouse BLwarehouse = this._mapper.Map<BusinessLogic.Entities.Warehouse>(body);
-            BLwarehouse = this._warehouseManagementLogic.ImportWarehouses();
-            body = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
+            bool response = this._warehouseManagementLogic.ImportWarehouses(BLwarehouse);
 
-            /*if (body.Level == null)
+            if (response == false)
             {
-                throw new Exception("Level cannot be null");
+                return StatusCode(400, new Error("Inputs are invalid"));
             }
-            else if (body.Level <= 0)
-            {
-                throw new Exception("Zero or negative level is not valid");
-            }*/
 
-            throw new NotImplementedException();
+            return StatusCode(200);
         }
     }
 }

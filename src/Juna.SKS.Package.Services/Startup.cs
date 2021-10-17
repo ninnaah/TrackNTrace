@@ -27,6 +27,10 @@ using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
 using Juna.SKS.Package.BusinessLogic.Interfaces;
 using Juna.SKS.Package.BusinessLogic;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using Juna.SKS.Package.BusinessLogic.Entities;
+using Juna.SKS.Package.BusinessLogic.Entities.Validators;
 
 namespace Juna.SKS.Package.Services
 {
@@ -58,7 +62,6 @@ namespace Juna.SKS.Package.Services
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup).Assembly);
-            //services.AddMvc();
 
             // Add framework services.
             services
@@ -67,6 +70,7 @@ namespace Juna.SKS.Package.Services
                     options.InputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonInputFormatter>();
                     options.OutputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonOutputFormatter>();
                 })
+                .AddFluentValidation()
                 .AddNewtonsoftJson(opts =>
                 {
                     opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
@@ -74,6 +78,10 @@ namespace Juna.SKS.Package.Services
                 })
                 .AddXmlSerializerFormatters();
 
+            services.AddTransient<IValidator<HopArrival>, HopArrivalValidator>();
+            services.AddTransient<IValidator<Parcel>, ParcelValidator>();
+            services.AddTransient<IValidator<Recipient>, RecipientValidator>();
+            services.AddTransient<IValidator<Warehouse>, WarehouseValidator>();
 
             services
                 .AddSwaggerGen(c =>

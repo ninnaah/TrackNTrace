@@ -27,7 +27,15 @@ namespace Juna.SKS.Package.Services.DTOs.Models
     [DataContract]
     [ExcludeFromCodeCoverage]
     public partial class Error
-    { 
+    {
+        public Error(string message)
+        {
+            ErrorMessage = message;
+        }
+        public Error()
+        {
+                
+        }
         /// <summary>
         /// The error message.
         /// </summary>

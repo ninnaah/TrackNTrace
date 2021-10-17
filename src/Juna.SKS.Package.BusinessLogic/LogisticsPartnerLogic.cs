@@ -1,4 +1,6 @@
-﻿using Juna.SKS.Package.BusinessLogic.Entities;
+﻿using FluentValidation;
+using Juna.SKS.Package.BusinessLogic.Entities;
+using Juna.SKS.Package.BusinessLogic.Entities.Validators;
 using Juna.SKS.Package.BusinessLogic.Interfaces;
 using System;
 
@@ -11,9 +13,18 @@ namespace Juna.SKS.Package.BusinessLogic
         {
 
         }
-        public string TransitionParcel(Parcel parcel)
+        public string TransitionParcel(Parcel parcel, string trackingId)
         {
-            return "PYJRB4HZ6";
+            parcel.TrackingId = trackingId;
+            IValidator<Parcel> validator = new ParcelValidator();
+            var result = validator.Validate(parcel);
+
+            if (result.IsValid == true)
+            {
+                return trackingId;
+            }
+
+            return null;
         }
     }
 }

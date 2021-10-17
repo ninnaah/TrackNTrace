@@ -72,28 +72,19 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
             
-            BusinessLogic.Entities.Parcel BLparcel = this._recipientLogic.TrackParcel(trackingId);
+            var response = this._recipientLogic.TrackParcel(trackingId);
+
+            if (response == null)
+            {
+                return StatusCode(400, new Error("Inputs are invalid"));
+            }
+
+            BusinessLogic.Entities.Parcel BLparcel = response;
             DTOs.Models.TrackingInformation trackingInfo = this._mapper.Map<DTOs.Models.TrackingInformation>(BLparcel);
 
-            return new ObjectResult(trackingInfo);
+            return StatusCode(200, trackingInfo);
 
 
-            /*if (trackingId == null)
-            {
-                throw new Exception("TrackingID cannot be null");
-            }
-            else if (trackingId.Length <= 0)
-            {
-                throw new Exception("TrackingID cannot have zero or negative length");
-            }
-
-            string exampleJson = null;
-            exampleJson = "{\n  \"visitedHops\" : [ {\n    \"dateTime\" : \"2000-01-23T04:56:07.000+00:00\",\n    \"code\" : \"code\",\n    \"description\" : \"description\"\n  }, {\n    \"dateTime\" : \"2000-01-23T04:56:07.000+00:00\",\n    \"code\" : \"code\",\n    \"description\" : \"description\"\n  } ],\n  \"futureHops\" : [ null, null ],\n  \"state\" : \"Pickup\"\n}";
-            
-                        var example = exampleJson != null
-                        ? JsonConvert.DeserializeObject<TrackingInformation>(exampleJson)
-                        : default(TrackingInformation);            //TODO: Change the data returned
-            return new ObjectResult(example);*/
         }
     }
 }

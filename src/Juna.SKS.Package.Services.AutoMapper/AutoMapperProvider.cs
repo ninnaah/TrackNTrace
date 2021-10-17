@@ -20,6 +20,8 @@ namespace Juna.SKS.Package.Services.AutoMapper
                 mc.AddProfile(new TransferwarehouseProfile());
                 mc.AddProfile(new TruckProfile());
                 mc.AddProfile(new WarehouseProfile());
+                mc.AddProfile(new WarehouseNextHopsProfile());
+                mc.AddProfile(new GeoCoordinateProfile());
             });
 
             Mapper mapper = new Mapper(mapperConfig);

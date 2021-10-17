@@ -12,7 +12,7 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
         {
 
         }
-        public Parcel(float weight, Recipient recipient, Recipient sender, string trackingId, List<HopArrival> visitedHops, List<HopArrival> futureHops)
+        public Parcel(float weight, Recipient recipient, Recipient sender, string trackingId, List<HopArrival> visitedHops, List<HopArrival> futureHops, StateEnum state)
         {
             Weight = weight;
             Recipient = recipient;
@@ -20,6 +20,7 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
             TrackingId = trackingId;
             VisitedHops = visitedHops;
             FutureHops = futureHops;
+            State = state;
         }
         public float? Weight { get; set; }
         public Recipient Recipient { get; set; }
@@ -27,5 +28,15 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
         public string TrackingId { get; set; }
         public List<HopArrival> VisitedHops { get; set; }
         public List<HopArrival> FutureHops { get; set; }
+
+        public enum StateEnum
+        {
+            PickupEnum = 0,
+            InTransportEnum = 1,
+            InTruckDeliveryEnum = 2,
+            TransferredEnum = 3,
+            DeliveredEnum = 4
+        }
+        public StateEnum? State { get; set; }
     }
 }

@@ -6,74 +6,66 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Juna.SKS.Package.Services.DTOs.Models;
 using Juna.SKS.Package.Services.Controllers;
+using Moq;
+using AutoMapper;
+using Juna.SKS.Package.BusinessLogic.Interfaces;
+using FizzWare.NBuilder;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
     public class SenderApiTest
     {
+        Mock<ISenderLogic> mockLogic;
+        Mock<IMapper> mockMapper;
 
-        [Test]
-        public void SubmitParcel_ValidParcel_NoExceptionThrown()
+        [SetUp]
+        public void Setup()
         {
-            Parcel parcel = new Parcel();
-            SenderApiController sender = new SenderApiController();
-
-            parcel.Weight = 25;
-            Exception ex = null;
-
-            try
-            {
-                sender.SubmitParcel(parcel);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
-
-            Assert.IsNull(ex);
+            mockLogic = new Mock<ISenderLogic>();
+            mockMapper = new Mock<IMapper>();
         }
 
         [Test]
-        public void SubmitParcel_ZeroWeight_ArgumentExceptionThrown()
+        public void SubmitParcel_ValidParcel_ReturnCode201()
         {
-            Parcel parcel = new Parcel();
-            SenderApiController sender = new SenderApiController();
+            mockLogic.Setup(m => m.SubmitParcel(It.IsAny<BusinessLogic.Entities.Parcel>()))
+                .Returns("PYJRB4HZ6");
 
-            parcel.Weight = 0;
-            Exception ex = null;
+            SenderApiController sender = new(mockLogic.Object, mockMapper.Object);
 
-            try
-            {
-                sender.SubmitParcel(parcel);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
+            var validParcel = Builder<DTOs.Models.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .Build();
 
-            Assert.AreEqual(ex.Message, "Zero or negative weight is not valid");
+            var testResult = sender.SubmitParcel(validParcel);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
 
+            Assert.AreEqual(201, testResultCode.StatusCode);
         }
 
         [Test]
-        public void SubmitParcel_EmptyWeight_ArgumentExceptionThrown()
+        public void SubmitParcel_InvalidParcelZeroWeight_ReturnCode400()
         {
-            Parcel parcel = new Parcel();
-            SenderApiController sender = new SenderApiController();
+            mockLogic.Setup(m => m.SubmitParcel(It.IsAny<BusinessLogic.Entities.Parcel>()))
+               .Returns(value: null);
 
-            parcel.Weight = null;
-            Exception ex = null;
+            SenderApiController sender = new(mockLogic.Object, mockMapper.Object);
 
-            try
-            {
-                sender.SubmitParcel(parcel);
-            }
-            catch (Exception e)
-            {
-                ex = e;
-            }
+            var invalidParcel = Builder<DTOs.Models.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .Build();
 
-            Assert.AreEqual(ex.Message, "Empty weight is not valid");
+            var testResult = sender.SubmitParcel(invalidParcel);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(400, testResultCode.StatusCode);
 
         }
 
