@@ -55,8 +55,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             string invalidTrackingId = "123";
 
             var testResult = staff.ReportParcelDelivery(invalidTrackingId);
-            Assert.IsInstanceOf<StatusCodeResult>(testResult);
-            var testResultCode = testResult as StatusCodeResult;
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
 
             Assert.AreEqual(400, testResultCode.StatusCode);
         }
@@ -92,8 +92,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             string validCode = "ABCD1234";
 
             var testResult = staff.ReportParcelHop(invalidTrackingId, validCode);
-            Assert.IsInstanceOf<StatusCodeResult>(testResult);
-            var testResultCode = testResult as StatusCodeResult;
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
 
             Assert.AreEqual(400, testResultCode.StatusCode);
 

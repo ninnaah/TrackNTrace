@@ -43,8 +43,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             var validTrackingId = "PYJRB4HZ6";
 
             var testResult = logisticsPartner.TransitionParcel(validParcel, validTrackingId);
-            Assert.IsInstanceOf<StatusCodeResult>(testResult);
-            var testResultCode = testResult as StatusCodeResult;
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
 
             Assert.AreEqual(200, testResultCode.StatusCode);
         }
@@ -65,8 +65,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             var validTrackingId = "PYJRB4HZ6";
 
             var testResult = logisticsPartner.TransitionParcel(invalidParcel, validTrackingId);
-            Assert.IsInstanceOf<StatusCodeResult>(testResult);
-            var testResultCode = testResult as StatusCodeResult;
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
 
             Assert.AreEqual(400, testResultCode.StatusCode);
         }

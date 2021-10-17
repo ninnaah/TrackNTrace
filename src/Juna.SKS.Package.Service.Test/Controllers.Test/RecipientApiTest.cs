@@ -43,8 +43,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             var validTrackingId = "PYJRB4HZ6";
 
             var testResult = recipient.TrackParcel(validTrackingId);
-            Assert.IsInstanceOf<StatusCodeResult>(testResult);
-            var testResultCode = testResult as StatusCodeResult;
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
 
             Assert.AreEqual(200, testResultCode.StatusCode);
         }
@@ -60,8 +60,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             var invalidTrackingId = "12";
 
             var testResult = recipient.TrackParcel(invalidTrackingId);
-            Assert.IsInstanceOf<StatusCodeResult>(testResult);
-            var testResultCode = testResult as StatusCodeResult;
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
 
             Assert.AreEqual(400, testResultCode.StatusCode);
         }
