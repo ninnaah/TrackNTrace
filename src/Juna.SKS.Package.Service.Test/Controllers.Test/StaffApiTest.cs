@@ -37,8 +37,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             string validTrackingId = "PYJRB4HZ6";
 
             var testResult = staff.ReportParcelDelivery(validTrackingId);
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(200, testResultCode.StatusCode);
         }
@@ -55,8 +55,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             string invalidTrackingId = "123";
 
             var testResult = staff.ReportParcelDelivery(invalidTrackingId);
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(400, testResultCode.StatusCode);
         }
@@ -73,8 +73,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             string validCode = "ABCD1234";
 
             var testResult = staff.ReportParcelHop(validTrackingId, validCode);
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(200, testResultCode.StatusCode);
         }
@@ -92,8 +92,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             string validCode = "ABCD1234";
 
             var testResult = staff.ReportParcelHop(invalidTrackingId, validCode);
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(400, testResultCode.StatusCode);
 

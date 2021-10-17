@@ -41,8 +41,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Build();
 
             var testResult = sender.SubmitParcel(validParcel);
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(201, testResultCode.StatusCode);
         }
@@ -62,8 +62,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Build();
 
             var testResult = sender.SubmitParcel(invalidParcel);
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(400, testResultCode.StatusCode);
 

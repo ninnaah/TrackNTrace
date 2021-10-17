@@ -42,8 +42,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object);
 
             var testResult = warehouseManagement.ExportWarehouses();
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(200, testResultCode.StatusCode);
         }
@@ -67,8 +67,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             string validCode = "ABCD1234";
 
             var testResult = warehouseManagement.GetWarehouse(validCode);
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(200, testResultCode.StatusCode);
         }
@@ -85,8 +85,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             string invalidCode = "12";
 
             var testResult = warehouseManagement.GetWarehouse(invalidCode);
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(400, testResultCode.StatusCode);
 
@@ -108,8 +108,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Build();
 
             var testResult = warehouseManagement.ImportWarehouses(validWarehouse);
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(200, testResultCode.StatusCode);
 
@@ -132,8 +132,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Build();
 
             var testResult = warehouseManagement.ImportWarehouses(invalidWarehouse);
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(400, testResultCode.StatusCode);
 
