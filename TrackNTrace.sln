@@ -12,20 +12,28 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.Services.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.Services.Interfaces", "src\Juna.SKS.Package.Services.Interfaces\Juna.SKS.Package.Services.Interfaces.csproj", "{00CC092A-C0EB-4581-BC73-3B261FCBC3BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.Services.Test", "src\Juna.SKS.Package.Service.Test\Juna.SKS.Package.Services.Test.csproj", "{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.Services.Tests", "src\Juna.SKS.Package.Services.Tests\Juna.SKS.Package.Services.Tests.csproj", "{7FED2F97-49C4-408D-A7C7-C4D3D1FFCCA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.BusinessLogic.Entities", "src\Juna.SKS.Package.BusinessLogic.Entities\Juna.SKS.Package.BusinessLogic.Entities.csproj", "{C5995E31-1325-438C-88BB-D49293FEEE11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.BusinessLogic.Entities", "src\Juna.SKS.Package.BusinessLogic.Entities\Juna.SKS.Package.BusinessLogic.Entities.csproj", "{C5995E31-1325-438C-88BB-D49293FEEE11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.BusinessLogic.Interfaces", "src\Juna.SKS.Package.BusinessLogic.Interfaces\Juna.SKS.Package.BusinessLogic.Interfaces.csproj", "{50B1678D-145B-4A3E-80C5-9D68C51FBDC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.BusinessLogic.Interfaces", "src\Juna.SKS.Package.BusinessLogic.Interfaces\Juna.SKS.Package.BusinessLogic.Interfaces.csproj", "{50B1678D-145B-4A3E-80C5-9D68C51FBDC1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C5995E31-1325-438C-88BB-D49293FEEE11} = {C5995E31-1325-438C-88BB-D49293FEEE11}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.BusinessLogic", "src\Juna.SKS.Package.BusinessLogic\Juna.SKS.Package.BusinessLogic.csproj", "{D1513A47-00B1-4FB9-9FD5-34D9B004F049}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.BusinessLogic", "src\Juna.SKS.Package.BusinessLogic\Juna.SKS.Package.BusinessLogic.csproj", "{D1513A47-00B1-4FB9-9FD5-34D9B004F049}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.BusinessLogic.Tests", "src\Juna.SKS.Package.BusinessLogic.Tests\Juna.SKS.Package.BusinessLogic.Tests.csproj", "{7F25F7C1-6CB7-46EE-9F36-A476E5859A84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.BusinessLogic.Tests", "src\Juna.SKS.Package.BusinessLogic.Tests\Juna.SKS.Package.BusinessLogic.Tests.csproj", "{7F25F7C1-6CB7-46EE-9F36-A476E5859A84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.Services.AutoMapper", "src\Juna.SKS.Package.Services.AutoMapper\Juna.SKS.Package.Services.AutoMapper.csproj", "{A1FE3A15-D266-4A86-ABD0-F8DB1E6958CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.Services.AutoMapper", "src\Juna.SKS.Package.Services.AutoMapper\Juna.SKS.Package.Services.AutoMapper.csproj", "{A1FE3A15-D266-4A86-ABD0-F8DB1E6958CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.DataAccess.Sql", "src\Juna.SKS.Package.DataAccess.Sql\Juna.SKS.Package.DataAccess.Sql.csproj", "{9BDBD2C2-CE29-42F0-BC3F-633CB0A0AA49}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.DataAccess.Interfaces", "src\Juna.SKS.Package.DataAccess.Interfaces\Juna.SKS.Package.DataAccess.Interfaces.csproj", "{FCF4FDFC-E1F7-4614-91F1-1D9E338DD9F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.DataAccess.Entities", "src\Juna.SKS.Package.DataAccess.Entities\Juna.SKS.Package.DataAccess.Entities.csproj", "{CDF904FB-D17B-49CA-A38C-35BFA9FC9DFE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.DataAccess.Tests", "src\Juna.SKS.Package.DataAccess.Tests\Juna.SKS.Package.DataAccess.Tests.csproj", "{EB2C3AAD-F8F0-42FF-9A34-C1239BD69584}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +77,22 @@ Global
 		{A1FE3A15-D266-4A86-ABD0-F8DB1E6958CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1FE3A15-D266-4A86-ABD0-F8DB1E6958CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1FE3A15-D266-4A86-ABD0-F8DB1E6958CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BDBD2C2-CE29-42F0-BC3F-633CB0A0AA49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BDBD2C2-CE29-42F0-BC3F-633CB0A0AA49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BDBD2C2-CE29-42F0-BC3F-633CB0A0AA49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BDBD2C2-CE29-42F0-BC3F-633CB0A0AA49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCF4FDFC-E1F7-4614-91F1-1D9E338DD9F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCF4FDFC-E1F7-4614-91F1-1D9E338DD9F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCF4FDFC-E1F7-4614-91F1-1D9E338DD9F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCF4FDFC-E1F7-4614-91F1-1D9E338DD9F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDF904FB-D17B-49CA-A38C-35BFA9FC9DFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDF904FB-D17B-49CA-A38C-35BFA9FC9DFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDF904FB-D17B-49CA-A38C-35BFA9FC9DFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDF904FB-D17B-49CA-A38C-35BFA9FC9DFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB2C3AAD-F8F0-42FF-9A34-C1239BD69584}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB2C3AAD-F8F0-42FF-9A34-C1239BD69584}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB2C3AAD-F8F0-42FF-9A34-C1239BD69584}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB2C3AAD-F8F0-42FF-9A34-C1239BD69584}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
