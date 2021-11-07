@@ -14,8 +14,10 @@ namespace Juna.SKS.Package.DataAccess.Interfaces
         void Delete(int id);
 
         IEnumerable<Hop> GetByHopType(string hopType); //??
-        Hop GetById(int id);
-        Hop GetByCode(string code);
+        Hop GetSingleHopById(int id);
+        Hop GetSingleHopByCode(string code);
+        HopArrival GetSingleHopArrivalByCode(string code);
+        Warehouse GetSingleWarehouseByCode(string code);
 
     }
 }

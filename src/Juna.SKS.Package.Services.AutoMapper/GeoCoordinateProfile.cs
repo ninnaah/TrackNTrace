@@ -14,6 +14,7 @@ namespace Juna.SKS.Package.Services.AutoMapper
         public GeoCoordinateProfile()
         {
             CreateMap<BusinessLogic.Entities.GeoCoordinate, DTOs.Models.GeoCoordinate>().ReverseMap();
+            CreateMap<BusinessLogic.Entities.GeoCoordinate, DataAccess.Entities.GeoCoordinate>().ReverseMap();
         }
     }
 }

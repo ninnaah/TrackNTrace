@@ -25,6 +25,7 @@ using Juna.SKS.Package.BusinessLogic;
 using AutoMapper;
 using Juna.SKS.Package.Services.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using Juna.SKS.Package.DataAccess.Sql;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -40,7 +41,7 @@ namespace Juna.SKS.Package.Services.Controllers
         [ActivatorUtilitiesConstructor]
         public WarehouseManagementApiController()
         {
-            this._warehouseManagementLogic = new WarehouseManagementLogic();
+            this._warehouseManagementLogic = new WarehouseManagementLogic(new SqlHopRepository(), AutoMapperProvider.GetMapper());
             this._mapper = AutoMapperProvider.GetMapper();
         }
 

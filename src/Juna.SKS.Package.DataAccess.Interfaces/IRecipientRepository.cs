@@ -14,7 +14,7 @@ namespace Juna.SKS.Package.DataAccess.Interfaces
         void Delete(int id);
 
         IEnumerable<Recipient> GetByPostalCode(string postalCode); //??
-        Recipient GetById(int id);
-        Recipient GetByName(string name);
+        Recipient GetSingleRecipientById(int id);
+        Recipient GetSingleRecipientByName(string name);
     }
 }

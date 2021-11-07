@@ -24,6 +24,7 @@ namespace Juna.SKS.Package.DataAccess.Entities
             FutureHops = futureHops;
             State = state;
         }
+        public int Id { get; set; }
         public float? Weight { get; set; }
         public Recipient Recipient { get; set; }
         public Recipient Sender { get; set; }

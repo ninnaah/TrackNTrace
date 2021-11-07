@@ -20,6 +20,7 @@ namespace Juna.SKS.Package.DataAccess.Entities
             Description = description;
             DateTime = dateTime;
         }
+        public int Id { get; set; }
         public string Code { get; set; }
 
         public string Description { get; set; }

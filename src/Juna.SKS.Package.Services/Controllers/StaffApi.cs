@@ -24,6 +24,7 @@ using Juna.SKS.Package.BusinessLogic;
 using AutoMapper;
 using Juna.SKS.Package.Services.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using Juna.SKS.Package.DataAccess.Sql;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -39,7 +40,7 @@ namespace Juna.SKS.Package.Services.Controllers
         [ActivatorUtilitiesConstructor]
         public StaffApiController()
         {
-            this._staffLogic = new StaffLogic();
+            this._staffLogic = new StaffLogic(new SqlParcelRepository(), new SqlHopRepository());  
             this._mapper = AutoMapperProvider.GetMapper();
         }
 

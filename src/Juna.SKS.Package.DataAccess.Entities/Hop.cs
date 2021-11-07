@@ -22,6 +22,7 @@ namespace Juna.SKS.Package.DataAccess.Entities
             LocationName = locationName;
             LocationCoordinates = locationCoordinates;
         }
+        public int Id { get; set; }
         public string HopType { get; set; }
 
         public string Code { get; set; }

@@ -31,6 +31,8 @@ using FluentValidation.AspNetCore;
 using FluentValidation;
 using Juna.SKS.Package.BusinessLogic.Entities;
 using Juna.SKS.Package.BusinessLogic.Entities.Validators;
+using Juna.SKS.Package.DataAccess.Sql;
+using Microsoft.EntityFrameworkCore;
 
 namespace Juna.SKS.Package.Services
 {
@@ -107,7 +109,7 @@ namespace Juna.SKS.Package.Services
                     c.OperationFilter<GeneratePathParamsValidationFilter>();
                 });
 
-
+            //services.AddDbContext<DBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         /// <summary>

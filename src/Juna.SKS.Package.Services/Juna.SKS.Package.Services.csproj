@@ -11,6 +11,8 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.11" />
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.5.1" />
@@ -26,6 +28,7 @@
     <ProjectReference Include="..\Juna.SKS.Package.BusinessLogic.Entities\Juna.SKS.Package.BusinessLogic.Entities.csproj" />
     <ProjectReference Include="..\Juna.SKS.Package.BusinessLogic.Interfaces\Juna.SKS.Package.BusinessLogic.Interfaces.csproj" />
     <ProjectReference Include="..\Juna.SKS.Package.BusinessLogic\Juna.SKS.Package.BusinessLogic.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.DataAccess.Sql\Juna.SKS.Package.DataAccess.Sql.csproj" />
     <ProjectReference Include="..\Juna.SKS.Package.Services.AutoMapper\Juna.SKS.Package.Services.AutoMapper.csproj" />
     <ProjectReference Include="..\Juna.SKS.Package.Services.DTOs\Juna.SKS.Package.Services.DTOs.csproj" /> 
   </ItemGroup>

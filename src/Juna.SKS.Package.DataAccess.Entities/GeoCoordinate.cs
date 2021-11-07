@@ -20,7 +20,7 @@ namespace Juna.SKS.Package.DataAccess.Entities
             Lat = lat;
             Lon = lon;
         }
-
+        public int Id { get; set; }
         public double? Lat { get; set; }
         public double? Lon { get; set; }
     }

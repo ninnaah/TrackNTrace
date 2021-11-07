@@ -1,7 +1,9 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using Juna.SKS.Package.BusinessLogic.Entities;
 using Juna.SKS.Package.BusinessLogic.Entities.Validators;
 using Juna.SKS.Package.BusinessLogic.Interfaces;
+using Juna.SKS.Package.DataAccess.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +14,12 @@ namespace Juna.SKS.Package.BusinessLogic
 {
     public class RecipientLogic : IRecipientLogic
     {
-        public RecipientLogic()
+        private readonly IMapper _mapper;
+        private readonly IParcelRepository _repository;
+        public RecipientLogic(IParcelRepository repo, IMapper mapper)
         {
-
+            _repository = repo;
+            _mapper = mapper;
         }
 
         public Parcel TrackParcel(string trackingId)
@@ -29,7 +34,13 @@ namespace Juna.SKS.Package.BusinessLogic
                 return null;
             }
 
-            Recipient recipient = new Recipient("Tom", "Examplestreet", "1220", "Vienna", "Austira");
+            DataAccess.Entities.Parcel DAparcel = _repository.GetSingleParcelByTrackingId(trackingId);
+
+            Parcel parcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(DAparcel);
+
+            return parcel;
+
+            /*Recipient recipient = new Recipient("Tom", "Examplestreet", "1220", "Vienna", "Austira");
             Recipient sender = new Recipient("Jerry", "Examplestreet", "1220", "Vienna", "Austira");
             List<HopArrival> visitedHops = new List<HopArrival>
             {
@@ -43,7 +54,7 @@ namespace Juna.SKS.Package.BusinessLogic
             };
 
             Parcel parcel = new Parcel(3, recipient, sender, trackingId, visitedHops, futureHops, Parcel.StateEnum.InTransportEnum);
-            return parcel;
+            return parcel;*/
         }
     }
 }

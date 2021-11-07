@@ -16,6 +16,7 @@ namespace Juna.SKS.Package.Services.AutoMapper
         public RecipientProfile()
         {
             CreateMap<BusinessLogic.Entities.Recipient, DTOs.Models.Recipient>().ReverseMap();
+            CreateMap<BusinessLogic.Entities.Recipient, DataAccess.Entities.Recipient>().ReverseMap();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Juna.SKS.Package.DataAccess.Interfaces
         void Delete(int id);
         
         IEnumerable<Parcel> GetByRecipient(Recipient recipient); //??
-        Parcel GetById(int id);
-        Parcel GetByTrackingId(string trackingid);
+        Parcel GetSingleParcelById(int id);
+        Parcel GetSingleParcelByTrackingId(string trackingid);
     }
 }

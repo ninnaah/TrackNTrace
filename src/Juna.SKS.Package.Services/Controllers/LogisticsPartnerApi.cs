@@ -24,6 +24,7 @@ using AutoMapper;
 using Juna.SKS.Package.Services.AutoMapper;
 using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Juna.SKS.Package.DataAccess.Sql;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -39,7 +40,7 @@ namespace Juna.SKS.Package.Services.Controllers
         [ActivatorUtilitiesConstructor]
         public LogisticsPartnerApiController()
         {
-            this._logisticsPartnerLogic = new LogisticsPartnerLogic();
+            this._logisticsPartnerLogic = new LogisticsPartnerLogic(new SqlParcelRepository(), AutoMapperProvider.GetMapper());
             this._mapper = AutoMapperProvider.GetMapper();
         }
 

@@ -14,6 +14,7 @@ namespace Juna.SKS.Package.Services.AutoMapper
         public TransferwarehouseProfile()
         {
             CreateMap<BusinessLogic.Entities.Transferwarehouse, DTOs.Models.Transferwarehouse>().ReverseMap();
+            CreateMap<BusinessLogic.Entities.Transferwarehouse, DataAccess.Entities.Transferwarehouse>().ReverseMap();
         }
     }
 }

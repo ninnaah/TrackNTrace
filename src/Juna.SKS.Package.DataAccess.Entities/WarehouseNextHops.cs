@@ -20,7 +20,7 @@ namespace Juna.SKS.Package.DataAccess.Entities
             TraveltimeMins = travelMin;
             Hop = hop;
         }
-
+        public int Id { get;  set; }
         public int? TraveltimeMins { get; set; }
         public Hop Hop { get; set; }
     }

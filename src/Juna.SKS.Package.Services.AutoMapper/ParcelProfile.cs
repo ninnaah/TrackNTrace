@@ -16,6 +16,8 @@ namespace Juna.SKS.Package.Services.AutoMapper
             CreateMap<DTOs.Models.Parcel, BusinessLogic.Entities.Parcel>().ReverseMap();
             CreateMap<DTOs.Models.NewParcelInfo, BusinessLogic.Entities.Parcel>().ReverseMap();
             CreateMap<DTOs.Models.TrackingInformation, BusinessLogic.Entities.Parcel>().ReverseMap();
+
+            CreateMap<DataAccess.Entities.Parcel, BusinessLogic.Entities.Parcel>().ReverseMap();
         }
     }
 }

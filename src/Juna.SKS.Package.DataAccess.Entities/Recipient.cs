@@ -22,6 +22,7 @@ namespace Juna.SKS.Package.DataAccess.Entities
             City = city;
             Country = country;
         }
+        public int Id { get; set; }
         public string Name { get; set; }
 
         public string Street { get; set; }
