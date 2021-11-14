@@ -11,23 +11,26 @@ using Juna.SKS.Package.BusinessLogic.Interfaces;
 using AutoMapper;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
-    public class WarehouseManagerApiTest
+    public class WarehouseManagementApiTest
     {
         Mock<IWarehouseManagementLogic> mockLogic;
         Mock<IMapper> mockMapper;
+        Mock<ILogger<WarehouseManagementApiController>> mockLogger;
 
         [SetUp]
         public void Setup()
         {
             mockLogic = new Mock<IWarehouseManagementLogic>();
             mockMapper = new Mock<IMapper>();
+            mockLogger = new Mock<ILogger<WarehouseManagementApiController>>();
         }
 
         [Test]
-        public void ExportWarehouses_ValidWarehouses_ReturnCode200()
+        public void ExportWarehouse_ValidWarehouses_ReturnCode200()
         {
             var returnWarehouse = Builder<BusinessLogic.Entities.Warehouse>.CreateNew()
                 .With(p => p.Code = "ABCD1234")
@@ -36,16 +39,31 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .With(p => p.NextHops = Builder<BusinessLogic.Entities.WarehouseNextHops> .CreateListOfSize(3).Build().ToList())
                 .Build();
 
-            mockLogic.Setup(m => m.ExportWarehouses())
+            mockLogic.Setup(m => m.ExportWarehouse())
                 .Returns(returnWarehouse);
 
-            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object);
+            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var testResult = warehouseManagement.ExportWarehouses();
             Assert.IsInstanceOf<ObjectResult>(testResult);
             var testResultCode = testResult as ObjectResult;
 
             Assert.AreEqual(200, testResultCode.StatusCode);
+        }
+
+        [Test]
+        public void ExportWarehouse_NoWarehouseFound_ReturnCode404()
+        {
+            mockLogic.Setup(m => m.ExportWarehouse())
+                .Returns(value: null);
+
+            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
+
+            var testResult = warehouseManagement.ExportWarehouses();
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(404, testResultCode.StatusCode);
         }
 
 
@@ -62,7 +80,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.GetWarehouse(It.IsAny<string>()))
                 .Returns(returnWarehouse);
 
-            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object);
+            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             string validCode = "ABCD1234";
 
@@ -80,7 +98,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.GetWarehouse(It.IsAny<string>()))
                 .Returns(value : null);
 
-            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object);
+            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             string invalidCode = "12";
 
@@ -93,12 +111,12 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         }
 
         [Test]
-        public void ImportWarehouses_ValidWarehouse_ReturnCode200()
+        public void ImportWarehouse_ValidWarehouse_ReturnCode200()
         {
-            mockLogic.Setup(m => m.ImportWarehouses(It.IsAny<BusinessLogic.Entities.Warehouse>()))
+            mockLogic.Setup(m => m.ImportWarehouse(It.IsAny<BusinessLogic.Entities.Warehouse>()))
                 .Returns(true);
 
-            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object);
+            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var validWarehouse = Builder<DTOs.Models.Warehouse>.CreateNew()
                 .With(p => p.Code = "ABCD1234")
@@ -117,12 +135,12 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
 
         [Test]
-        public void ImportWarehouses_InvalidWarehouse_ReturnCode400()
+        public void ImportWarehouse_InvalidWarehouse_ReturnCode400()
         {
-            mockLogic.Setup(m => m.ImportWarehouses(It.IsAny<BusinessLogic.Entities.Warehouse>()))
+            mockLogic.Setup(m => m.ImportWarehouse(It.IsAny<BusinessLogic.Entities.Warehouse>()))
                  .Returns(false);
 
-            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object);
+            WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var invalidWarehouse = Builder<DTOs.Models.Warehouse>.CreateNew()
                 .With(p => p.Code = "12")

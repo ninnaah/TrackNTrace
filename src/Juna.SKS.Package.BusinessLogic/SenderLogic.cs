@@ -4,11 +4,7 @@ using Juna.SKS.Package.BusinessLogic.Entities;
 using Juna.SKS.Package.BusinessLogic.Entities.Validators;
 using Juna.SKS.Package.BusinessLogic.Interfaces;
 using Juna.SKS.Package.DataAccess.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.BusinessLogic
 {
@@ -16,24 +12,30 @@ namespace Juna.SKS.Package.BusinessLogic
     {
         private readonly IMapper _mapper;
         private readonly IParcelRepository _repository;
-        public SenderLogic(IParcelRepository repo, IMapper mapper)
+        private readonly ILogger<SenderLogic> _logger;
+        public SenderLogic(IParcelRepository repo, IMapper mapper, ILogger<SenderLogic> logger)
         {
             _repository = repo;
             _mapper = mapper;
+            _logger = logger;
         }
         public string SubmitParcel(Parcel parcel)
         {
+            _logger.LogInformation("Trying to submit a parcel");
+
             IValidator<Parcel> validator = new ParcelValidator();
             var result = validator.Validate(parcel);
 
-            if (result.IsValid == true)
+            if (result.IsValid == false)
             {
-                DataAccess.Entities.Parcel DAparcel = this._mapper.Map<DataAccess.Entities.Parcel>(parcel);
-                _repository.Create(DAparcel);
-                return "PYJRB4HZ6";
+                _logger.LogDebug($"Parcel is invalid - {result}");
+                return null;
             }
 
-            return null;
+            DataAccess.Entities.Parcel DAparcel = this._mapper.Map<DataAccess.Entities.Parcel>(parcel);
+            _repository.Create(DAparcel);
+            _logger.LogInformation("Submitted the parcel");
+            return "PYJRB4HZ6";
         }
     }
 }

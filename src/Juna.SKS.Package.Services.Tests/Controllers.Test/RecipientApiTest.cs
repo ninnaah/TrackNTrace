@@ -11,6 +11,7 @@ using Juna.SKS.Package.BusinessLogic.Interfaces;
 using AutoMapper;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -18,12 +19,14 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
     {
         Mock<IRecipientLogic> mockLogic;
         Mock<IMapper> mockMapper;
+        Mock<ILogger<RecipientApiController>> mockLogger;
 
         [SetUp]
         public void Setup()
         {
             mockLogic = new Mock<IRecipientLogic>();
             mockMapper = new Mock<IMapper>();
+            mockLogger = new Mock<ILogger<RecipientApiController>>();
         }
 
         [Test]
@@ -38,7 +41,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.TrackParcel(It.IsAny<string>()))
                 .Returns(returnParcel);
 
-            RecipientApiController recipient = new(mockLogic.Object, mockMapper.Object);
+            RecipientApiController recipient = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var validTrackingId = "PYJRB4HZ6";
 
@@ -55,7 +58,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.TrackParcel(It.IsAny<string>()))
                 .Returns(value: null);
 
-            RecipientApiController recipient = new(mockLogic.Object, mockMapper.Object);
+            RecipientApiController recipient = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var invalidTrackingId = "12";
 

@@ -11,6 +11,7 @@ using AutoMapper;
 using Juna.SKS.Package.BusinessLogic.Interfaces;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -18,12 +19,14 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
     {
         Mock<ISenderLogic> mockLogic;
         Mock<IMapper> mockMapper;
+        Mock<ILogger<SenderApiController>> mockLogger;
 
         [SetUp]
         public void Setup()
         {
             mockLogic = new Mock<ISenderLogic>();
             mockMapper = new Mock<IMapper>();
+            mockLogger = new Mock<ILogger<SenderApiController>>();
         }
 
         [Test]
@@ -32,7 +35,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.SubmitParcel(It.IsAny<BusinessLogic.Entities.Parcel>()))
                 .Returns("PYJRB4HZ6");
 
-            SenderApiController sender = new(mockLogic.Object, mockMapper.Object);
+            SenderApiController sender = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var validParcel = Builder<DTOs.Models.Parcel>.CreateNew()
                 .With(p => p.Weight = 3)
@@ -53,7 +56,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.SubmitParcel(It.IsAny<BusinessLogic.Entities.Parcel>()))
                .Returns(value: null);
 
-            SenderApiController sender = new(mockLogic.Object, mockMapper.Object);
+            SenderApiController sender = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var invalidParcel = Builder<DTOs.Models.Parcel>.CreateNew()
                 .With(p => p.Weight = 3)

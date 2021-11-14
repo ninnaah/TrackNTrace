@@ -24,6 +24,7 @@ using AutoMapper;
 using Juna.SKS.Package.Services.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Juna.SKS.Package.DataAccess.Sql;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -35,19 +36,13 @@ namespace Juna.SKS.Package.Services.Controllers
     {
         private readonly IMapper _mapper;
         private readonly ISenderLogic _senderLogic;
+        private readonly ILogger<SenderApiController> _logger;
 
-        [ActivatorUtilitiesConstructor]
-        public SenderApiController()
-        {
-            this._senderLogic = new SenderLogic(new SqlParcelRepository(), AutoMapperProvider.GetMapper());
-            this._mapper = AutoMapperProvider.GetMapper();
-        }
-        
-
-        public SenderApiController(ISenderLogic senderLogic, IMapper mapper)
+        public SenderApiController(ISenderLogic senderLogic, IMapper mapper, ILogger<SenderApiController> logger)
         {
             this._senderLogic = senderLogic;
             this._mapper = mapper;
+            _logger = logger;
         }
 
         /// <summary>
@@ -75,12 +70,14 @@ namespace Juna.SKS.Package.Services.Controllers
 
             if (response == null)
             {
-                return StatusCode(400, new Error("Inputs are invalid"));
+                _logger.LogInformation("Respond 400 - Parcel is invalid");
+                return StatusCode(400, new Error("Parcel is invalid"));
             }
 
             NewParcelInfo info = new NewParcelInfo();
             info.TrackingId = response;
 
+            _logger.LogInformation("Respond 201 - Submitted parcel");
             return StatusCode(201, info);
         }
     }

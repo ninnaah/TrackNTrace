@@ -12,6 +12,7 @@ using AutoMapper;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Mvc;
 using Juna.SKS.Package.DataAccess.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -19,6 +20,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
     {
         Mock<IParcelRepository> mockRepo;
         Mock<IMapper> mockMapper;
+        Mock<ILogger<RecipientLogic>> mockLogger;
 
         [SetUp]
         public void Setup()
@@ -40,11 +42,12 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Returns(returnParcel);
 
             mockMapper = new Mock<IMapper>();
+            mockLogger = new Mock<ILogger<RecipientLogic>>();
         }
         /*[Test]
         public void TrackParcel_ValidTrackingId_ReturnParcel()
         {
-            IRecipientLogic recipient= new RecipientLogic(mockRepo.Object, mockMapper.Object);
+            IRecipientLogic recipient= new RecipientLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
             string validTrackingId = "PYJRB4HZ6";
 
@@ -57,7 +60,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         [Test]
         public void TrackParcel_InvalidTrackingId_ReturnNull()
         {
-            IRecipientLogic recipient = new RecipientLogic(mockRepo.Object, mockMapper.Object);
+            IRecipientLogic recipient = new RecipientLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
             string validTrackingId = "12";
 

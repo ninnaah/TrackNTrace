@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Juna.SKS.Package.DataAccess.Interfaces
 {
-    public interface IRecipientRepository
+    /*public interface IRecipientRepository
     {
         int Create(Recipient recipient);
         void Update(Recipient recipient);
         void Delete(int id);
 
-        IEnumerable<Recipient> GetByPostalCode(string postalCode); //??
+        IEnumerable<Recipient> GetRecipientsByPostalCode(string postalCode); //??
         Recipient GetSingleRecipientById(int id);
         Recipient GetSingleRecipientByName(string name);
-    }
+    }*/
 }

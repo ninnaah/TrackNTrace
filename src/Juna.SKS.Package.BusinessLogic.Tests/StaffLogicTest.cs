@@ -12,6 +12,7 @@ using AutoMapper;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Mvc;
 using Juna.SKS.Package.DataAccess.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -19,6 +20,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
     {
         Mock<IParcelRepository> mockParcelRepo;
         Mock<IHopRepository> mockHopRepo;
+        Mock<ILogger<StaffLogic>> mockLogger;
 
         [SetUp]
         public void Setup()
@@ -54,12 +56,14 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Build();
             mockHopRepo.Setup(m => m.GetSingleHopArrivalByCode(It.IsAny<string>()))
                 .Returns(returnHopArrival);
+
+            mockLogger = new Mock<ILogger<StaffLogic>>();
         }
 
         [Test]
         public void ReportParcelDelivery_ValidTrackingId_ReturnTrue()
         {
-            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object);
+            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockLogger.Object);
 
             string validTrackingId = "PYJRB4HZ6";
 
@@ -72,7 +76,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         [Test]
         public void ReportParcelDelivery_InvalidTrackingId_ReturnFalse()
         {
-            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object);
+            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockLogger.Object);
 
             string invalidTrackingId = "12";
 
@@ -84,7 +88,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         [Test]
         public void ReportParcelHop_ValidTrackingId_ReturnTrue()
         {
-            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object);
+            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockLogger.Object);
 
             string validTrackingId = "PYJRB4HZ6";
             string validCode = "ABCD1234";
@@ -98,7 +102,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         [Test]
         public void ReportParcelHop_InvalidTrackingId_ReturnFalse()
         {
-            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object);
+            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockLogger.Object);
 
             string invalidTrackingId = "12";
             string validCode = "ABCD1234";
@@ -107,7 +111,32 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             Assert.IsFalse(testResult);
         }
+        [Test]
+        public void ReportParcelHop_ValidCode_ReturnTrue()
+        {
+            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockLogger.Object);
 
+            string validTrackingId = "PYJRB4HZ6";
+            string validCode = "ABCD1234";
+
+            var testResult = staff.ReportParcelHop(validTrackingId, validCode);
+
+            Assert.IsTrue(testResult);
+        }
+
+
+        [Test]
+        public void ReportParcelHop_InvalidCode_ReturnFalse()
+        {
+            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockLogger.Object);
+
+            string validTrackingId = "PYJRB4HZ6";
+            string invalidCode = "12";
+
+            var testResult = staff.ReportParcelHop(validTrackingId, invalidCode);
+
+            Assert.IsFalse(testResult);
+        }
 
     }
 }

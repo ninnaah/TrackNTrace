@@ -25,6 +25,7 @@ using AutoMapper;
 using Juna.SKS.Package.Services.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Juna.SKS.Package.DataAccess.Sql;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -36,18 +37,13 @@ namespace Juna.SKS.Package.Services.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IStaffLogic _staffLogic;
+        private readonly ILogger<StaffApiController> _logger;
 
-        [ActivatorUtilitiesConstructor]
-        public StaffApiController()
-        {
-            this._staffLogic = new StaffLogic(new SqlParcelRepository(), new SqlHopRepository());  
-            this._mapper = AutoMapperProvider.GetMapper();
-        }
-
-        public StaffApiController(IStaffLogic staffLogic, IMapper mapper)
+        public StaffApiController(IStaffLogic staffLogic, IMapper mapper, ILogger<StaffApiController> logger)
         {
             this._staffLogic = staffLogic;
             this._mapper = mapper;
+            _logger = logger;
         }
         /// <summary>
         /// Report that a Parcel has been delivered at it&#x27;s final destination address. 
@@ -72,15 +68,24 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
 
-
-            bool reported = this._staffLogic.ReportParcelDelivery(trackingId);
-
-            if (reported == false)
+            try
             {
-                return StatusCode(400, new Error("Inputs are invalid"));
-            }
+                bool reported = this._staffLogic.ReportParcelDelivery(trackingId);
 
-            return StatusCode(200);
+                if (reported == false)
+                {
+                    _logger.LogInformation("Respond 400 - Tracking id is invalid or parcel not delivered yet");
+                    return StatusCode(400, new Error("Tracking id is invalid or parcel not delivered yet"));
+                }
+                _logger.LogInformation("Respond 200 - Reported parcel delivery");
+                return StatusCode(200);
+            }
+            catch (Exception)
+            {
+                _logger.LogInformation("Respond 404 - Parcel not found");
+                return StatusCode(404, new Error("Parcel not found"));
+            }
+            
 
         }
 
@@ -107,15 +112,24 @@ namespace Juna.SKS.Package.Services.Controllers
 
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
-
-            bool reported = this._staffLogic.ReportParcelHop(trackingId, code);
-
-            if (reported == false)
+            try
             {
-                return StatusCode(400, new Error("Inputs are invalid"));
-            }
+                bool reported = this._staffLogic.ReportParcelHop(trackingId, code);
 
-            return StatusCode(200);
+                if (reported == false)
+                {
+                    _logger.LogInformation("Respond 400 - Tracking id/code is invalid or parcel not delivered at hop yet");
+                    return StatusCode(400, new Error("Tracking id/code is invalid or parcel not delivered at hop yet"));
+                }
+                _logger.LogInformation("Respond 200 - Reported parcel hop");
+                return StatusCode(200);
+            }
+            catch (Exception)
+            {
+                _logger.LogInformation("Respond 404 - Parcel or hop not found");
+                return StatusCode(404, new Error("Parcel or hop not found"));
+            }
+            
         }
     }
 }

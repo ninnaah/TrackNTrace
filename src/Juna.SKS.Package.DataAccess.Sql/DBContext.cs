@@ -9,29 +9,24 @@ namespace Juna.SKS.Package.DataAccess.Sql
     {
         public DBContext()
         {
-
+                
         }
-
-        /*public DBContext(DbContextOptions<DBContext> options) : base(options)
+       
+        public DBContext(DbContextOptions<DBContext> options) : base(options)
         { 
-        
-        }*/
-
-        public DbSet<Hop> Hops { get; set; }
-        public DbSet<GeoCoordinate> GeoCoordinates { get; set; }
-        public DbSet<Transferwarehouse> Transferwarehouses { get; set; }
-        public DbSet<Truck> Trucks { get; set; }
-        public DbSet<Warehouse> Warehouses { get; set; }
-        public DbSet<WarehouseNextHops> WarehouseNextHops { get; set; }
-        public DbSet<Parcel> Parcels { get; set; }
-        public DbSet<Recipient> Recipients { get; set; }
-        public DbSet<HopArrival> HopArrivals { get; set; }
-
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-             optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;");
+       
         }
+
+        public virtual DbSet<Hop> Hops { get; set; }
+        public virtual DbSet<GeoCoordinate> GeoCoordinates { get; set; }
+        public virtual DbSet<Transferwarehouse> Transferwarehouses { get; set; }
+        public virtual DbSet<Truck> Trucks { get; set; }
+        public virtual DbSet<Warehouse> Warehouses { get; set; }
+        public virtual DbSet<WarehouseNextHops> WarehouseNextHops { get; set; }
+        public virtual DbSet<Parcel> Parcels { get; set; }
+        public virtual DbSet<Recipient> Recipients { get; set; }
+        public virtual DbSet<HopArrival> HopArrivals { get; set; }
+
 
     }
 

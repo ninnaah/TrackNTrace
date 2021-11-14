@@ -19,20 +19,19 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Juna.SKS.Package.Services.Filters;
-using Juna.SKS.Package.Services.AutoMapper;
 using System.Diagnostics.CodeAnalysis;
-using AutoMapper;
-using Juna.SKS.Package.BusinessLogic.Interfaces;
-using Juna.SKS.Package.BusinessLogic;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using Juna.SKS.Package.BusinessLogic.Entities;
 using Juna.SKS.Package.BusinessLogic.Entities.Validators;
+using Juna.SKS.Package.BusinessLogic.Interfaces;
+using Juna.SKS.Package.BusinessLogic;
+using Juna.SKS.Package.DataAccess.Interfaces;
 using Juna.SKS.Package.DataAccess.Sql;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using Juna.SKS.Package.Services.AutoMapper;
 
 namespace Juna.SKS.Package.Services
 {
@@ -63,8 +62,6 @@ namespace Juna.SKS.Package.Services
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(Startup).Assembly);
-
             // Add framework services.
             services
                 .AddMvc(options =>
@@ -79,11 +76,6 @@ namespace Juna.SKS.Package.Services
                     opts.SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
                 })
                 .AddXmlSerializerFormatters();
-
-            services.AddTransient<IValidator<HopArrival>, HopArrivalValidator>();
-            services.AddTransient<IValidator<Parcel>, ParcelValidator>();
-            services.AddTransient<IValidator<Recipient>, RecipientValidator>();
-            services.AddTransient<IValidator<Warehouse>, WarehouseValidator>();
 
             services
                 .AddSwaggerGen(c =>
@@ -109,7 +101,40 @@ namespace Juna.SKS.Package.Services
                     c.OperationFilter<GeneratePathParamsValidationFilter>();
                 });
 
-            //services.AddDbContext<DBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ParcelProfile());
+                mc.AddProfile(new HopArrivalProfile());
+                mc.AddProfile(new HopProfile());
+                mc.AddProfile(new RecipientProfile());
+                mc.AddProfile(new TransferwarehouseProfile());
+                mc.AddProfile(new TruckProfile());
+                mc.AddProfile(new WarehouseProfile());
+                mc.AddProfile(new WarehouseNextHopsProfile());
+                mc.AddProfile(new GeoCoordinateProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
+            //services.AddAutoMapper(typeof(Startup).Assembly);
+
+            services.AddTransient<IValidator<HopArrival>, HopArrivalValidator>();
+            services.AddTransient<IValidator<Parcel>, ParcelValidator>();
+            services.AddTransient<IValidator<Recipient>, RecipientValidator>();
+            services.AddTransient<IValidator<Warehouse>, WarehouseValidator>();
+
+            services.AddTransient<ILogisticsPartnerLogic, LogisticsPartnerLogic>();
+            services.AddTransient<IRecipientLogic, RecipientLogic>();
+            services.AddTransient<ISenderLogic, SenderLogic>();
+            services.AddTransient<IStaffLogic, StaffLogic>();
+            services.AddTransient<IWarehouseManagementLogic, WarehouseManagementLogic>();
+
+            services.AddScoped<IHopRepository, SqlHopRepository>();
+            services.AddScoped<IParcelRepository, SqlParcelRepository>();
+            //services.AddScoped<IRecipientRepository, SqlRecipientRepository>();
+
+            services.AddDbContext<DBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         /// <summary>

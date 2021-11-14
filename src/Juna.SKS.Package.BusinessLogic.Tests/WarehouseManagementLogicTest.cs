@@ -12,13 +12,15 @@ using Microsoft.AspNetCore.Mvc;
 using Juna.SKS.Package.BusinessLogic;
 using Juna.SKS.Package.BusinessLogic.Entities;
 using Juna.SKS.Package.DataAccess.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
-    public class WarehouseManagerLogicTest
+    public class WarehouseManageLogicTest
     {
         Mock<IHopRepository> mockRepo;
         Mock<IMapper> mockMapper;
+        Mock<ILogger<WarehouseManagementLogic>> mockLogger;
 
         [SetUp]
         public void Setup()
@@ -41,13 +43,15 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Returns(1);
 
             mockMapper = new Mock<IMapper>();
+
+            mockLogger = new Mock<ILogger<WarehouseManagementLogic>>();
         }
         [Test]
         public void ExportWarehouses_ValidWarehouses_ReturnWarehouse()
         {
-            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object);
+            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = warehouseManagement.ExportWarehouses();
+            var testResult = warehouseManagement.ExportWarehouse();
 
             Assert.IsNotNull(testResult);
             Assert.IsInstanceOf<Warehouse>(testResult);
@@ -57,7 +61,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         /*[Test]
         public void GetWarehouse_ValidCode_ReturnWarehouse()
         {
-            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object);
+            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
             string validCode = "ABCD1234";
 
@@ -71,7 +75,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         [Test]
         public void GetWarehouse_InvalidCode_ReturnNull()
         {
-            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object);
+            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
             string validCode = "12";
 
@@ -90,9 +94,9 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .With(p => p.NextHops = Builder<BusinessLogic.Entities.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
                 .Build();
 
-            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object);
+            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = warehouseManagement.ImportWarehouses(validWarehouse);
+            var testResult = warehouseManagement.ImportWarehouse(validWarehouse);
 
             Assert.IsTrue(testResult);
         }
@@ -107,9 +111,9 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .With(p => p.NextHops = Builder<BusinessLogic.Entities.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
                 .Build();
 
-            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object);
+            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = warehouseManagement.ImportWarehouses(invalidWarehouse);
+            var testResult = warehouseManagement.ImportWarehouse(invalidWarehouse);
 
             Assert.IsFalse(testResult);
         }
@@ -124,9 +128,9 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .With(p => p.NextHops = null)
                 .Build();
 
-            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object);
+            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = warehouseManagement.ImportWarehouses(invalidWarehouse);
+            var testResult = warehouseManagement.ImportWarehouse(invalidWarehouse);
 
             Assert.IsFalse(testResult);
         }

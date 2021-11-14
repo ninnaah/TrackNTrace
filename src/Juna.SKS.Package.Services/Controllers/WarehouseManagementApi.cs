@@ -26,6 +26,7 @@ using AutoMapper;
 using Juna.SKS.Package.Services.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Juna.SKS.Package.DataAccess.Sql;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -37,18 +38,13 @@ namespace Juna.SKS.Package.Services.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IWarehouseManagementLogic _warehouseManagementLogic;
+        private readonly ILogger<WarehouseManagementApiController> _logger;
 
-        [ActivatorUtilitiesConstructor]
-        public WarehouseManagementApiController()
-        {
-            this._warehouseManagementLogic = new WarehouseManagementLogic(new SqlHopRepository(), AutoMapperProvider.GetMapper());
-            this._mapper = AutoMapperProvider.GetMapper();
-        }
-
-        public WarehouseManagementApiController(IWarehouseManagementLogic warehouseManagementLogic, IMapper mapper)
+        public WarehouseManagementApiController(IWarehouseManagementLogic warehouseManagementLogic, IMapper mapper, ILogger<WarehouseManagementApiController> logger)
         {
             this._warehouseManagementLogic = warehouseManagementLogic;
             this._mapper = mapper;
+            _logger = logger;
         }
         /// <summary>
         /// Exports the hierarchy of Warehouse and Truck objects. 
@@ -73,11 +69,21 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
 
-            BusinessLogic.Entities.Warehouse BLwarehouse = this._warehouseManagementLogic.ExportWarehouses();
+            var response = this._warehouseManagementLogic.ExportWarehouse();
 
+            if (response == null)
+            {
+                _logger.LogInformation("Respond 400 - No warehouse found");
+                return StatusCode(404, new Error("No warehouse found"));
+            }
+
+            BusinessLogic.Entities.Warehouse BLwarehouse = response;
             DTOs.Models.Warehouse warehouse = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
 
-            return StatusCode(200,warehouse);
+            _logger.LogInformation("Respond 200 - Exported warehouse");
+            return StatusCode(200, warehouse);
+
+            //400  missing
         }
 
         /// <summary>
@@ -103,18 +109,28 @@ namespace Juna.SKS.Package.Services.Controllers
 
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
-
-            var response = this._warehouseManagementLogic.GetWarehouse(code);
-
-            if (response == null)
+            try
             {
-                return StatusCode(400, new Error("Inputs are invalid"));
+                var response = this._warehouseManagementLogic.GetWarehouse(code);
+
+                if (response == null)
+                {
+                    _logger.LogInformation("Respond 400 - Code is invalid");
+                    return StatusCode(400, new Error("Code is invalid"));
+                }
+
+                BusinessLogic.Entities.Warehouse BLwarehouse = response;
+                DTOs.Models.Warehouse warehouse = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
+
+                _logger.LogInformation("Respond 200 - Got warehouse");
+                return StatusCode(200, warehouse);
             }
-
-            BusinessLogic.Entities.Warehouse BLwarehouse = response;
-            DTOs.Models.Warehouse warehouse = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
-
-            return StatusCode(200, warehouse);
+            catch (Exception)
+            {
+                _logger.LogInformation("Respond 404 - Warehouse not found");
+                return StatusCode(404, new Error("Warehouse not found"));
+            }
+            
 
         }
 
@@ -138,13 +154,14 @@ namespace Juna.SKS.Package.Services.Controllers
             // return StatusCode(400, default(Error));
 
             BusinessLogic.Entities.Warehouse BLwarehouse = this._mapper.Map<BusinessLogic.Entities.Warehouse>(body);
-            bool response = this._warehouseManagementLogic.ImportWarehouses(BLwarehouse);
+            bool response = this._warehouseManagementLogic.ImportWarehouse(BLwarehouse);
 
             if (response == false)
             {
-                return StatusCode(400, new Error("Inputs are invalid"));
+                _logger.LogInformation("Respond 400 - Warehouse is invalid");
+                return StatusCode(400, new Error("Warehouse is invalid"));
             }
-
+            _logger.LogInformation("Respond 200 - Imported warehouse");
             return StatusCode(200);
         }
     }

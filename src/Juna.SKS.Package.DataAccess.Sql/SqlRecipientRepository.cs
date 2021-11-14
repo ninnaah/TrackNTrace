@@ -1,69 +1,92 @@
 ﻿using Juna.SKS.Package.DataAccess.Entities;
 using Juna.SKS.Package.DataAccess.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Juna.SKS.Package.DataAccess.Sql
 {
-    public class SqlRecipientRepository : IRecipientRepository
+    /*public class SqlRecipientRepository : IRecipientRepository
     {
+        private DBContext _context;
+        public SqlRecipientRepository(DBContext context)
+        {
+            _context = context;
+            _context.Database.Migrate();
+        }
         public int Create(Recipient recipient)
         {
-            using DBContext context = new();
-            context.Database.EnsureCreated();
-            context.Add(recipient);
+            _context.Add(recipient);
 
-            context.SaveChanges();
+            _context.SaveChanges();
 
             return recipient.Id;
         }
 
         public void Delete(int id)
         {
-            using DBContext context = new();
-            context.Database.EnsureCreated();
             Recipient recipient = GetSingleRecipientById(id);
 
-            context.Remove(recipient);
+            if (recipient == null)
+                return;
 
-            context.SaveChanges();
+            _context.Remove(recipient);
+
+            _context.SaveChanges();
 
             return;
         }
         public void Update(Recipient recipient)
         {
-            using DBContext context = new();
-            context.Database.EnsureCreated();
-            context.Update(recipient);
+            _context.Update(recipient);
 
-            context.SaveChanges();
+            _context.SaveChanges();
 
             return;
         }
 
-        public IEnumerable<Recipient> GetByPostalCode(string postalCode)
+        public IEnumerable<Recipient> GetRecipientsByPostalCode(string postalCode)
         {
-            using DBContext context = new();
-            context.Database.EnsureCreated();
-            return context.Recipients.Where(p => p.PostalCode == postalCode).ToList();
+            try
+            {
+                return _context.Recipients.Where(p => p.PostalCode == postalCode).ToList();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Recipients not found exception: " + ex.Message);
+                return null;
+            }
         }
 
         public Recipient GetSingleRecipientById(int id)
         {
-            using DBContext context = new();
-            context.Database.EnsureCreated();
-            return context.Recipients.Single(p => p.Id == id) as Recipient;
+            try
+            {
+                return _context.Recipients.Single(p => p.Id == id);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Recipient not found exception: " + ex.Message);
+                return null;
+            }
         }
 
         public Recipient GetSingleRecipientByName(string name)
         {
-            using DBContext context = new();
-            context.Database.EnsureCreated();
-            return context.Recipients.Single(p => p.Name == name) as Recipient;
+            try
+            {
+                return _context.Recipients.Single(p => p.Name == name);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Recipient not found exception: " + ex.Message);
+                return null;
+            }
         }
 
-    }
+    }*/
 }

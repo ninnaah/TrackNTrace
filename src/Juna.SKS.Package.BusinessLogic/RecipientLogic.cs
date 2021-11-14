@@ -4,6 +4,7 @@ using Juna.SKS.Package.BusinessLogic.Entities;
 using Juna.SKS.Package.BusinessLogic.Entities.Validators;
 using Juna.SKS.Package.BusinessLogic.Interfaces;
 using Juna.SKS.Package.DataAccess.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,18 @@ namespace Juna.SKS.Package.BusinessLogic
     {
         private readonly IMapper _mapper;
         private readonly IParcelRepository _repository;
-        public RecipientLogic(IParcelRepository repo, IMapper mapper)
+        private readonly ILogger<RecipientLogic> _logger;
+        public RecipientLogic(IParcelRepository repo, IMapper mapper, ILogger<RecipientLogic> logger)
         {
             _repository = repo;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public Parcel TrackParcel(string trackingId)
         {
+            _logger.LogInformation("Trying to track a parcel");
+
             Parcel wrapParcel = new Parcel(3, new Recipient(), new Recipient(), trackingId, new List<HopArrival>(), new List<HopArrival>(), Parcel.StateEnum.InTransportEnum);
 
             IValidator<Parcel> validator = new ParcelValidator();
@@ -31,30 +36,24 @@ namespace Juna.SKS.Package.BusinessLogic
 
             if (result.IsValid == false)
             {
+                _logger.LogDebug($"Tracking id is invalid - {result}");
                 return null;
             }
 
-            DataAccess.Entities.Parcel DAparcel = _repository.GetSingleParcelByTrackingId(trackingId);
-
-            Parcel parcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(DAparcel);
-
-            return parcel;
-
-            /*Recipient recipient = new Recipient("Tom", "Examplestreet", "1220", "Vienna", "Austira");
-            Recipient sender = new Recipient("Jerry", "Examplestreet", "1220", "Vienna", "Austira");
-            List<HopArrival> visitedHops = new List<HopArrival>
+            try
             {
-                new HopArrival("111", "aVisitedHop", DateTime.Now),
-                new HopArrival("222", "anotherVisitedHop", DateTime.Now)
-            };
-            List<HopArrival> futureHops = new List<HopArrival>
+                DataAccess.Entities.Parcel DAparcel = _repository.GetSingleParcelByTrackingId(trackingId);
+                Parcel parcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(DAparcel);
+                _logger.LogInformation("Tracked the parcel");
+                return parcel;
+            }
+            catch(Exception ex)
             {
-                new HopArrival("333", "aFutureHop", DateTime.Now),
-                new HopArrival("444", "anotherFutureHop", DateTime.Now)
-            };
-
-            Parcel parcel = new Parcel(3, recipient, sender, trackingId, visitedHops, futureHops, Parcel.StateEnum.InTransportEnum);
-            return parcel;*/
+                _logger.LogError($"Parcel not found - {ex.Message}");
+                throw;
+            }
+            
+            
         }
     }
 }

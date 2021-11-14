@@ -11,6 +11,7 @@ using Juna.SKS.Package.BusinessLogic.Interfaces;
 using AutoMapper;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -18,12 +19,14 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
     {
         Mock<IStaffLogic> mockLogic;
         Mock<IMapper> mockMapper;
+        Mock<ILogger<StaffApiController>> mockLogger;
 
         [SetUp]
         public void Setup()
         {
             mockLogic = new Mock<IStaffLogic>();
             mockMapper = new Mock<IMapper>();
+            mockLogger = new Mock<ILogger<StaffApiController>>();
         }
 
         [Test]
@@ -32,7 +35,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.ReportParcelDelivery(It.IsAny<string>()))
                 .Returns(true);
 
-            StaffApiController staff = new(mockLogic.Object, mockMapper.Object);
+            StaffApiController staff = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             string validTrackingId = "PYJRB4HZ6";
 
@@ -50,7 +53,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.ReportParcelDelivery(It.IsAny<string>()))
                 .Returns(false);
 
-            StaffApiController staff = new(mockLogic.Object, mockMapper.Object);
+            StaffApiController staff = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             string invalidTrackingId = "123";
 
@@ -67,7 +70,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.ReportParcelHop(It.IsAny<string>(), It.IsAny<string>()))
                .Returns(true);
 
-            StaffApiController staff = new(mockLogic.Object, mockMapper.Object);
+            StaffApiController staff = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             string validTrackingId = "PYJRB4HZ6";
             string validCode = "ABCD1234";
@@ -86,7 +89,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.ReportParcelHop(It.IsAny<string>(), It.IsAny<string>()))
               .Returns(false);
 
-            StaffApiController staff = new(mockLogic.Object, mockMapper.Object);
+            StaffApiController staff = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             string invalidTrackingId = "123";
             string validCode = "ABCD1234";

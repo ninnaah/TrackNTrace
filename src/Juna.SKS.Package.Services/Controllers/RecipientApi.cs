@@ -24,6 +24,7 @@ using AutoMapper;
 using Juna.SKS.Package.Services.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Juna.SKS.Package.DataAccess.Sql;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -35,18 +36,13 @@ namespace Juna.SKS.Package.Services.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IRecipientLogic _recipientLogic;
+        private readonly ILogger<RecipientApiController> _logger;
 
-        [ActivatorUtilitiesConstructor]
-        public RecipientApiController()
-        {
-            this._recipientLogic = new RecipientLogic(new SqlParcelRepository(), AutoMapperProvider.GetMapper());
-            this._mapper = AutoMapperProvider.GetMapper();
-        }
-        
-        public RecipientApiController(IRecipientLogic recipientLogic, IMapper mapper)
+        public RecipientApiController(IRecipientLogic recipientLogic, IMapper mapper, ILogger<RecipientApiController> logger)
         {
             this._recipientLogic = recipientLogic;
             this._mapper = mapper;
+            _logger = logger;
         }
 
         /// <summary>
@@ -72,18 +68,28 @@ namespace Juna.SKS.Package.Services.Controllers
 
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
-            
-            var response = this._recipientLogic.TrackParcel(trackingId);
-
-            if (response == null)
+            try
             {
-                return StatusCode(400, new Error("Inputs are invalid"));
+                var response = this._recipientLogic.TrackParcel(trackingId);
+
+                if (response == null)
+                {
+                    _logger.LogInformation("Respond 400 - Tracking id is invalid");
+                    return StatusCode(400, new Error("Tracking id is invalid"));
+                }
+
+                BusinessLogic.Entities.Parcel BLparcel = response;
+                DTOs.Models.TrackingInformation trackingInfo = this._mapper.Map<DTOs.Models.TrackingInformation>(BLparcel);
+
+                _logger.LogInformation("Respond 200 - Tracked parcel");
+                return StatusCode(200, trackingInfo);
+
+            }catch(Exception)
+            {
+                _logger.LogInformation("Respond 404 - Parcel not found");
+                return StatusCode(404, "Parcel not found");
             }
-
-            BusinessLogic.Entities.Parcel BLparcel = response;
-            DTOs.Models.TrackingInformation trackingInfo = this._mapper.Map<DTOs.Models.TrackingInformation>(BLparcel);
-
-            return StatusCode(200, trackingInfo);
+            
 
 
         }

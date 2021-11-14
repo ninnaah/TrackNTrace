@@ -12,6 +12,7 @@ using AutoMapper;
 using FizzWare.NBuilder;
 using Moq;
 using Juna.SKS.Package.DataAccess.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -19,6 +20,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
     {
         Mock<IParcelRepository> mockRepo;
         Mock<IMapper> mockMapper;
+        Mock<ILogger<LogisticsPartnerLogic>> mockLogger;
 
         [SetUp]
         public void Setup()
@@ -28,6 +30,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Returns(1);
 
             mockMapper = new Mock<IMapper>();
+            mockLogger = new Mock<ILogger<LogisticsPartnerLogic>>();
         }
 
         [Test]
@@ -43,7 +46,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Build();
             string validTrackingId = "PYJRB4HZ6";
 
-            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object);
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
             var testResult = logisticsPartner.TransitionParcel(validParcel, validTrackingId);
 
@@ -63,7 +66,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Build();
             string validTrackingId = "PYJRB4HZ6";
 
-            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object);
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
             var testResult = logisticsPartner.TransitionParcel(invalidParcel, validTrackingId);
 
@@ -83,7 +86,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .Build();
             string validTrackingId = "PYJRB4HZ6";
 
-            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object);
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
             var testResult = logisticsPartner.TransitionParcel(invalidParcel, validTrackingId);
 
@@ -103,7 +106,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .Build();
             string validTrackingId = "PYJRB4HZ6";
 
-            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object);
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
             var testResult = logisticsPartner.TransitionParcel(invalidParcel, validTrackingId);
 
@@ -123,7 +126,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .Build();
             string invalidTrackingId = "12";
 
-            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object);
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
             var testResult = logisticsPartner.TransitionParcel(invalidParcel, invalidTrackingId);
 

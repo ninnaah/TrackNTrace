@@ -25,6 +25,7 @@ using Juna.SKS.Package.Services.AutoMapper;
 using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Juna.SKS.Package.DataAccess.Sql;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -36,18 +37,13 @@ namespace Juna.SKS.Package.Services.Controllers
     {
         private readonly IMapper _mapper;
         private readonly ILogisticsPartnerLogic _logisticsPartnerLogic;
+        private readonly ILogger<LogisticsPartnerApiController> _logger;
 
-        [ActivatorUtilitiesConstructor]
-        public LogisticsPartnerApiController()
-        {
-            this._logisticsPartnerLogic = new LogisticsPartnerLogic(new SqlParcelRepository(), AutoMapperProvider.GetMapper());
-            this._mapper = AutoMapperProvider.GetMapper();
-        }
-
-        public LogisticsPartnerApiController(ILogisticsPartnerLogic logisticsPartnerLogic, IMapper mapper)
+        public LogisticsPartnerApiController(ILogisticsPartnerLogic logisticsPartnerLogic, IMapper mapper, ILogger<LogisticsPartnerApiController> logger)
         {
             this._logisticsPartnerLogic = logisticsPartnerLogic;
             this._mapper = mapper;
+            _logger = logger;
         }
 
         /// <summary>
@@ -77,11 +73,13 @@ namespace Juna.SKS.Package.Services.Controllers
 
             if(response == null)
             {
-                return StatusCode(400, new Error("Inputs are invalid"));
+                _logger.LogInformation("Respond 400 - Parcel is invalid");
+                return StatusCode(400, new Error("Parcel is invalid"));
             }
             
             NewParcelInfo info = new NewParcelInfo();
             info.TrackingId = response;
+            _logger.LogInformation("Respond 200 - Transitioned parcel");
             return StatusCode(200, info);
             
 

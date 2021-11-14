@@ -12,6 +12,7 @@ using Juna.SKS.Package.BusinessLogic.Interfaces;
 using Juna.SKS.Package.BusinessLogic.Entities;
 using AutoMapper;
 using FizzWare.NBuilder;
+using Microsoft.Extensions.Logging;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -19,12 +20,14 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
     {
         Mock<ILogisticsPartnerLogic> mockLogic;
         Mock<IMapper> mockMapper;
+        Mock<ILogger<LogisticsPartnerApiController>> mockLogger;
 
         [SetUp]
         public void Setup()
         {
             mockLogic = new Mock<ILogisticsPartnerLogic>();
             mockMapper = new Mock<IMapper>();
+            mockLogger = new Mock<ILogger<LogisticsPartnerApiController>>();
         }
 
         [Test]
@@ -33,7 +36,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.TransitionParcel(It.IsAny<BusinessLogic.Entities.Parcel>(), It.IsAny<string>()))
                 .Returns("PYJRB4HZ6");
 
-            LogisticsPartnerApiController logisticsPartner = new(mockLogic.Object, mockMapper.Object);
+            LogisticsPartnerApiController logisticsPartner = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var validParcel = Builder<DTOs.Models.Parcel>.CreateNew()
                 .With(p => p.Weight = 3)
@@ -55,7 +58,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockLogic.Setup(m => m.TransitionParcel(It.IsAny<BusinessLogic.Entities.Parcel>(), It.IsAny<string>()))
                 .Returns(value: null);
 
-            LogisticsPartnerApiController logisticsPartner = new(mockLogic.Object, mockMapper.Object);
+            LogisticsPartnerApiController logisticsPartner = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var invalidParcel = Builder<DTOs.Models.Parcel>.CreateNew()
                 .With(p => p.Weight = 0)
