@@ -60,8 +60,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var testResult = warehouseManagement.ExportWarehouses();
-            Assert.IsInstanceOf<ObjectResult>(testResult);
-            var testResultCode = testResult as ObjectResult;
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
 
             Assert.AreEqual(404, testResultCode.StatusCode);
         }
