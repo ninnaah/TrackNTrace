@@ -87,7 +87,7 @@ namespace Juna.SKS.Package.Services.Controllers
             }catch(Exception)
             {
                 _logger.LogInformation("Respond 404 - Parcel not found");
-                return StatusCode(404, "Parcel not found");
+                return StatusCode(404);
             }
             
 

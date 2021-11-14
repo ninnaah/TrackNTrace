@@ -73,8 +73,8 @@ namespace Juna.SKS.Package.Services.Controllers
 
             if (response == null)
             {
-                _logger.LogInformation("Respond 400 - No warehouse found");
-                return StatusCode(404, new Error("No warehouse found"));
+                _logger.LogInformation("Respond 404 - No warehouse found");
+                return StatusCode(404);
             }
 
             BusinessLogic.Entities.Warehouse BLwarehouse = response;
@@ -128,7 +128,7 @@ namespace Juna.SKS.Package.Services.Controllers
             catch (Exception)
             {
                 _logger.LogInformation("Respond 404 - Warehouse not found");
-                return StatusCode(404, new Error("Warehouse not found"));
+                return StatusCode(404);
             }
             
 

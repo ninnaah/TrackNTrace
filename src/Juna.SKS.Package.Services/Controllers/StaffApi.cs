@@ -127,7 +127,7 @@ namespace Juna.SKS.Package.Services.Controllers
             catch (Exception)
             {
                 _logger.LogInformation("Respond 404 - Parcel or hop not found");
-                return StatusCode(404, new Error("Parcel or hop not found"));
+                return StatusCode(404);
             }
             
         }
