@@ -13,6 +13,7 @@ using FizzWare.NBuilder;
 using Moq;
 using Juna.SKS.Package.DataAccess.Interfaces;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -68,9 +69,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = logisticsPartner.TransitionParcel(invalidParcel, validTrackingId);
+            try
+            {
+                var testResult = logisticsPartner.TransitionParcel(invalidParcel, validTrackingId);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsNull(testResult);
         }
 
         [Test]
@@ -88,9 +96,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = logisticsPartner.TransitionParcel(invalidParcel, validTrackingId);
+            try
+            {
+                var testResult = logisticsPartner.TransitionParcel(invalidParcel, validTrackingId);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsNull(testResult);
         }
 
         [Test]
@@ -108,9 +123,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = logisticsPartner.TransitionParcel(invalidParcel, validTrackingId);
+            try
+            {
+                var testResult = logisticsPartner.TransitionParcel(invalidParcel, validTrackingId);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsNull(testResult);
         }
 
         [Test]
@@ -128,9 +150,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = logisticsPartner.TransitionParcel(invalidParcel, invalidTrackingId);
+            try
+            {
+                var testResult = logisticsPartner.TransitionParcel(invalidParcel, invalidTrackingId);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsNull(testResult);
         }
 
     }

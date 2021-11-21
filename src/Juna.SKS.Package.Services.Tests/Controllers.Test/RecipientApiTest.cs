@@ -12,6 +12,7 @@ using AutoMapper;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -56,7 +57,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         public void TrackParcel_InvalidTrackingId_ReturnCode400()
         {
             mockLogic.Setup(m => m.TrackParcel(It.IsAny<string>()))
-                .Returns(value: null);
+                .Throws(new ValidatorException(null, null, null));
 
             RecipientApiController recipient = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 

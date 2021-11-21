@@ -3,7 +3,9 @@ using FluentValidation;
 using Juna.SKS.Package.BusinessLogic.Entities;
 using Juna.SKS.Package.BusinessLogic.Entities.Validators;
 using Juna.SKS.Package.BusinessLogic.Interfaces;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 using Juna.SKS.Package.DataAccess.Interfaces;
+using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -59,8 +61,8 @@ namespace Juna.SKS.Package.BusinessLogic
 
             if (result.IsValid == false)
             {
-                _logger.LogDebug($"Code is invalid - {result}");
-                return null;
+                _logger.LogError($"Code is invalid - {result}");
+                throw new ValidatorException(nameof(code), nameof(GetWarehouse), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
 
             try
@@ -71,12 +73,25 @@ namespace Juna.SKS.Package.BusinessLogic
                 _logger.LogInformation("Got the warehouse");
                 return warehouse;
             }
+            catch (DataNotFoundException ex)
+            {
+                string errorMessage = $"Warehouse with code {code} cannot be found";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicDataNotFoundException(nameof(WarehouseManagementLogic), nameof(GetWarehouse), errorMessage);
+            }
+            catch (DataException ex)
+            {
+                string errorMessage = $"An error occurred while getting a warehouse with code {code}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(WarehouseManagementLogic), nameof(GetWarehouse), errorMessage, ex);
+            }
             catch (Exception ex)
             {
-                _logger.LogDebug($"Warehouse not found - {ex.Message}");
-                throw;
+                string errorMessage = $"An unknown error occurred while getting a warehouse with code {code}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(WarehouseManagementLogic), nameof(GetWarehouse), errorMessage, ex);
             }
-            
+
         }
 
         public bool ImportWarehouse(Warehouse warehouse)
@@ -88,12 +103,27 @@ namespace Juna.SKS.Package.BusinessLogic
 
             if (result.IsValid == false)
             {
-                _logger.LogDebug($"Warehouse is invalid - {result}");
-                return false;
+                _logger.LogError($"Warehouse is invalid - {result}");
+                throw new ValidatorException(nameof(warehouse), nameof(ImportWarehouse), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
 
             DataAccess.Entities.Warehouse DAwarehouse = this._mapper.Map<DataAccess.Entities.Warehouse>(warehouse);
-            _repository.Create(DAwarehouse);
+            try
+            {
+                _repository.Create(DAwarehouse);
+            }
+            catch (DataException ex)
+            {
+                string errorMessage = $"An error occurred importing a warehouse with code {warehouse.Code}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(WarehouseManagementLogic), nameof(ImportWarehouse), errorMessage, ex);
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"An unknown error occurred importing a warehouse with code {warehouse.Code}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(WarehouseManagementLogic), nameof(ImportWarehouse), errorMessage, ex);
+            }
 
             _logger.LogInformation("Imported the warehouse");
             return true;

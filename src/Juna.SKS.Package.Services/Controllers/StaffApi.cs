@@ -26,6 +26,7 @@ using Juna.SKS.Package.Services.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Juna.SKS.Package.DataAccess.Sql;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -72,20 +73,25 @@ namespace Juna.SKS.Package.Services.Controllers
             {
                 bool reported = this._staffLogic.ReportParcelDelivery(trackingId);
 
-                if (reported == false)
-                {
-                    _logger.LogInformation("Respond 400 - Tracking id is invalid or parcel not delivered yet");
-                    return StatusCode(400, new Error("Tracking id is invalid or parcel not delivered yet"));
-                }
                 _logger.LogInformation("Respond 200 - Reported parcel delivery");
                 return StatusCode(200);
             }
-            catch (Exception)
+            catch (LogicDataNotFoundException ex)
             {
-                _logger.LogInformation("Respond 404 - Parcel not found");
-                return StatusCode(404, new Error("Parcel not found"));
+                _logger.LogError("Respond 404 - Parcel not found", ex);
+                return StatusCode(404);
             }
-            
+            catch (ValidatorException ex)
+            {
+                _logger.LogError("Respond 400 - Trackingid is invalid", ex);
+                return StatusCode(400, new Error($"Trackingid is invalid - {ex.Message}")); ;
+            }
+            catch (LogicException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(400, new Error(ex.Message)); ;
+            }
+
 
         }
 
@@ -115,21 +121,25 @@ namespace Juna.SKS.Package.Services.Controllers
             try
             {
                 bool reported = this._staffLogic.ReportParcelHop(trackingId, code);
-
-                if (reported == false)
-                {
-                    _logger.LogInformation("Respond 400 - Tracking id/code is invalid or parcel not delivered at hop yet");
-                    return StatusCode(400, new Error("Tracking id/code is invalid or parcel not delivered at hop yet"));
-                }
                 _logger.LogInformation("Respond 200 - Reported parcel hop");
                 return StatusCode(200);
             }
-            catch (Exception)
+            catch (LogicDataNotFoundException ex)
             {
-                _logger.LogInformation("Respond 404 - Parcel or hop not found");
+                _logger.LogError("Respond 404 - Parcel or hop not found", ex);
                 return StatusCode(404);
             }
-            
+            catch (ValidatorException ex)
+            {
+                _logger.LogError("Respond 400 - Trackingid or code is invalid", ex);
+                return StatusCode(400, new Error($"Trackingid or code is invalid - {ex.Message}")); ;
+            }
+            catch (LogicException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(400, new Error(ex.Message)); ;
+            }
+
         }
     }
 }

@@ -26,6 +26,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Juna.SKS.Package.DataAccess.Sql;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -67,20 +68,31 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(400, default(Error));
 
-
-            BusinessLogic.Entities.Parcel BLparcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(body);
-            var response = this._logisticsPartnerLogic.TransitionParcel(BLparcel, trackingId);
-
-            if(response == null)
+            try
             {
-                _logger.LogInformation("Respond 400 - Parcel is invalid");
-                return StatusCode(400, new Error("Parcel is invalid"));
+                BusinessLogic.Entities.Parcel BLparcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(body);
+                var response = this._logisticsPartnerLogic.TransitionParcel(BLparcel, trackingId);
+
+                NewParcelInfo info = new NewParcelInfo();
+                info.TrackingId = response;
+                _logger.LogInformation("Respond 200 - Transitioned parcel");
+                return StatusCode(200, info);
             }
-            
-            NewParcelInfo info = new NewParcelInfo();
-            info.TrackingId = response;
-            _logger.LogInformation("Respond 200 - Transitioned parcel");
-            return StatusCode(200, info);
+            catch (ValidatorException ex)
+            {
+                _logger.LogError("Respond 400 - Parcel is invalid", ex);
+                return StatusCode(400, new Error($"Parcel is invalid - {ex.Message}")); 
+            }
+            catch (LogicException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(400, new Error(ex.Message));
+            }/*catch(Exception ex)
+            {
+                string errorMessage = $"An unknown error occurred transitioning a parcel with trackingid {trackingId}";
+                _logger.LogError(errorMessage, ex);
+                return StatusCode(400, new Error(ex.Message));
+            }*/
             
 
         }

@@ -3,7 +3,9 @@ using FluentValidation;
 using Juna.SKS.Package.BusinessLogic.Entities;
 using Juna.SKS.Package.BusinessLogic.Entities.Validators;
 using Juna.SKS.Package.BusinessLogic.Interfaces;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 using Juna.SKS.Package.DataAccess.Interfaces;
+using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -34,8 +36,8 @@ namespace Juna.SKS.Package.BusinessLogic
 
             if (result.IsValid == false)
             {
-                _logger.LogDebug($"Tracking id is invalid - {result}");
-                return false;
+                _logger.LogError($"Tracking id is invalid - {result}");
+                throw new ValidatorException(nameof(trackingId), nameof(ReportParcelDelivery), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
 
             try
@@ -48,16 +50,31 @@ namespace Juna.SKS.Package.BusinessLogic
                 }
                 else
                 {
-                    _logger.LogDebug("Cannot report the parcel delivery - not delivered yet");
-                    return false;
+                    string errorMessage = $"Cannot report the parcel delivery with trackingid {trackingId} - not delivered yet";
+                    _logger.LogError(errorMessage);
+                    throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage);
                 }
-            }catch (Exception ex)
-            {
-                _logger.LogError($"Parcel not found - {ex.Message}");
-                throw;
             }
-            
-                
+            catch (DataNotFoundException ex)
+            {
+                string errorMessage = $"Parcel with trackingid {trackingId} cannot be found";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage, ex);
+            }
+            catch (DataException ex)
+            {
+                string errorMessage = $"An error occurred reporting a parcel delivery with trackingid {trackingId}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage, ex);
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"An unknown error occurred reporting a parcel delivery with trackingid {trackingId}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage, ex);
+            }
+
+
         }
 
         public bool ReportParcelHop(string trackingId, string code)
@@ -72,7 +89,7 @@ namespace Juna.SKS.Package.BusinessLogic
             if (result.IsValid == false)
             {
                 _logger.LogError($"Tracking id is invalid - {result}");
-                return false;
+                throw new ValidatorException(nameof(trackingId), nameof(ReportParcelHop), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
 
             HopArrival wrapHopArrival = new HopArrival(code, "Hauptlager 27-12", DateTime.Now);
@@ -83,7 +100,7 @@ namespace Juna.SKS.Package.BusinessLogic
             if (result.IsValid == false)
             {
                 _logger.LogError($"Code is invalid - {result}");
-                return false;
+                throw new ValidatorException(nameof(code), nameof(ReportParcelHop), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
 
             try
@@ -101,15 +118,37 @@ namespace Juna.SKS.Package.BusinessLogic
 
                 }
 
-                _logger.LogError("Cannot report the parcel hop - parcel not delivered at hop yet");
-                return false;
+                string errorMessage = $"Cannot report the parcel hop with trackingid {trackingId} and code {code} - not delivered yet";
+                _logger.LogError(errorMessage);
+                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage);
+            }
+            catch (DataNotFoundException ex)
+            {
+                string errorMessage = null;
+                if (ex.Method == "GetSingleParcelByTrackingId")
+                {
+                    errorMessage = $"Parcel with trackingid {trackingId} cannot be found";
+                }else if(ex.Method == "GetSingleHopArrivalByCode")
+                {
+                    errorMessage = $"Hop with code {code} cannot be found";
+                }
+                
+                _logger.LogError(errorMessage);
+                throw new LogicDataNotFoundException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage);
+            }
+            catch (DataException ex)
+            {
+                string errorMessage = $"An error occurred reporting a parcel hop with trackingid {trackingId} and code {code}";
+                _logger.LogError(errorMessage);
+                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage, ex);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Parcel or hop not found - {ex.Message}");
-                throw;
+                string errorMessage = $"An unknown error occurred reporting a parcel hop with trackingid {trackingId} and code {code}";
+                _logger.LogError(errorMessage);
+                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage, ex);
             }
-            
+
         }
     }
 }

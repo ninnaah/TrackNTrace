@@ -25,9 +25,10 @@ using Juna.SKS.Package.Services.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Juna.SKS.Package.DataAccess.Sql;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Controllers
-{ 
+{
     /// <summary>
     /// 
     /// </summary>
@@ -57,7 +58,7 @@ namespace Juna.SKS.Package.Services.Controllers
         [SwaggerOperation("SubmitParcel")]
         [SwaggerResponse(statusCode: 201, type: typeof(NewParcelInfo), description: "Successfully submitted the new parcel")]
         [SwaggerResponse(statusCode: 400, type: typeof(Error), description: "The operation failed due to an error.")]
-        public virtual IActionResult SubmitParcel([FromBody]Parcel body)
+        public virtual IActionResult SubmitParcel([FromBody] Parcel body)
         {
             //TODO: Uncomment the next line to return response 201 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(201, default(NewParcelInfo));
@@ -65,20 +66,27 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(400, default(Error));
 
-            BusinessLogic.Entities.Parcel BLparcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(body);
-            var response = this._senderLogic.SubmitParcel(BLparcel);
-
-            if (response == null)
+            try
             {
-                _logger.LogInformation("Respond 400 - Parcel is invalid");
-                return StatusCode(400, new Error("Parcel is invalid"));
+                BusinessLogic.Entities.Parcel BLparcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(body);
+                var response = this._senderLogic.SubmitParcel(BLparcel);
+
+                NewParcelInfo info = new NewParcelInfo();
+                info.TrackingId = response;
+
+                _logger.LogInformation("Respond 201 - Submitted parcel");
+                return StatusCode(201, info);
             }
-
-            NewParcelInfo info = new NewParcelInfo();
-            info.TrackingId = response;
-
-            _logger.LogInformation("Respond 201 - Submitted parcel");
-            return StatusCode(201, info);
+            catch (ValidatorException ex)
+            {
+                _logger.LogError("Respond 400 - Parcel is invalid", ex);
+                return StatusCode(400, new Error($"Parcel is invalid - {ex.Message}")); ;
+            }
+            catch (LogicException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(400, new Error(ex.Message));
+            }
         }
     }
 }

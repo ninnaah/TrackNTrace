@@ -27,6 +27,7 @@ using Juna.SKS.Package.Services.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Juna.SKS.Package.DataAccess.Sql;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -113,24 +114,28 @@ namespace Juna.SKS.Package.Services.Controllers
             {
                 var response = this._warehouseManagementLogic.GetWarehouse(code);
 
-                if (response == null)
-                {
-                    _logger.LogInformation("Respond 400 - Code is invalid");
-                    return StatusCode(400, new Error("Code is invalid"));
-                }
-
                 BusinessLogic.Entities.Warehouse BLwarehouse = response;
                 DTOs.Models.Warehouse warehouse = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
 
                 _logger.LogInformation("Respond 200 - Got warehouse");
                 return StatusCode(200, warehouse);
             }
-            catch (Exception)
+            catch (LogicDataNotFoundException ex)
             {
-                _logger.LogInformation("Respond 404 - Warehouse not found");
+                _logger.LogError("Respond 404 - Warehouse not found", ex);
                 return StatusCode(404);
             }
-            
+            catch (ValidatorException ex)
+            {
+                _logger.LogError("Respond 400 - Code is invalid", ex);
+                return StatusCode(400, new Error($"Code is invalid - {ex.Message}")); ;
+            }
+            catch (LogicException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(400, new Error(ex.Message)); ;
+            }
+
 
         }
 
@@ -153,16 +158,24 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 400 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(400, default(Error));
 
-            BusinessLogic.Entities.Warehouse BLwarehouse = this._mapper.Map<BusinessLogic.Entities.Warehouse>(body);
-            bool response = this._warehouseManagementLogic.ImportWarehouse(BLwarehouse);
-
-            if (response == false)
+            try
             {
-                _logger.LogInformation("Respond 400 - Warehouse is invalid");
-                return StatusCode(400, new Error("Warehouse is invalid"));
+                BusinessLogic.Entities.Warehouse BLwarehouse = this._mapper.Map<BusinessLogic.Entities.Warehouse>(body);
+                bool response = this._warehouseManagementLogic.ImportWarehouse(BLwarehouse);
+
+                _logger.LogInformation("Respond 200 - Imported warehouse");
+                return StatusCode(200);
             }
-            _logger.LogInformation("Respond 200 - Imported warehouse");
-            return StatusCode(200);
+            catch (ValidatorException ex)
+            {
+                _logger.LogError("Respond 400 - Warehouse is invalid", ex);
+                return StatusCode(400, new Error($"Warehouse is invalid - {ex.Message}")); ;
+            }
+            catch (LogicException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(400, new Error(ex.Message));
+            }
         }
     }
 }

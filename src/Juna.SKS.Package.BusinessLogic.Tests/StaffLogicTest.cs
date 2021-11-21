@@ -13,6 +13,7 @@ using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Mvc;
 using Juna.SKS.Package.DataAccess.Interfaces;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -80,9 +81,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             string invalidTrackingId = "12";
 
-            var testResult = staff.ReportParcelDelivery(invalidTrackingId);
+            try
+            {
+                var testResult = staff.ReportParcelDelivery(invalidTrackingId);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsFalse(testResult);
         }
 
         [Test]
@@ -107,9 +115,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             string invalidTrackingId = "12";
             string validCode = "ABCD1234";
 
-            var testResult = staff.ReportParcelHop(invalidTrackingId, validCode);
+            try
+            {
+                var testResult = staff.ReportParcelHop(invalidTrackingId, validCode);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsFalse(testResult);
         }
         [Test]
         public void ReportParcelHop_ValidCode_ReturnTrue()
@@ -133,9 +148,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             string validTrackingId = "PYJRB4HZ6";
             string invalidCode = "12";
 
-            var testResult = staff.ReportParcelHop(validTrackingId, invalidCode);
+            try
+            {
+                var testResult = staff.ReportParcelHop(validTrackingId, invalidCode);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsFalse(testResult);
         }
 
     }

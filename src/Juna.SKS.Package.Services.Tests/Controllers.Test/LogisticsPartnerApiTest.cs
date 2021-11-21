@@ -13,6 +13,7 @@ using Juna.SKS.Package.BusinessLogic.Entities;
 using AutoMapper;
 using FizzWare.NBuilder;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -56,7 +57,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         public void TransitionParcel_InvalidParcelZeroWeight_ReturnCode400()
         {
             mockLogic.Setup(m => m.TransitionParcel(It.IsAny<BusinessLogic.Entities.Parcel>(), It.IsAny<string>()))
-                .Returns(value: null);
+                .Throws(new ValidatorException(null, null, null));
 
             LogisticsPartnerApiController logisticsPartner = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 

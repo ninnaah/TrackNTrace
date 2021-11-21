@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Juna.SKS.Package.ServiceAgents.Interfaces\Juna.SKS.Package.ServiceAgents.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

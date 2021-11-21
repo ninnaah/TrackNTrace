@@ -13,6 +13,7 @@ using Juna.SKS.Package.BusinessLogic;
 using Juna.SKS.Package.BusinessLogic.Entities;
 using Juna.SKS.Package.DataAccess.Interfaces;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -57,7 +58,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             Assert.IsInstanceOf<Warehouse>(testResult);
         }
 
-
+        
         /*[Test]
         public void GetWarehouse_ValidCode_ReturnWarehouse()
         {
@@ -79,9 +80,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             string validCode = "12";
 
-            var testResult = warehouseManagement.GetWarehouse(validCode);
+            try
+            {
+                var testResult = warehouseManagement.GetWarehouse(validCode);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsNull(testResult);
         }
 
         [Test]
@@ -113,9 +121,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = warehouseManagement.ImportWarehouse(invalidWarehouse);
+            try
+            {
+                var testResult = warehouseManagement.ImportWarehouse(invalidWarehouse);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsFalse(testResult);
         }
 
         [Test]
@@ -130,9 +145,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = warehouseManagement.ImportWarehouse(invalidWarehouse);
+            try
+            {
+                var testResult = warehouseManagement.ImportWarehouse(invalidWarehouse);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsFalse(testResult);
         }
 
     }

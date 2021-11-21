@@ -12,6 +12,7 @@ using AutoMapper;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -96,7 +97,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         public void GetWarehouse_InvalidCode_ReturnCode400()
         {
             mockLogic.Setup(m => m.GetWarehouse(It.IsAny<string>()))
-                .Returns(value : null);
+                .Throws(new ValidatorException(null, null, null));
 
             WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
@@ -138,7 +139,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         public void ImportWarehouse_InvalidWarehouse_ReturnCode400()
         {
             mockLogic.Setup(m => m.ImportWarehouse(It.IsAny<BusinessLogic.Entities.Warehouse>()))
-                 .Returns(false);
+                 .Throws(new ValidatorException(null, null, null));
 
             WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 

@@ -3,7 +3,9 @@ using FluentValidation;
 using Juna.SKS.Package.BusinessLogic.Entities;
 using Juna.SKS.Package.BusinessLogic.Entities.Validators;
 using Juna.SKS.Package.BusinessLogic.Interfaces;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 using Juna.SKS.Package.DataAccess.Interfaces;
+using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -36,24 +38,37 @@ namespace Juna.SKS.Package.BusinessLogic
 
             if (result.IsValid == false)
             {
-                _logger.LogDebug($"Tracking id is invalid - {result}");
-                return null;
+                _logger.LogError($"Tracking id is invalid - {result}");
+                throw new ValidatorException(nameof(trackingId), nameof(TrackParcel), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
 
             try
             {
                 DataAccess.Entities.Parcel DAparcel = _repository.GetSingleParcelByTrackingId(trackingId);
                 Parcel parcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(DAparcel);
-                _logger.LogInformation("Tracked the parcel");
+                _logger.LogError("Tracked the parcel");
                 return parcel;
             }
-            catch(Exception ex)
+            catch(DataNotFoundException ex)
             {
-                _logger.LogError($"Parcel not found - {ex.Message}");
-                throw;
+                string errorMessage = $"Parcel with trackingid {trackingId} cannot be found";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicDataNotFoundException(nameof(RecipientLogic), nameof(TrackParcel), errorMessage);
             }
-            
-            
+            catch (DataException ex)
+            {
+                string errorMessage = $"An error occurred tracking a parcel with trackingid {trackingId}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(RecipientLogic), nameof(TrackParcel), errorMessage, ex);
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"An unknown error occurred tracking a parcel with trackingid {trackingId}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(RecipientLogic), nameof(TrackParcel), errorMessage, ex);
+            }
+
+
         }
     }
 }

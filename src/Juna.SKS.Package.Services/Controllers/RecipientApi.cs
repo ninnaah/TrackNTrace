@@ -25,6 +25,7 @@ using Juna.SKS.Package.Services.AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Juna.SKS.Package.DataAccess.Sql;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Controllers
 { 
@@ -72,24 +73,28 @@ namespace Juna.SKS.Package.Services.Controllers
             {
                 var response = this._recipientLogic.TrackParcel(trackingId);
 
-                if (response == null)
-                {
-                    _logger.LogInformation("Respond 400 - Tracking id is invalid");
-                    return StatusCode(400, new Error("Tracking id is invalid"));
-                }
-
                 BusinessLogic.Entities.Parcel BLparcel = response;
                 DTOs.Models.TrackingInformation trackingInfo = this._mapper.Map<DTOs.Models.TrackingInformation>(BLparcel);
 
                 _logger.LogInformation("Respond 200 - Tracked parcel");
                 return StatusCode(200, trackingInfo);
 
-            }catch(Exception)
+            }catch(LogicDataNotFoundException ex)
             {
-                _logger.LogInformation("Respond 404 - Parcel not found");
+                _logger.LogError("Respond 404 - Parcel not found", ex);
                 return StatusCode(404);
             }
-            
+            catch (ValidatorException ex)
+            {
+                _logger.LogError("Respond 400 - Trackingid is invalid", ex);
+                return StatusCode(400, new Error($"Trackingid is invalid - {ex.Message}")); ;
+            }
+            catch (LogicException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(400, new Error(ex.Message)); ;
+            }
+
 
 
         }

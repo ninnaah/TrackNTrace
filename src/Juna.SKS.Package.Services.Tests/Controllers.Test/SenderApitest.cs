@@ -12,6 +12,7 @@ using Juna.SKS.Package.BusinessLogic.Interfaces;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -54,7 +55,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         public void SubmitParcel_InvalidParcelZeroWeight_ReturnCode400()
         {
             mockLogic.Setup(m => m.SubmitParcel(It.IsAny<BusinessLogic.Entities.Parcel>()))
-               .Returns(value: null);
+               .Throws(new ValidatorException(null, null, null));
 
             SenderApiController sender = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 

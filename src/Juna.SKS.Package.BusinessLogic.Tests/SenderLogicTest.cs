@@ -13,6 +13,7 @@ using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Mvc;
 using Juna.SKS.Package.DataAccess.Interfaces;
 using Microsoft.Extensions.Logging;
+using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
@@ -65,9 +66,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             ISenderLogic sender = new SenderLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = sender.SubmitParcel(validParcel);
+            try
+            {
+                var testResult = sender.SubmitParcel(validParcel);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsNull(testResult);
         }
 
         [Test]
@@ -84,9 +92,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             ISenderLogic sender = new SenderLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = sender.SubmitParcel(validParcel);
+            try
+            {
+                var testResult = sender.SubmitParcel(validParcel);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsNull(testResult);
 
         }
 
@@ -104,9 +119,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             ISenderLogic sender = new SenderLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = sender.SubmitParcel(validParcel);
+            try
+            {
+                var testResult = sender.SubmitParcel(validParcel);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsNull(testResult);
 
         }
 
@@ -124,9 +146,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             ISenderLogic sender = new SenderLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = sender.SubmitParcel(validParcel);
+            try
+            {
+                var testResult = sender.SubmitParcel(validParcel);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsNull(testResult);
 
         }
         [Test]
@@ -143,9 +172,16 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             ISenderLogic sender = new SenderLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = sender.SubmitParcel(validParcel);
+            try
+            {
+                var testResult = sender.SubmitParcel(validParcel);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
 
-            Assert.IsNull(testResult);
 
         }
 
