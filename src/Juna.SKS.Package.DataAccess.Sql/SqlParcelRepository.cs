@@ -19,7 +19,7 @@ namespace Juna.SKS.Package.DataAccess.Sql
         public SqlParcelRepository(DBContext context, ILogger<SqlParcelRepository> logger)
         {
             _context = context;
-            _context.Database.Migrate();
+            _context.Database.EnsureCreated();
             _logger = logger;
         }
         public int Create(Parcel parcel)

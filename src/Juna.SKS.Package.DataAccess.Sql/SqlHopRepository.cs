@@ -17,7 +17,7 @@ namespace Juna.SKS.Package.DataAccess.Sql
         public SqlHopRepository(DBContext context, ILogger<SqlHopRepository> logger)
         {
             _context = context;
-            _context.Database.Migrate();
+            _context.Database.EnsureCreated();
             _logger = logger;
         }
 
