@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Fare;
 using FluentValidation;
 using Juna.SKS.Package.BusinessLogic.Entities;
 using Juna.SKS.Package.BusinessLogic.Entities.Validators;
@@ -36,6 +37,13 @@ namespace Juna.SKS.Package.BusinessLogic
                 throw new ValidatorException(nameof(parcel), nameof(SubmitParcel), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
 
+            var xeger = new Xeger("^[A-Z0-9]{9}$", new Random());
+            var trackingId = xeger.Generate();
+
+            //check if id is unique
+            parcel.TrackingId = trackingId;
+
+
             DataAccess.Entities.Parcel DAparcel = this._mapper.Map<DataAccess.Entities.Parcel>(parcel);
             try
             {
@@ -54,7 +62,7 @@ namespace Juna.SKS.Package.BusinessLogic
                 throw new LogicException(nameof(SenderLogic), nameof(SubmitParcel), errorMessage, ex);
             }
             _logger.LogInformation("Submitted the parcel");
-            return "PYJRB4HZ6";
+            return parcel.TrackingId;
         }
     }
 }
