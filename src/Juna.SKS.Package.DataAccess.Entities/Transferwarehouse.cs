@@ -1,5 +1,7 @@
-﻿using System;
+﻿using NetTopologySuite.Geometries;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -15,16 +17,17 @@ namespace Juna.SKS.Package.DataAccess.Entities
 
         }
 
-        public Transferwarehouse(string regionGeoJson, string logisticsPartner, string logisticsPartnerUrl)
+        public Transferwarehouse(Geometry region, string logisticsPartner, string logisticsPartnerUrl)
         {
-            RegionGeoJson = regionGeoJson;
+            Region = region;
             LogisticsPartner = logisticsPartner;
             LogisticsPartnerUrl = logisticsPartnerUrl;
         }
-        public Transferwarehouse(string regionGeoJson, string logisticsPartner, string logisticsPartnerUrl, string hopType, string code, 
+        public Transferwarehouse(int id, Geometry region, string logisticsPartner, string logisticsPartnerUrl, string hopType, string code, 
             string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates)
         {
-            RegionGeoJson = regionGeoJson;
+            Id = id;
+            Region= region;
             LogisticsPartner = logisticsPartner;
             LogisticsPartnerUrl = logisticsPartnerUrl;
             HopType = hopType;
@@ -34,7 +37,7 @@ namespace Juna.SKS.Package.DataAccess.Entities
             LocationName = locationName;
             LocationCoordinates = locationCoordinates;
         }
-        public string RegionGeoJson { get; set; }
+        public virtual Geometry Region { get; set; }
 
         public string LogisticsPartner { get; set; }
 

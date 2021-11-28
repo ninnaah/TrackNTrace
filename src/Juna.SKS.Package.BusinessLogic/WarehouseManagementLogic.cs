@@ -28,24 +28,27 @@ namespace Juna.SKS.Package.BusinessLogic
         }
         public Warehouse ExportWarehouse()
         {
-            /*IEnumerable<DataAccess.Entities.Warehouse> DAwarehouses = _repository.GetAllWarehouses();
-
-            IEnumerable<Warehouse> warehouses = this._mapper.Map<IEnumerable<BusinessLogic.Entities.Warehouse>>(DAwarehouses);
-
-            return warehouses;*/
 
             _logger.LogInformation("Trying to export a warehouse");
-
-            GeoCoordinate locationCoodinates = new GeoCoordinate(3.1, 4.5);
-            Hop hop1 = new Hop("truck", "123", "aHop", 23, "Vienna", locationCoodinates);
-            Hop hop2 = new Hop("truck", "321", "anotherHop", 13, "Vienna", locationCoodinates);
-            List <WarehouseNextHops> nextHops = new List<WarehouseNextHops>
+            Warehouse warehouse = new();
+            try
             {
-                new WarehouseNextHops(123, hop1),
-                new WarehouseNextHops(456, hop2)
-            };
+                DataAccess.Entities.Warehouse DAwarehouse = _repository.GetWarehouseHierarchy();
+                warehouse = this._mapper.Map<Warehouse>(DAwarehouse);
+            }
+            catch (DataException ex)
+            {
+                string errorMessage = $"An error occurred exporting the warehouse hierachy";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(WarehouseManagementLogic), nameof(ExportWarehouse), errorMessage, ex);
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"An error occurred exporting the warehouse hierachy";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(WarehouseManagementLogic), nameof(ExportWarehouse), errorMessage, ex);
+            }
 
-            Warehouse warehouse = new Warehouse(0, nextHops, "warehouse", "111", "Hauptlager 27-12", 11, "Vienna", locationCoodinates);
             _logger.LogInformation("Exported warehouse");
             return warehouse;
         }
@@ -106,6 +109,8 @@ namespace Juna.SKS.Package.BusinessLogic
                 _logger.LogError($"Warehouse is invalid - {result}");
                 throw new ValidatorException(nameof(warehouse), nameof(ImportWarehouse), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
+
+            //_repository.DropDatabase();
 
             DataAccess.Entities.Warehouse DAwarehouse = this._mapper.Map<DataAccess.Entities.Warehouse>(warehouse);
             try

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using NetTopologySuite.Geometries;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -15,15 +17,16 @@ namespace Juna.SKS.Package.DataAccess.Entities
 
         }
 
-        public Truck(string regionGeoJson, string numberPlate)
+        public Truck(Geometry region, string numberPlate)
         {
-            RegionGeoJson = regionGeoJson;
+            Region = region;
             NumberPlate = numberPlate;
         }
 
-        public Truck(string regionGeoJson, string numberPlate, string hopType, string code, string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates)
+        public Truck(int id, Geometry region, string numberPlate, string hopType, string code, string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates)
         {
-            RegionGeoJson = regionGeoJson;
+            Id = id;
+            Region = region;
             NumberPlate = numberPlate;
             HopType = hopType;
             Code = code;
@@ -32,7 +35,7 @@ namespace Juna.SKS.Package.DataAccess.Entities
             LocationName = locationName;
             LocationCoordinates = locationCoordinates;
         }
-        public string RegionGeoJson { get; set; }
+        public virtual Geometry Region { get; set; }
 
         public string NumberPlate { get; set; }
     }

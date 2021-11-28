@@ -18,6 +18,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
+using NetTopologySuite.Geometries;
 
 namespace Juna.SKS.Package.Services.DTOs.Models
 { 
@@ -35,7 +36,7 @@ namespace Juna.SKS.Package.Services.DTOs.Models
         [Required]
 
         [DataMember(Name="regionGeoJson")]
-        public string RegionGeoJson { get; set; }
+        public virtual string RegionGeoJson { get; set; }
 
         /// <summary>
         /// The truck&#x27;s number plate.

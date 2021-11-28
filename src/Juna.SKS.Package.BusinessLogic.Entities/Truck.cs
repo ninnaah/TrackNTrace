@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetTopologySuite.Geometries;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
             LocationName = locationName;
             LocationCoordinates = locationCoordinates;
         }
-        public string RegionGeoJson { get; set; }
+        public virtual string RegionGeoJson { get; set; }
 
         public string NumberPlate { get; set; }
     }

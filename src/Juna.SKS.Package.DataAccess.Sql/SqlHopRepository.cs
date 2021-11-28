@@ -102,6 +102,32 @@ namespace Juna.SKS.Package.DataAccess.Sql
             }
         }
 
+        public void DropDatabase()
+        {
+            _logger.LogInformation("Trying to drop database");
+            try
+            {
+                if(_context.Hops.Any(x => x.Code != null))
+                    _context.RemoveRange(_context.WarehouseNextHops, _context.Hops, _context.GeoCoordinates, _context.HopArrivals,  _context.Parcels, _context.Recipients);
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex)
+            {
+                string errorMessage = $"An error occured while dropping the database";
+                _logger.LogError(errorMessage, ex);
+                throw new DataException(nameof(SqlHopRepository), nameof(DropDatabase), errorMessage, ex);
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"An unknown error occured while dropping the database";
+                _logger.LogError(errorMessage, ex);
+                throw new DataException(nameof(SqlHopRepository), nameof(DropDatabase), errorMessage, ex);
+            }
+            _logger.LogInformation("Dropped database");
+            _logger.LogInformation("Trying to create new database");
+            _context.Database.EnsureCreated();
+            _context.SaveChanges();
+            _logger.LogInformation("Created new database");
+        }
 
         /*public IEnumerable<Hop> GetHopsByHopType(string hopType)
         {
@@ -212,18 +238,63 @@ namespace Juna.SKS.Package.DataAccess.Sql
             }
         }
 
-        /*public IEnumerable<Warehouse> GetAllWarehouses()
+        public Warehouse GetWarehouseHierarchy()
         {
+            _logger.LogInformation("Trying to get warehouse hierarchy");
             try
             {
-                return _context.Warehouses.ToList();
+                var hierarchy = _context.Warehouses.Include(w => w.NextHops).ThenInclude(nh => nh.Hop).ThenInclude(nh => nh.LocationCoordinates);
+
+                if (hierarchy == null)
+                {
+                    _logger.LogError($"Warehouse hierarchy not found");
+                    throw new DataNotFoundException(nameof(SqlHopRepository), nameof(GetWarehouseHierarchy));
+                }
+                _logger.LogInformation("Got warehouse hierarchy");
+                return hierarchy.ToList().SingleOrDefault(w => w.Level == 0);
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex)
+            {
+                string errorMessage = $"An error occured while fetching warehous hierarchy";
+                _logger.LogError(errorMessage, ex);
+                throw new DataException(nameof(SqlHopRepository), nameof(GetWarehouseHierarchy), errorMessage, ex);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("No warehouses found exception: " + ex.Message);
-                return null;
+                string errorMessage = $"An unknown error occured while fetching warehous hierarchy";
+                _logger.LogError(errorMessage, ex);
+                throw new DataException(nameof(SqlHopRepository), nameof(GetWarehouseHierarchy), errorMessage, ex);
             }
-        }*/
+        }
+
+        public IEnumerable<Truck> GetTrucks()
+        {
+            _logger.LogInformation("Trying to get trucks by hopType");
+            try
+            {
+                var trucks = _context.Trucks;
+
+                if (trucks == null)
+                {
+                    _logger.LogError($"Trucks not found");
+                    throw new DataNotFoundException(nameof(SqlHopRepository), nameof(GetTrucks));
+                }
+                _logger.LogInformation("Got warehouse hierarchy");
+                return trucks;
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex)
+            {
+                string errorMessage = $"An error occured while fetching trucks";
+                _logger.LogError(errorMessage, ex);
+                throw new DataException(nameof(SqlHopRepository), nameof(GetTrucks), errorMessage, ex);
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"An unknown error occured while fetching trucks";
+                _logger.LogError(errorMessage, ex);
+                throw new DataException(nameof(SqlHopRepository), nameof(GetTrucks), errorMessage, ex);
+            }
+        }
 
     }
 }

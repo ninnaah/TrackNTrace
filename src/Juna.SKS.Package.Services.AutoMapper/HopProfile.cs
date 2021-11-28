@@ -22,6 +22,7 @@ namespace Juna.SKS.Package.Services.AutoMapper
                .ReverseMap();
 
             CreateMap<BusinessLogic.Entities.Hop, DataAccess.Entities.Hop>()
+               .ForMember(x => x.Id, x => x.Ignore())
                .Include<BusinessLogic.Entities.Warehouse, DataAccess.Entities.Warehouse>()
                .Include<BusinessLogic.Entities.Truck, DataAccess.Entities.Truck>()
                .Include<BusinessLogic.Entities.Transferwarehouse, DataAccess.Entities.Transferwarehouse>()

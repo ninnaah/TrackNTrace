@@ -14,8 +14,9 @@ namespace Juna.SKS.Package.DataAccess.Entities
         {
 
         }
-        public HopArrival(string code, string description, DateTime dateTime)
+        public HopArrival(int id, string code, string description, DateTime dateTime)
         {
+            Id = id;
             Code = code;
             Description = description;
             DateTime = dateTime;

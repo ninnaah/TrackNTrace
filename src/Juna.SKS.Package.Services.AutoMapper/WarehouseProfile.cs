@@ -14,7 +14,7 @@ namespace Juna.SKS.Package.Services.AutoMapper
         public WarehouseProfile()
         {
             CreateMap<BusinessLogic.Entities.Warehouse, DTOs.Models.Warehouse>().ReverseMap();
-            CreateMap<BusinessLogic.Entities.Warehouse, DataAccess.Entities.Warehouse>().ReverseMap();
+            CreateMap<BusinessLogic.Entities.Warehouse, DataAccess.Entities.Warehouse>().IncludeAllDerived().ReverseMap();
         }
     }
 }

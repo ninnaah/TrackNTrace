@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Nominatim.API" Version="1.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Juna.SKS.Package.ServiceAgents.Interfaces\Juna.SKS.Package.ServiceAgents.Interfaces.csproj" />
   </ItemGroup>
 

@@ -30,8 +30,8 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             List<DataAccess.Entities.HopArrival> visitedHops = new List<DataAccess.Entities.HopArrival>()
             {
-                new DataAccess.Entities.HopArrival("ABCD1234", "A description", DateTime.Now),
-                new DataAccess.Entities.HopArrival("DBCA1234", "A description", DateTime.Now)
+                new DataAccess.Entities.HopArrival(1, "ABCD1234", "A description", DateTime.Now),
+                new DataAccess.Entities.HopArrival(2, "DBCA1234", "A description", DateTime.Now)
             };
 
 

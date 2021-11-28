@@ -14,8 +14,9 @@ namespace Juna.SKS.Package.DataAccess.Entities
         {
 
         }
-        public Parcel(float weight, Recipient recipient, Recipient sender, string trackingId, List<HopArrival> visitedHops, List<HopArrival> futureHops, StateEnum state)
+        public Parcel(int id, float weight, Recipient recipient, Recipient sender, string trackingId, List<HopArrival> visitedHops, List<HopArrival> futureHops, StateEnum state)
         {
+            Id = id;
             Weight = weight;
             Recipient = recipient;
             Sender = sender;

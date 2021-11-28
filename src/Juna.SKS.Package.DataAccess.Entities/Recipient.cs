@@ -14,8 +14,9 @@ namespace Juna.SKS.Package.DataAccess.Entities
         {
 
         }
-        public Recipient(string name, string street, string postalCode, string city, string country)
+        public Recipient(int id, string name, string street, string postalCode, string city, string country)
         {
+            Id = id;
             Name = name;
             Street = street;
             PostalCode = postalCode;

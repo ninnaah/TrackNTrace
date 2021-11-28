@@ -13,8 +13,9 @@ namespace Juna.SKS.Package.DataAccess.Entities
         public Hop()
         {
         }
-        public Hop(string hopType, string code, string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates)
+        public Hop(int id, string hopType, string code, string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates)
         {
+            Id = id;
             HopType = hopType;
             Code = code;
             Description = description;

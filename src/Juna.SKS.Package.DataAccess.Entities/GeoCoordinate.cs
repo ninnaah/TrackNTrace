@@ -15,8 +15,9 @@ namespace Juna.SKS.Package.DataAccess.Entities
                 
         }
 
-        public GeoCoordinate(double lat, double lon)
+        public GeoCoordinate(int id, double lat, double lon)
         {
+            Id = id;
             Lat = lat;
             Lon = lon;
         }

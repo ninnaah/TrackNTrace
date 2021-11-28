@@ -15,8 +15,9 @@ namespace Juna.SKS.Package.DataAccess.Entities
 
         }
 
-        public Warehouse(int level, List<WarehouseNextHops> nextHops, string hopType, string code, string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates)
+        public Warehouse(int id, int level, List<WarehouseNextHops> nextHops, string hopType, string code, string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates)
         {
+            Id = id;
             Level = level;
             NextHops = nextHops;
             HopType = hopType;

@@ -2,6 +2,8 @@
 using Juna.SKS.Package.ServiceAgents.Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using Nominatim.API.Geocoders;
+using Nominatim.API.Models;
 using System;
 using System.IO;
 using System.Net;
@@ -11,12 +13,51 @@ namespace Juna.SKS.Package.ServiceAgents
     public class OpenStreetMapEncodingAgent : IGeoEncodingAgent
     {
         private readonly ILogger<OpenStreetMapEncodingAgent> _logger;
+        private readonly ForwardGeocoder _coder;
 
         public OpenStreetMapEncodingAgent(ILogger<OpenStreetMapEncodingAgent> logger)
         {
+            _coder = new ForwardGeocoder();
             _logger = logger;
         }
+
         public GeoCoordinate EncodeAddress(string street, string postalCode, string city, string country)
+        {
+            _logger.LogInformation($"Trying to encode an adress");
+            var response = _coder.Geocode(new ForwardGeocodeRequest()
+            {
+                StreetAddress = street,
+                City = city,
+                Country = country,
+                PostalCode = postalCode
+            }).Result;
+
+            if (response.Length == 0)
+                return null;
+
+            GeoCoordinate coordinate = new();
+            coordinate.Lat = response[0].Latitude;
+            coordinate.Lat = response[0].Longitude;
+
+            _logger.LogInformation($"Encoded adress");
+            return coordinate;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*public GeoCoordinate EncodeAddress(string street, string postalCode, string city, string country)
         {
             try
             {
@@ -70,6 +111,6 @@ namespace Juna.SKS.Package.ServiceAgents
                 _logger.LogError($"Error while loading the data:: {ex.Message}");
                 return null;
             }
-        }
+        }*/
     }
 }

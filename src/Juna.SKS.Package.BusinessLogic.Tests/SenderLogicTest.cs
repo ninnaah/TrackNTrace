@@ -14,24 +14,34 @@ using Microsoft.AspNetCore.Mvc;
 using Juna.SKS.Package.DataAccess.Interfaces;
 using Microsoft.Extensions.Logging;
 using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
+using Juna.SKS.Package.ServiceAgents.Interfaces;
 
 namespace Juna.SKS.Package.Services.Test.Controllers.Test
 {
     public class SenderLogicTest
     {
-        Mock<IParcelRepository> mockRepo;
+        Mock<IParcelRepository> mockParcelRepo;
+        Mock<IHopRepository> mockHopRepo;
         Mock<IMapper> mockMapper;
         Mock<ILogger<SenderLogic>> mockLogger;
+        Mock<IGeoEncodingAgent> mockAgent;
 
         [SetUp]
         public void Setup()
         {
-            mockRepo = new Mock<IParcelRepository>();
-            mockRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
+            mockParcelRepo = new Mock<IParcelRepository>();
+            mockParcelRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
                 .Returns(1);
+
+            var returnTrucks = Builder<DataAccess.Entities.Truck>.CreateListOfSize(3).Build().ToList();
+
+            mockHopRepo = new Mock<IHopRepository>();
+            mockHopRepo.Setup(m => m.GetTrucks())
+                .Returns(returnTrucks);
 
             mockMapper = new Mock<IMapper>();
             mockLogger = new Mock<ILogger<SenderLogic>>();
+            mockAgent = new Mock<IGeoEncodingAgent>();
         }
         [Test]
         public void SubmitParcel_ValidParcel_ReturnTrackingId()
@@ -45,7 +55,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                .Build();
 
-            ISenderLogic sender = new SenderLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+            ISenderLogic sender = new SenderLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
 
             var testResult = sender.SubmitParcel(validParcel);
 
@@ -64,7 +74,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                .Build();
 
-            ISenderLogic sender = new SenderLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+            ISenderLogic sender = new SenderLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
 
             try
             {
@@ -90,7 +100,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                .Build();
 
-            ISenderLogic sender = new SenderLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+            ISenderLogic sender = new SenderLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
 
             try
             {
@@ -117,7 +127,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                .Build();
 
-            ISenderLogic sender = new SenderLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+            ISenderLogic sender = new SenderLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
 
             try
             {
@@ -144,7 +154,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                .Build();
 
-            ISenderLogic sender = new SenderLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+            ISenderLogic sender = new SenderLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
 
             try
             {
@@ -170,7 +180,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                .Build();
 
-            ISenderLogic sender = new SenderLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+            ISenderLogic sender = new SenderLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
 
             try
             {

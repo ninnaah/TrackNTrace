@@ -32,6 +32,8 @@ using Juna.SKS.Package.DataAccess.Sql;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Juna.SKS.Package.Services.AutoMapper;
+using Juna.SKS.Package.ServiceAgents.Interfaces;
+using Juna.SKS.Package.ServiceAgents;
 
 namespace Juna.SKS.Package.Services
 {
@@ -101,6 +103,7 @@ namespace Juna.SKS.Package.Services
                     c.OperationFilter<GeneratePathParamsValidationFilter>();
                 });
 
+
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new ParcelProfile());
@@ -130,11 +133,12 @@ namespace Juna.SKS.Package.Services
             services.AddTransient<IStaffLogic, StaffLogic>();
             services.AddTransient<IWarehouseManagementLogic, WarehouseManagementLogic>();
 
+            services.AddTransient<IGeoEncodingAgent, OpenStreetMapEncodingAgent>();
+
             services.AddScoped<IHopRepository, SqlHopRepository>();
             services.AddScoped<IParcelRepository, SqlParcelRepository>();
-            //services.AddScoped<IRecipientRepository, SqlRecipientRepository>();
 
-            services.AddDbContext<DBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), options => options.UseNetTopologySuite()));
         }
 
         /// <summary>

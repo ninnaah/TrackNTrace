@@ -15,8 +15,9 @@ namespace Juna.SKS.Package.DataAccess.Entities
 
         }
 
-        public WarehouseNextHops(int travelMin, Hop hop)
+        public WarehouseNextHops(int id, int travelMin, Hop hop)
         {
+            Id = id;
             TraveltimeMins = travelMin;
             Hop = hop;
         }

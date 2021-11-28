@@ -16,7 +16,9 @@ namespace Juna.SKS.Package.Services.AutoMapper
         public HopArrivalProfile()
         {
             CreateMap<BusinessLogic.Entities.HopArrival, DTOs.Models.HopArrival>().ReverseMap();
-            CreateMap<BusinessLogic.Entities.HopArrival, DataAccess.Entities.HopArrival>().ReverseMap();
+            CreateMap<BusinessLogic.Entities.HopArrival, DataAccess.Entities.HopArrival>()
+                .ForMember(x => x.Id, x => x.Ignore())
+                .ReverseMap();
         }
     }
 }

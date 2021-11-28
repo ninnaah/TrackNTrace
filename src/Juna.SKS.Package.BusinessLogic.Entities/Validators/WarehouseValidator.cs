@@ -13,7 +13,7 @@ namespace Juna.SKS.Package.BusinessLogic.Entities.Validators
     {
         public WarehouseValidator()
         {
-            RuleFor(x => x.Description).Matches(@"^[A-Za-z-\s0-9]+$");
+            RuleFor(x => x.Description).Matches(@"^[A-Za-z-\s0-9äöüÄÖÜßI]+$");
             RuleFor(x => x.NextHops).NotNull();
         }
     }
