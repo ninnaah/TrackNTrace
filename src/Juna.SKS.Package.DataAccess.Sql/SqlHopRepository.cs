@@ -107,8 +107,14 @@ namespace Juna.SKS.Package.DataAccess.Sql
             _logger.LogInformation("Trying to drop database");
             try
             {
-                if(_context.Hops.Any(x => x.Code != null))
-                    _context.RemoveRange(_context.WarehouseNextHops, _context.Hops, _context.GeoCoordinates, _context.HopArrivals,  _context.Parcels, _context.Recipients);
+                _context.WarehouseNextHops.RemoveRange(_context.WarehouseNextHops);
+                _context.Hops.RemoveRange(_context.Hops);
+                _context.GeoCoordinates.RemoveRange(_context.GeoCoordinates);
+                _context.HopArrivals.RemoveRange(_context.HopArrivals);
+                _context.Parcels.RemoveRange(_context.Parcels);
+                _context.Recipients.RemoveRange(_context.Recipients);
+
+                _context.SaveChanges();
             }
             catch (Microsoft.Data.SqlClient.SqlException ex)
             {
