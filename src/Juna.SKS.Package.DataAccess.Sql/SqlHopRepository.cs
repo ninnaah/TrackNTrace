@@ -135,31 +135,36 @@ namespace Juna.SKS.Package.DataAccess.Sql
             _logger.LogInformation("Created new database");
         }
 
-        /*public IEnumerable<Hop> GetHopsByHopType(string hopType)
+        public IEnumerable<Hop> GetHopsByHopType(string hopType)
         {
-            try
+            _logger.LogInformation($"Trying to get hops by hopType {hopType}");
+            try 
+            { 
+                var hops = _context.Hops.Include(w => w.Parent).ThenInclude(nh => nh.Hop).ThenInclude(nh => nh.LocationCoordinates);
+
+                if (hops == null)
+                {
+                    _logger.LogError($"Hops with hoptype {hopType} not found");
+                    throw new DataNotFoundException(nameof(SqlHopRepository), nameof(GetHopsByHopType));
+                }
+                _logger.LogInformation($"Got hops by hopType {hopType}");
+
+                return hops.ToList().Where(p => p.HopType == hopType);
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex)
             {
-                return _context.Hops.Where(p => p.HopType == hopType).ToList();
+                string errorMessage = $"An error occured while fetching hops by hoptype {hopType}";
+                _logger.LogError(errorMessage, ex);
+                throw new DataException(nameof(SqlHopRepository), nameof(GetHopsByHopType), errorMessage, ex);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Hops not found exception: " + ex.Message);
-                return null;
+                string errorMessage = $"An unknown error occured while fetching  hops by hoptype {hopType}";
+                _logger.LogError(errorMessage, ex);
+                throw new DataException(nameof(SqlHopRepository), nameof(GetHopsByHopType), errorMessage, ex);
             }
         }
 
-        public Hop GetSingleHopByCode(string code)
-        {
-            try
-            {
-                return _context.Hops.Single(p => p.Code == code);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Hop not found exception: " + ex.Message);
-                return null;
-            }
-        }*/
         public HopArrival GetSingleHopArrivalByCode(string code)
         {
             _logger.LogInformation("Trying to get single hop by code");
@@ -188,31 +193,31 @@ namespace Juna.SKS.Package.DataAccess.Sql
             }
         }
 
-        public Warehouse GetSingleWarehouseByCode(string code)
+        public Hop GetSingleHopByCode(string code)
         {
-            _logger.LogInformation("Trying to get single warehouse by code");
+            _logger.LogInformation("Trying to get single hop by code");
             try
             {
-                var warehouse =  _context.Warehouses.Single(p => p.Code == code);
-                if (warehouse == null)
+                var hop =  _context.Hops.Include(nh => nh.LocationCoordinates).Single(p => p.Code == code);
+                if (hop == null)
                 {
-                    _logger.LogError($"Warehouse with code {code} not found");
-                    throw new DataNotFoundException(nameof(SqlHopRepository), nameof(GetSingleWarehouseByCode));
+                    _logger.LogError($"Hop with code {code} not found");
+                    throw new DataNotFoundException(nameof(SqlHopRepository), nameof(GetSingleHopByCode));
                 }
-                _logger.LogInformation("Got warehouse by code");
-                return warehouse;
+                _logger.LogInformation($"Got hop with code {code}");
+                return hop;
             }
             catch (Microsoft.Data.SqlClient.SqlException ex)
             {
-                string errorMessage = $"An error occured while fetching a warehouse with code {code}";
+                string errorMessage = $"An error occured while fetching a hop with code {code}";
                 _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(GetSingleWarehouseByCode), errorMessage, ex);
+                throw new DataException(nameof(SqlHopRepository), nameof(GetSingleHopByCode), errorMessage, ex);
             }
             catch (Exception ex)
             {
-                string errorMessage = $"An unknown error occured while fetching a warehouse with code {code}";
+                string errorMessage = $"An unknown error occured while fetching a hop with code {code}";
                 _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(GetSingleWarehouseByCode), errorMessage, ex);
+                throw new DataException(nameof(SqlHopRepository), nameof(GetSingleHopByCode), errorMessage, ex);
             }
         }
 
@@ -270,35 +275,6 @@ namespace Juna.SKS.Package.DataAccess.Sql
                 string errorMessage = $"An unknown error occured while fetching warehous hierarchy";
                 _logger.LogError(errorMessage, ex);
                 throw new DataException(nameof(SqlHopRepository), nameof(GetWarehouseHierarchy), errorMessage, ex);
-            }
-        }
-
-        public IEnumerable<Truck> GetTrucks()
-        {
-            _logger.LogInformation("Trying to get trucks by hopType");
-            try
-            {
-                var trucks = _context.Trucks;
-
-                if (trucks == null)
-                {
-                    _logger.LogError($"Trucks not found");
-                    throw new DataNotFoundException(nameof(SqlHopRepository), nameof(GetTrucks));
-                }
-                _logger.LogInformation("Got warehouse hierarchy");
-                return trucks;
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex)
-            {
-                string errorMessage = $"An error occured while fetching trucks";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(GetTrucks), errorMessage, ex);
-            }
-            catch (Exception ex)
-            {
-                string errorMessage = $"An unknown error occured while fetching trucks";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(GetTrucks), errorMessage, ex);
             }
         }
 

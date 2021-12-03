@@ -36,6 +36,12 @@ namespace Juna.SKS.Package.BusinessLogic
                 DataAccess.Entities.Warehouse DAwarehouse = _repository.GetWarehouseHierarchy();
                 warehouse = this._mapper.Map<Warehouse>(DAwarehouse);
             }
+            catch (DataNotFoundException ex)
+            {
+                string errorMessage = $"Warehouse hierarchy cannot be found";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicDataNotFoundException(nameof(WarehouseManagementLogic), nameof(ExportWarehouse), errorMessage);
+            }
             catch (DataException ex)
             {
                 string errorMessage = $"An error occurred exporting the warehouse hierachy";
@@ -53,7 +59,7 @@ namespace Juna.SKS.Package.BusinessLogic
             return warehouse;
         }
 
-        public Warehouse GetWarehouse(string code)
+        public Hop GetHop(string code)
         {
             _logger.LogInformation("Trying to get a warehouse");
 
@@ -65,34 +71,34 @@ namespace Juna.SKS.Package.BusinessLogic
             if (result.IsValid == false)
             {
                 _logger.LogError($"Code is invalid - {result}");
-                throw new ValidatorException(nameof(code), nameof(GetWarehouse), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
+                throw new ValidatorException(nameof(code), nameof(GetHop), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
 
             try
             {
-                DataAccess.Entities.Warehouse DAwarehouse = _repository.GetSingleWarehouseByCode(code);
-                Warehouse warehouse = this._mapper.Map<BusinessLogic.Entities.Warehouse>(DAwarehouse);
+                DataAccess.Entities.Hop DAhop = _repository.GetSingleHopByCode(code);
+                Hop hop = this._mapper.Map<BusinessLogic.Entities.Hop>(DAhop);
 
                 _logger.LogInformation("Got the warehouse");
-                return warehouse;
+                return hop;
             }
             catch (DataNotFoundException ex)
             {
                 string errorMessage = $"Warehouse with code {code} cannot be found";
                 _logger.LogError(errorMessage, ex);
-                throw new LogicDataNotFoundException(nameof(WarehouseManagementLogic), nameof(GetWarehouse), errorMessage);
+                throw new LogicDataNotFoundException(nameof(WarehouseManagementLogic), nameof(GetHop), errorMessage);
             }
             catch (DataException ex)
             {
                 string errorMessage = $"An error occurred while getting a warehouse with code {code}";
                 _logger.LogError(errorMessage, ex);
-                throw new LogicException(nameof(WarehouseManagementLogic), nameof(GetWarehouse), errorMessage, ex);
+                throw new LogicException(nameof(WarehouseManagementLogic), nameof(GetHop), errorMessage, ex);
             }
             catch (Exception ex)
             {
                 string errorMessage = $"An unknown error occurred while getting a warehouse with code {code}";
                 _logger.LogError(errorMessage, ex);
-                throw new LogicException(nameof(WarehouseManagementLogic), nameof(GetWarehouse), errorMessage, ex);
+                throw new LogicException(nameof(WarehouseManagementLogic), nameof(GetHop), errorMessage, ex);
             }
 
         }
@@ -110,11 +116,10 @@ namespace Juna.SKS.Package.BusinessLogic
                 throw new ValidatorException(nameof(warehouse), nameof(ImportWarehouse), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
 
-            _repository.DropDatabase();
-
-            DataAccess.Entities.Warehouse DAwarehouse = this._mapper.Map<DataAccess.Entities.Warehouse>(warehouse);
             try
             {
+                _repository.DropDatabase();
+                DataAccess.Entities.Warehouse DAwarehouse = this._mapper.Map<DataAccess.Entities.Warehouse>(warehouse);
                 _repository.Create(DAwarehouse);
             }
             catch (DataException ex)

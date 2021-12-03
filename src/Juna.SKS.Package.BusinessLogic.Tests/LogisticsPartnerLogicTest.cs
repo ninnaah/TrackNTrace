@@ -14,29 +14,44 @@ using Moq;
 using Juna.SKS.Package.DataAccess.Interfaces;
 using Microsoft.Extensions.Logging;
 using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
+using Juna.SKS.Package.ServiceAgents.Interfaces;
+using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
 
-namespace Juna.SKS.Package.Services.Test.Controllers.Test
+namespace Juna.SKS.Package.BusinessLogic.Tests
 {
     public class LogisticsPartnerLogicTest
     {
-        Mock<IParcelRepository> mockRepo;
+        Mock<IParcelRepository> mockParcelRepo;
+        Mock<IHopRepository> mockHopRepo;
         Mock<IMapper> mockMapper;
         Mock<ILogger<LogisticsPartnerLogic>> mockLogger;
+        Mock<IGeoEncodingAgent> mockAgent;
 
         [SetUp]
         public void Setup()
         {
-            mockRepo = new Mock<IParcelRepository>();
-            mockRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
-                .Returns(1);
+            mockParcelRepo = new Mock<IParcelRepository>();
+            mockHopRepo = new Mock<IHopRepository>();
 
             mockMapper = new Mock<IMapper>();
+            mockMapper.Setup(m => m.Map<BusinessLogic.Entities.GeoCoordinate>(It.IsAny<DataAccess.Entities.GeoCoordinate>())).Returns(new BusinessLogic.Entities.GeoCoordinate());
+            mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<BusinessLogic.Entities.Parcel>())).Returns(new DataAccess.Entities.Parcel());
+
             mockLogger = new Mock<ILogger<LogisticsPartnerLogic>>();
+
+            mockAgent = new Mock<IGeoEncodingAgent>();
         }
 
         [Test]
         public void TransitionParcel_ValidParcel_ReturnTrackingId()
         {
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
+            var returnTrucks = Builder<DataAccess.Entities.Hop>.CreateListOfSize(3).Build().ToList();
+            mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
+                .Returns(returnTrucks);
+            mockParcelRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
+                .Returns(1);
+
             var validParcel = Builder<Parcel>.CreateNew()
                 .With(p => p.Weight = 3)
                 .With(p => p.TrackingId = "PYJRB4HZ6")
@@ -47,7 +62,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Build();
             string validTrackingId = "PYJRB4HZ6";
 
-            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
 
             var testResult = logisticsPartner.TransitionParcel(validParcel, validTrackingId);
 
@@ -55,7 +70,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         }
 
         [Test]
-        public void TransitionParcel_InvalidParcelZeroWeight_ReturnNull()
+        public void TransitionParcel_InvalidParcelZeroWeight_ThrowValidatorException()
         {
             var invalidParcel = Builder<Parcel>.CreateNew()
                 .With(p => p.Weight = 0)
@@ -67,7 +82,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 .Build();
             string validTrackingId = "PYJRB4HZ6";
 
-            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
 
             try
             {
@@ -82,7 +97,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         }
 
         [Test]
-        public void TransitionParcel_InvalidParcelRecipientIsNull_ReturnNull()
+        public void TransitionParcel_InvalidParcelRecipientIsNull_ThrowValidatorException()
         {
             var invalidParcel = Builder<Parcel>.CreateNew()
                .With(p => p.Weight = 3)
@@ -94,7 +109,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .Build();
             string validTrackingId = "PYJRB4HZ6";
 
-            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
 
             try
             {
@@ -109,7 +124,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         }
 
         [Test]
-        public void TransitionParcel_InvalidParcelSenderIsNull_ReturnNull()
+        public void TransitionParcel_InvalidParcelSenderIsNull_ThrowValidatorException()
         {
             var invalidParcel = Builder<Parcel>.CreateNew()
                .With(p => p.Weight = 3)
@@ -121,7 +136,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .Build();
             string validTrackingId = "PYJRB4HZ6";
 
-            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
 
             try
             {
@@ -136,7 +151,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         }
 
         [Test]
-        public void TransitionParcel_InvalidParcelInvalidTrackingId_ReturnNull()
+        public void TransitionParcel_InvalidParcelInvalidTrackingId_ThrowValidatorException()
         {
             var invalidParcel = Builder<Parcel>.CreateNew()
                .With(p => p.Weight = 3)
@@ -148,7 +163,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                .Build();
             string invalidTrackingId = "12";
 
-            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
 
             try
             {
@@ -162,5 +177,129 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
         }
 
+        [Test]
+        public void TransitionParcel_DataNotFoundExceptionEncodeAdress_ThrowLogicDataNotFoundException()
+        {
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Throws(new DataNotFoundException(null, null));
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+            string validTrackingId = "PYJRB4HZ6";
+
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+
+            try
+            {
+                var testResult = logisticsPartner.TransitionParcel(validParcel, validTrackingId);
+                Assert.Fail();
+            }
+            catch (LogicDataNotFoundException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
+        public void TransitionParcel_DataNotFoundExceptionGetHopsByHopType_ThrowLogicDataNotFoundException()
+        {
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
+            mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
+                .Throws(new DataNotFoundException(null, null));
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+            string validTrackingId = "PYJRB4HZ6";
+
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+
+            try
+            {
+                var testResult = logisticsPartner.TransitionParcel(validParcel, validTrackingId);
+                Assert.Fail();
+            }
+            catch (LogicDataNotFoundException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
+        public void TransitionParcel_DataExceptionGetHopsByHopType_ThrowLogicException()
+        {
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
+            mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
+                .Throws(new DataException(null, null));
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+            string validTrackingId = "PYJRB4HZ6";
+
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+
+            try
+            {
+                var testResult = logisticsPartner.TransitionParcel(validParcel, validTrackingId);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
+        public void TransitionParcel_DataExceptionCreate_ThrowLogicException()
+        {
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
+            var returnTrucks = Builder<DataAccess.Entities.Hop>.CreateListOfSize(3).Build().ToList();
+            mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
+                .Returns(returnTrucks);
+            mockParcelRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
+                 .Throws(new DataException(null, null));
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+            string validTrackingId = "PYJRB4HZ6";
+
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+
+            try
+            {
+                var testResult = logisticsPartner.TransitionParcel(validParcel, validTrackingId);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
     }
 }

@@ -14,12 +14,10 @@ namespace Juna.SKS.Package.DataAccess.Interfaces
         void Delete(int id);
         void DropDatabase();
 
-        /*IEnumerable<Hop> GetHopsByHopType(string hopType);
-        Hop GetSingleHopByCode(string code);*/
+        IEnumerable<Hop> GetHopsByHopType(string hopType);
         HopArrival GetSingleHopArrivalByCode(string code);
-        Warehouse GetSingleWarehouseByCode(string code);
+        Hop GetSingleHopByCode(string code);
         Hop GetSingleHopById(int id);
         Warehouse GetWarehouseHierarchy();
-        IEnumerable<Truck> GetTrucks();
     }
 }

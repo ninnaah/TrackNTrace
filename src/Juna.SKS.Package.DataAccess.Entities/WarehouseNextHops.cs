@@ -24,5 +24,6 @@ namespace Juna.SKS.Package.DataAccess.Entities
         public int Id { get;  set; }
         public int? TraveltimeMins { get; set; }
         public Hop Hop { get; set; }
+        public Warehouse Parent { get; set; }
     }
 }

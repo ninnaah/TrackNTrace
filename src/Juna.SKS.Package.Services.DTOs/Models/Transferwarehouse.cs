@@ -27,7 +27,7 @@ namespace Juna.SKS.Package.Services.DTOs.Models
     /// </summary>
     [DataContract]
     [ExcludeFromCodeCoverage]
-    public partial class Transferwarehouse : Hop
+    public partial class TransferWarehouse : Hop
     { 
         /// <summary>
         /// GeoJSON of the are covered by the logistics partner.

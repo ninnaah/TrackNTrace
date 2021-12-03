@@ -10,20 +10,20 @@ using System.Threading.Tasks;
 namespace Juna.SKS.Package.DataAccess.Entities
 {
     [ExcludeFromCodeCoverage]
-    public class Transferwarehouse : Hop
+    public class TransferWarehouse : Hop
     {
-        public Transferwarehouse()
+        public TransferWarehouse()
         {
 
         }
 
-        public Transferwarehouse(Geometry region, string logisticsPartner, string logisticsPartnerUrl)
+        public TransferWarehouse(Geometry region, string logisticsPartner, string logisticsPartnerUrl)
         {
             Region = region;
             LogisticsPartner = logisticsPartner;
             LogisticsPartnerUrl = logisticsPartnerUrl;
         }
-        public Transferwarehouse(int id, Geometry region, string logisticsPartner, string logisticsPartnerUrl, string hopType, string code, 
+        public TransferWarehouse(int id, Geometry region, string logisticsPartner, string logisticsPartnerUrl, string hopType, string code, 
             string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates)
         {
             Id = id;

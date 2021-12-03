@@ -83,16 +83,16 @@ namespace Juna.SKS.Package.Services.Controllers
                 _logger.LogError("Respond 400 - Parcel is invalid", ex);
                 return StatusCode(400, new Error($"Parcel is invalid - {ex.Message}")); 
             }
+            catch (LogicDataNotFoundException ex)
+            {
+                _logger.LogError("Respond 400 - Data not found", ex);
+                return StatusCode(400, new Error($"Data not found - {ex.Message}"));
+            }
             catch (LogicException ex)
             {
                 _logger.LogError(ex.Message, ex);
                 return StatusCode(400, new Error(ex.Message));
-            }/*catch(Exception ex)
-            {
-                string errorMessage = $"An unknown error occurred transitioning a parcel with trackingid {trackingId}";
-                _logger.LogError(errorMessage, ex);
-                return StatusCode(400, new Error(ex.Message));
-            }*/
+            }
             
 
         }

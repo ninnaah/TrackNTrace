@@ -10,5 +10,6 @@ namespace Juna.SKS.Package.BusinessLogic.Interfaces
     public interface ISenderLogic
     {
         string SubmitParcel(Parcel parcel);
+        string GenerateTrackingId();
     }
 }

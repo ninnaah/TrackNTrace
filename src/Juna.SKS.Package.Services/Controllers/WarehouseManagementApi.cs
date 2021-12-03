@@ -70,21 +70,26 @@ namespace Juna.SKS.Package.Services.Controllers
             //TODO: Uncomment the next line to return response 404 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(404);
 
-            var response = this._warehouseManagementLogic.ExportWarehouse();
-
-            if (response == null)
+            try
             {
-                _logger.LogInformation("Respond 404 - No warehouse found");
+                var response = this._warehouseManagementLogic.ExportWarehouse();
+                BusinessLogic.Entities.Warehouse BLwarehouse = response;
+                DTOs.Models.Warehouse warehouse = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
+
+                _logger.LogInformation("Respond 200 - Exported warehouse");
+                return StatusCode(200, warehouse);
+            }
+            catch (LogicDataNotFoundException ex)
+            {
+                _logger.LogError("Respond 404 - Warehouse hierarchy not found", ex);
                 return StatusCode(404);
             }
+            catch (LogicException ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(400, new Error(ex.Message)); ;
+            }
 
-            BusinessLogic.Entities.Warehouse BLwarehouse = response;
-            DTOs.Models.Warehouse warehouse = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
-
-            _logger.LogInformation("Respond 200 - Exported warehouse");
-            return StatusCode(200, warehouse);
-
-            //400  missing
         }
 
         /// <summary>
@@ -112,17 +117,17 @@ namespace Juna.SKS.Package.Services.Controllers
             // return StatusCode(404);
             try
             {
-                var response = this._warehouseManagementLogic.GetWarehouse(code);
+                var response = this._warehouseManagementLogic.GetHop(code);
 
-                BusinessLogic.Entities.Warehouse BLwarehouse = response;
-                DTOs.Models.Warehouse warehouse = this._mapper.Map<DTOs.Models.Warehouse>(BLwarehouse);
+                BusinessLogic.Entities.Hop BLhop = response;
+                DTOs.Models.Hop hop = this._mapper.Map<DTOs.Models.Hop>(BLhop);
 
-                _logger.LogInformation("Respond 200 - Got warehouse");
-                return StatusCode(200, warehouse);
+                _logger.LogInformation("Respond 200 - Got hop");
+                return StatusCode(200, hop);
             }
             catch (LogicDataNotFoundException ex)
             {
-                _logger.LogError("Respond 404 - Warehouse not found", ex);
+                _logger.LogError("Respond 404 - Hop not found", ex);
                 return StatusCode(404);
             }
             catch (ValidatorException ex)

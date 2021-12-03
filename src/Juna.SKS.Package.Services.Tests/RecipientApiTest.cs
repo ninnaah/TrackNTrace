@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
-namespace Juna.SKS.Package.Services.Test.Controllers.Test
+namespace Juna.SKS.Package.Services.Tests
 {
     public class RecipientApiTest
     {
@@ -54,7 +54,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         }
 
         [Test]
-        public void TrackParcel_InvalidTrackingId_ReturnCode400()
+        public void TrackParcel_ValidatorExceptionInvalidTrackingId_ReturnCode400()
         {
             mockLogic.Setup(m => m.TrackParcel(It.IsAny<string>()))
                 .Throws(new ValidatorException(null, null, null));
@@ -64,6 +64,40 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             var invalidTrackingId = "12";
 
             var testResult = recipient.TrackParcel(invalidTrackingId);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(400, testResultCode.StatusCode);
+        }
+
+        [Test]
+        public void TrackParcel_LogicDataNotFoundException_ReturnCode404()
+        {
+            mockLogic.Setup(m => m.TrackParcel(It.IsAny<string>()))
+                .Throws(new LogicDataNotFoundException(null, null, null));
+
+            RecipientApiController recipient = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
+
+            var validTrackingId = "PYJRB4HZ6";
+
+            var testResult = recipient.TrackParcel(validTrackingId);
+            Assert.IsInstanceOf<StatusCodeResult>(testResult);
+            var testResultCode = testResult as StatusCodeResult;
+
+            Assert.AreEqual(404, testResultCode.StatusCode);
+        }
+
+        [Test]
+        public void TrackParcel_LogicException_ReturnCode400()
+        {
+            mockLogic.Setup(m => m.TrackParcel(It.IsAny<string>()))
+                .Throws(new LogicException(null, null, null));
+
+            RecipientApiController recipient = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
+
+            var validTrackingId = "PYJRB4HZ6";
+
+            var testResult = recipient.TrackParcel(validTrackingId);
             Assert.IsInstanceOf<ObjectResult>(testResult);
             var testResultCode = testResult as ObjectResult;
 

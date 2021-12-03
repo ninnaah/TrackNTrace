@@ -17,8 +17,12 @@ namespace Juna.SKS.Package.BusinessLogic.Entities.Validators
             RuleFor(x => x.Weight).GreaterThan(0);
             RuleFor(x => x.Recipient).NotNull();
             RuleFor(x => x.Sender).NotNull();
-            RuleFor(x => x.VisitedHops).NotNull();
-            RuleFor(x => x.FutureHops).NotNull();
+
+            RuleSet("HopsNotNull", () =>
+            {
+                RuleFor(x => x.VisitedHops).NotNull();
+                RuleFor(x => x.FutureHops).NotNull();
+            });
         }
     }
 }

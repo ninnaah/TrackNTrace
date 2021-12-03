@@ -35,5 +35,7 @@ namespace Juna.SKS.Package.DataAccess.Entities
         public string LocationName { get; set; }
 
         public GeoCoordinate LocationCoordinates { get; set; }
+
+        public WarehouseNextHops Parent { get; set; }
     }
 }

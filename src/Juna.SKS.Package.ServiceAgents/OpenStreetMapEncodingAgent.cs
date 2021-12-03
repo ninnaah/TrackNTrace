@@ -1,4 +1,5 @@
 ﻿using Juna.SKS.Package.DataAccess.Entities;
+using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
 using Juna.SKS.Package.ServiceAgents.Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -23,7 +24,7 @@ namespace Juna.SKS.Package.ServiceAgents
 
         public GeoCoordinate EncodeAddress(string street, string postalCode, string city, string country)
         {
-            _logger.LogInformation($"Trying to encode an adress");
+            _logger.LogInformation($"Trying to encode an adress - street: {street}, postalCode: {postalCode}, city: {city} and country: {country}");
             var response = _coder.Geocode(new ForwardGeocodeRequest()
             {
                 StreetAddress = street,
@@ -33,13 +34,16 @@ namespace Juna.SKS.Package.ServiceAgents
             }).Result;
 
             if (response.Length == 0)
-                return null;
+            {
+                _logger.LogError($"No response received for street: {street}, postalCode: {postalCode}, city: {city} and country: {country}");
+                throw new DataNotFoundException(nameof(OpenStreetMapEncodingAgent), nameof(EncodeAddress));
+            }
 
             GeoCoordinate coordinate = new();
             coordinate.Lat = response[0].Latitude;
-            coordinate.Lat = response[0].Longitude;
+            coordinate.Lon = response[0].Longitude;
 
-            _logger.LogInformation($"Encoded adress");
+            _logger.LogInformation($"Encoded adress - street: {street}, postalCode: {postalCode}, city: {city} and country: {country}");
             return coordinate;
         }
 

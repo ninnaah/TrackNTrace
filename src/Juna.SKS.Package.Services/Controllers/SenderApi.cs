@@ -82,6 +82,11 @@ namespace Juna.SKS.Package.Services.Controllers
                 _logger.LogError("Respond 400 - Parcel is invalid", ex);
                 return StatusCode(400, new Error($"Parcel is invalid - {ex.Message}")); ;
             }
+            catch (LogicDataNotFoundException ex)
+            {
+                _logger.LogError("Respond 400 - Data not found", ex);
+                return StatusCode(400, new Error($"Data not found - {ex.Message}"));
+            }
             catch (LogicException ex)
             {
                 _logger.LogError(ex.Message, ex);

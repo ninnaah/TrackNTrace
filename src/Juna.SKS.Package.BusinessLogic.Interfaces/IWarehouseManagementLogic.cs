@@ -11,7 +11,7 @@ namespace Juna.SKS.Package.BusinessLogic.Interfaces
     {
         Warehouse ExportWarehouse();
 
-        Warehouse GetWarehouse(string code);
+        Hop GetHop(string code);
 
         bool ImportWarehouse(Warehouse warehouse);
     }

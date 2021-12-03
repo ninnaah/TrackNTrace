@@ -18,14 +18,14 @@ namespace Juna.SKS.Package.Services.AutoMapper
             CreateMap<BusinessLogic.Entities.Hop, DTOs.Models.Hop>()
                .Include<BusinessLogic.Entities.Warehouse, DTOs.Models.Warehouse>()
                .Include<BusinessLogic.Entities.Truck, DTOs.Models.Truck>()
-               .Include<BusinessLogic.Entities.Transferwarehouse, DTOs.Models.Transferwarehouse>()
+               .Include<BusinessLogic.Entities.TransferWarehouse, DTOs.Models.TransferWarehouse>()
                .ReverseMap();
 
             CreateMap<BusinessLogic.Entities.Hop, DataAccess.Entities.Hop>()
                .ForMember(x => x.Id, x => x.Ignore())
                .Include<BusinessLogic.Entities.Warehouse, DataAccess.Entities.Warehouse>()
                .Include<BusinessLogic.Entities.Truck, DataAccess.Entities.Truck>()
-               .Include<BusinessLogic.Entities.Transferwarehouse, DataAccess.Entities.Transferwarehouse>()
+               .Include<BusinessLogic.Entities.TransferWarehouse, DataAccess.Entities.TransferWarehouse>()
                .ReverseMap();
         }
     }

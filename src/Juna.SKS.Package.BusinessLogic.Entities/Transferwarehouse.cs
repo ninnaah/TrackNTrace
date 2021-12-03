@@ -9,21 +9,21 @@ using System.Threading.Tasks;
 namespace Juna.SKS.Package.BusinessLogic.Entities
 {
     [ExcludeFromCodeCoverage]
-    public class Transferwarehouse : Hop
+    public class TransferWarehouse : Hop
     {
-        public Transferwarehouse()
+        public TransferWarehouse()
         {
 
         }
 
-        public Transferwarehouse(string regionGeoJson
+        public TransferWarehouse(string regionGeoJson
             , string logisticsPartner, string logisticsPartnerUrl)
         {
             RegionGeoJson = regionGeoJson;
             LogisticsPartner = logisticsPartner;
             LogisticsPartnerUrl = logisticsPartnerUrl;
         }
-        public Transferwarehouse(string regionGeoJson, string logisticsPartner, string logisticsPartnerUrl, string hopType, string code, 
+        public TransferWarehouse(string regionGeoJson, string logisticsPartner, string logisticsPartnerUrl, string hopType, string code, 
             string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates)
         {
             RegionGeoJson = regionGeoJson;

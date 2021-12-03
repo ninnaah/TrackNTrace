@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Juna.SKS.Package.DataAccess.Interfaces\Juna.SKS.Package.DataAccess.Interfaces.csproj" />
     <ProjectReference Include="..\Juna.SKS.Package.ServiceAgents.Interfaces\Juna.SKS.Package.ServiceAgents.Interfaces.csproj" />
   </ItemGroup>
 

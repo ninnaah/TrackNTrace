@@ -14,8 +14,9 @@ using Microsoft.AspNetCore.Mvc;
 using Juna.SKS.Package.DataAccess.Interfaces;
 using Microsoft.Extensions.Logging;
 using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
+using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
 
-namespace Juna.SKS.Package.Services.Test.Controllers.Test
+namespace Juna.SKS.Package.BusinessLogic.Tests
 {
     public class RecipientLogicTest
     {
@@ -28,6 +29,15 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         {
             mockRepo = new Mock<IParcelRepository>();
 
+            mockMapper = new Mock<IMapper>();
+            mockMapper.Setup(m => m.Map<BusinessLogic.Entities.Parcel>(It.IsAny<DataAccess.Entities.Parcel>())).Returns(new BusinessLogic.Entities.Parcel());
+
+            mockLogger = new Mock<ILogger<RecipientLogic>>();
+        }
+
+        [Test]
+        public void TrackParcel_ValidTrackingId_ReturnParcel()
+        {
             var returnParcel = Builder<DataAccess.Entities.Parcel>.CreateNew()
                 .With(p => p.Weight = 3)
                 .With(p => p.Id = 1)
@@ -42,13 +52,6 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             mockRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
                 .Returns(returnParcel);
 
-            mockMapper = new Mock<IMapper>();
-            mockLogger = new Mock<ILogger<RecipientLogic>>();
-        }
-
-        /*[Test]
-        public void TrackParcel_ValidTrackingId_ReturnParcel()
-        {
             IRecipientLogic recipient= new RecipientLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
             string validTrackingId = "PYJRB4HZ6";
@@ -57,21 +60,65 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             Assert.IsNotNull(testResult);
             Assert.IsInstanceOf<Parcel>(testResult);
-        }*/
+        }
 
         [Test]
-        public void TrackParcel_InvalidTrackingId_ReturnNull()
+        public void TrackParcel_InvalidTrackingId_ThrowValidatorException()
         {
             IRecipientLogic recipient = new RecipientLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            string validTrackingId = "12";
+            string invalidTrackingId = "12";
+
+            try
+            {
+                var testResult = recipient.TrackParcel(invalidTrackingId);
+                Assert.Fail();
+            }
+            catch (ValidatorException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
+        public void TrackParcel_DataNotFoundException_ThrowLogicDataNotFoundException()
+        {
+            mockRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+               .Throws(new DataNotFoundException(null, null));
+
+            IRecipientLogic recipient = new RecipientLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+
+            string validTrackingId = "PYJRB4HZ6";
 
             try
             {
                 var testResult = recipient.TrackParcel(validTrackingId);
                 Assert.Fail();
             }
-            catch (ValidatorException)
+            catch (LogicDataNotFoundException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
+        public void TrackParcel_DataException_ThrowLogicException()
+        {
+            mockRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+               .Throws(new DataException(null, null));
+
+            IRecipientLogic recipient = new RecipientLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+
+            string validTrackingId = "PYJRB4HZ6";
+
+            try
+            {
+                var testResult = recipient.TrackParcel(validTrackingId);
+                Assert.Fail();
+            }
+            catch (LogicException)
             {
                 Assert.Pass();
             }

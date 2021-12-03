@@ -23,5 +23,6 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
 
         public int? TraveltimeMins { get; set; }
         public Hop Hop { get; set; }
+        public Warehouse Parent { get; set; }
     }
 }

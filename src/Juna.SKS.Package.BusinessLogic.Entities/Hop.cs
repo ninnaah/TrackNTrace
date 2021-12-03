@@ -33,5 +33,7 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
         public string LocationName { get; set; }
 
         public GeoCoordinate LocationCoordinates { get; set; }
+
+        public WarehouseNextHops Parent { get; set; }
     }
 }

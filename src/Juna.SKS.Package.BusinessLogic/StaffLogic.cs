@@ -17,19 +17,21 @@ namespace Juna.SKS.Package.BusinessLogic
 {
     public class StaffLogic : IStaffLogic
     {
+        private readonly IMapper _mapper;
         private readonly IParcelRepository _parcelRepo;
         private readonly IHopRepository _hopRepo;
         private readonly ILogger<StaffLogic> _logger;
-        public StaffLogic(IParcelRepository parcelRepo, IHopRepository hopRepo, ILogger<StaffLogic> logger)
+        public StaffLogic(IParcelRepository parcelRepo, IHopRepository hopRepo, IMapper mapper, ILogger<StaffLogic> logger)
         {
             _parcelRepo = parcelRepo;
             _hopRepo = hopRepo;
+            _mapper = mapper;
             _logger = logger;
         }
         public bool ReportParcelDelivery(string trackingId)
         {
             _logger.LogInformation("Trying to report a parcel delivery");
-            Parcel wrapParcel = new Parcel(3, new Recipient(), new Recipient(), trackingId, new List<HopArrival>(), new List<HopArrival>(), Parcel.StateEnum.InTransportEnum);
+            Parcel wrapParcel = new Parcel(3, new(), new(), trackingId, null, null, Parcel.StateEnum.InTransportEnum);
 
             IValidator<Parcel> validator = new ParcelValidator();
             var result = validator.Validate(wrapParcel);
@@ -40,26 +42,18 @@ namespace Juna.SKS.Package.BusinessLogic
                 throw new ValidatorException(nameof(trackingId), nameof(ReportParcelDelivery), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
 
+            Parcel parcel = new();
+
             try
             {
-                DataAccess.Entities.Parcel parcel = _parcelRepo.GetSingleParcelByTrackingId(trackingId);
-                if (parcel.State == DataAccess.Entities.Parcel.StateEnum.DeliveredEnum)
-                {
-                    _logger.LogInformation("Reported the parcel delivery");
-                    return true;
-                }
-                else
-                {
-                    string errorMessage = $"Cannot report the parcel delivery with trackingid {trackingId} - not delivered yet";
-                    _logger.LogError(errorMessage);
-                    throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage);
-                }
+                DataAccess.Entities.Parcel DAparcel = _parcelRepo.GetSingleParcelByTrackingId(trackingId);
+                parcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(DAparcel);
             }
             catch (DataNotFoundException ex)
             {
                 string errorMessage = $"Parcel with trackingid {trackingId} cannot be found";
                 _logger.LogError(errorMessage, ex);
-                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage, ex);
+                throw new LogicDataNotFoundException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage);
             }
             catch (DataException ex)
             {
@@ -75,13 +69,41 @@ namespace Juna.SKS.Package.BusinessLogic
             }
 
 
+            if (parcel.State == Parcel.StateEnum.DeliveredEnum)
+            {
+                _logger.LogInformation($"Parcel with trackingId {trackingId} is already delivered");
+            }
+            else
+            {
+                parcel.State = Parcel.StateEnum.DeliveredEnum;
+                try
+                {
+                    DataAccess.Entities.Parcel DAparcel = this._mapper.Map<DataAccess.Entities.Parcel>(parcel);
+                    _parcelRepo.Update(DAparcel);
+                }
+                catch (DataException ex)
+                {
+                    string errorMessage = $"An error occurred updating the parcel with trackingid {trackingId}";
+                    _logger.LogError(errorMessage, ex);
+                    throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage, ex);
+                }
+                catch (Exception ex)
+                {
+                    string errorMessage = $"An unknown error occurred updating the parcel with trackingid {trackingId}";
+                    _logger.LogError(errorMessage, ex);
+                    throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage, ex);
+                }
+                _logger.LogInformation($"Parcel with trackingId {trackingId} is now delivered");
+            }
+            return true;
+
         }
 
         public bool ReportParcelHop(string trackingId, string code)
         {
             _logger.LogInformation("Trying to report a parcel hop");
 
-            Parcel wrapParcel = new Parcel(3, new Recipient(), new Recipient(), trackingId, new List<HopArrival>(), new List<HopArrival>(), Parcel.StateEnum.InTransportEnum);
+            Parcel wrapParcel = new Parcel(3, new(), new(), trackingId, null, null, Parcel.StateEnum.InTransportEnum);
 
             IValidator<Parcel> parcelValidator = new ParcelValidator();
             var result = parcelValidator.Validate(wrapParcel);
@@ -103,24 +125,16 @@ namespace Juna.SKS.Package.BusinessLogic
                 throw new ValidatorException(nameof(code), nameof(ReportParcelHop), string.Join(" ", result.Errors.Select(err => err.ErrorMessage)));
             }
 
+            Parcel parcel = new();
+            HopArrival hop = new();
+
             try
             {
-                DataAccess.Entities.Parcel parcel = _parcelRepo.GetSingleParcelByTrackingId(trackingId);
-                DataAccess.Entities.HopArrival hop = _hopRepo.GetSingleHopArrivalByCode(code);
+                DataAccess.Entities.Parcel DAparcel = _parcelRepo.GetSingleParcelByTrackingId(trackingId);
+                parcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(DAparcel);
 
-                foreach (DataAccess.Entities.HopArrival h in parcel.VisitedHops)
-                {
-                    if (h.Code == hop.Code)
-                    {
-                        _logger.LogInformation("Reported the parcel hop");
-                        return true;
-                    }
-
-                }
-
-                string errorMessage = $"Cannot report the parcel hop with trackingid {trackingId} and code {code} - not delivered yet";
-                _logger.LogError(errorMessage);
-                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage);
+                DataAccess.Entities.HopArrival DAhop = _hopRepo.GetSingleHopArrivalByCode(code);
+                hop = this._mapper.Map<BusinessLogic.Entities.HopArrival>(DAhop);
             }
             catch (DataNotFoundException ex)
             {
@@ -134,21 +148,78 @@ namespace Juna.SKS.Package.BusinessLogic
                 }
                 
                 _logger.LogError(errorMessage);
-                throw new LogicDataNotFoundException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage);
+                throw new LogicDataNotFoundException(nameof(StaffLogic), nameof(ReportParcelHop), errorMessage);
             }
             catch (DataException ex)
             {
                 string errorMessage = $"An error occurred reporting a parcel hop with trackingid {trackingId} and code {code}";
                 _logger.LogError(errorMessage);
-                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage, ex);
+                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelHop), errorMessage, ex);
             }
             catch (Exception ex)
             {
                 string errorMessage = $"An unknown error occurred reporting a parcel hop with trackingid {trackingId} and code {code}";
                 _logger.LogError(errorMessage);
-                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage, ex);
+                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelHop), errorMessage, ex);
             }
 
+            int futureHopsCount = parcel.FutureHops.Count();
+            int visitedHopsCount = parcel.VisitedHops.Count();
+
+            foreach (HopArrival h in parcel.FutureHops)
+            {
+                if (h.Code == hop.Code)
+                {
+                    parcel.FutureHops.Remove(h);
+                    parcel.VisitedHops.Add(h);
+                    break;
+                }
+            }
+
+            if (futureHopsCount == parcel.FutureHops.Count() && visitedHopsCount == parcel.VisitedHops.Count())
+            {
+                string errorMessage = $"Cannot report the parcel hop with trackingid {trackingId} and code {code}";
+                _logger.LogError(errorMessage);
+                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelHop), errorMessage);
+            }
+            else if (futureHopsCount + 1 == parcel.FutureHops.Count() && visitedHopsCount - 1 == parcel.VisitedHops.Count())
+            {
+                _logger.LogInformation("Reported the parcel arrival at hop");
+            }
+
+            if (hop.GetType() == typeof(Warehouse))
+            {
+                parcel.State = Parcel.StateEnum.InTransportEnum;
+            }else if(hop.GetType() == typeof(Truck))
+            {
+                parcel.State = Parcel.StateEnum.InTruckDeliveryEnum;
+            }
+            else if (hop.GetType() == typeof(TransferWarehouse))
+            {
+                //MISSING CALL TO API
+
+                parcel.State = Parcel.StateEnum.TransferredEnum;
+            }
+
+            try
+            {
+                DataAccess.Entities.Parcel DAparcel = this._mapper.Map<DataAccess.Entities.Parcel>(parcel);
+                _parcelRepo.Update(DAparcel);
+            }
+            catch (DataException ex)
+            {
+                string errorMessage = $"An error occurred updating the parcel with trackingid {trackingId}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelHop), errorMessage, ex);
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"An unknown error occurred updating the parcel with trackingid {trackingId}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(StaffLogic), nameof(ReportParcelHop), errorMessage, ex);
+            }
+
+            return true;
         }
     }
 }

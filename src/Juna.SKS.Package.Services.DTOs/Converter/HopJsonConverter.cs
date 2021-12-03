@@ -26,7 +26,7 @@ namespace Juna.SKS.Package.Services.DTOs.Converter
             }
             else
             {
-                return new Transferwarehouse();
+                return new TransferWarehouse();
             }
         }
     }

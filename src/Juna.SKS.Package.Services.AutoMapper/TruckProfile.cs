@@ -17,7 +17,6 @@ namespace Juna.SKS.Package.Services.AutoMapper
         public TruckProfile()
         {
             CreateMap<BusinessLogic.Entities.Truck, DTOs.Models.Truck>().ReverseMap();
-            //CreateMap<BusinessLogic.Entities.Truck, DataAccess.Entities.Truck>().ReverseMap();
 
             CreateMap<BusinessLogic.Entities.Truck, DataAccess.Entities.Truck>().BeforeMap((s, d) =>
             {

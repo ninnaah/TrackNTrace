@@ -15,8 +15,9 @@ using Juna.SKS.Package.DataAccess.Interfaces;
 using Microsoft.Extensions.Logging;
 using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 using Juna.SKS.Package.ServiceAgents.Interfaces;
+using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
 
-namespace Juna.SKS.Package.Services.Test.Controllers.Test
+namespace Juna.SKS.Package.BusinessLogic.Tests
 {
     public class SenderLogicTest
     {
@@ -30,22 +31,29 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         public void Setup()
         {
             mockParcelRepo = new Mock<IParcelRepository>();
-            mockParcelRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
-                .Returns(1);
-
-            var returnTrucks = Builder<DataAccess.Entities.Truck>.CreateListOfSize(3).Build().ToList();
-
             mockHopRepo = new Mock<IHopRepository>();
-            mockHopRepo.Setup(m => m.GetTrucks())
-                .Returns(returnTrucks);
 
             mockMapper = new Mock<IMapper>();
+            mockMapper.Setup(m => m.Map<BusinessLogic.Entities.GeoCoordinate>(It.IsAny<DataAccess.Entities.GeoCoordinate>())).Returns(new BusinessLogic.Entities.GeoCoordinate());
+            mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<BusinessLogic.Entities.Parcel>())).Returns(new DataAccess.Entities.Parcel());
+
             mockLogger = new Mock<ILogger<SenderLogic>>();
+
             mockAgent = new Mock<IGeoEncodingAgent>();
         }
+
         [Test]
         public void SubmitParcel_ValidParcel_ReturnTrackingId()
         {
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+               .Throws(new Exception());
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
+            mockParcelRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
+               .Returns(1);
+            var returnTrucks = Builder<DataAccess.Entities.Hop>.CreateListOfSize(3).Build().ToList();
+            mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
+                .Returns(returnTrucks);
+
             var validParcel = Builder<Parcel>.CreateNew()
                .With(p => p.Weight = 3)
                .With(p => p.TrackingId = "PYJRB4HZ6")
@@ -63,9 +71,9 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         }
 
         [Test]
-        public void SubmitParcel_InvalidParcelInvalidTrackingId_ReturnNull()
+        public void SubmitParcel_InvalidParcelInvalidTrackingId_ThrowValidatorException()
         {
-            var validParcel = Builder<Parcel>.CreateNew()
+            var invalidParcel = Builder<Parcel>.CreateNew()
                .With(p => p.Weight = 3)
                .With(p => p.TrackingId = "12")
                .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
@@ -78,7 +86,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             try
             {
-                var testResult = sender.SubmitParcel(validParcel);
+                var testResult = sender.SubmitParcel(invalidParcel);
                 Assert.Fail();
             }
             catch (ValidatorException)
@@ -89,9 +97,9 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         }
 
         [Test]
-        public void SubmitParcel_InvalidParcelZeroWeight_ReturnNull()
+        public void SubmitParcel_InvalidParcelZeroWeight_ThrowValidatorException()
         {
-            var validParcel = Builder<Parcel>.CreateNew()
+            var invalidParcel = Builder<Parcel>.CreateNew()
                .With(p => p.Weight = 0)
                .With(p => p.TrackingId = "PYJRB4HZ6")
                .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
@@ -104,7 +112,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             try
             {
-                var testResult = sender.SubmitParcel(validParcel);
+                var testResult = sender.SubmitParcel(invalidParcel);
                 Assert.Fail();
             }
             catch (ValidatorException)
@@ -116,9 +124,9 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         }
 
         [Test]
-        public void SubmitParcel_InvalidParcelRecipientIsNull_ReturnNull()
+        public void SubmitParcel_InvalidParcelRecipientIsNull_ThrowValidatorException()
         {
-            var validParcel = Builder<Parcel>.CreateNew()
+            var invalidParcel = Builder<Parcel>.CreateNew()
                .With(p => p.Weight = 3)
                .With(p => p.TrackingId = "PYJRB4HZ6")
                .With(p => p.Recipient = null)
@@ -131,7 +139,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             try
             {
-                var testResult = sender.SubmitParcel(validParcel);
+                var testResult = sender.SubmitParcel(invalidParcel);
                 Assert.Fail();
             }
             catch (ValidatorException)
@@ -143,9 +151,9 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         }
 
         [Test]
-        public void SubmitParcel_InvalidParcelSenderIsNull_ReturnNull()
+        public void SubmitParcel_InvalidParcelSenderIsNull_ThrowValidatorException()
         {
-            var validParcel = Builder<Parcel>.CreateNew()
+            var invalidParcel = Builder<Parcel>.CreateNew()
                .With(p => p.Weight = 3)
                .With(p => p.TrackingId = "PYJRB4HZ6")
                .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
@@ -158,7 +166,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
             try
             {
-                var testResult = sender.SubmitParcel(validParcel);
+                var testResult = sender.SubmitParcel(invalidParcel);
                 Assert.Fail();
             }
             catch (ValidatorException)
@@ -168,15 +176,21 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
 
 
         }
+        
+
         [Test]
-        public void SubmitParcel_InvalidParcelFutureHopsIsNull_ReturnNull()
+        public void SubmitParcel_DataNotFoundExceptionEncodeAdress_ThrowLogicDataNotFoundException()
         {
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+               .Throws(new Exception());
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Throws(new DataNotFoundException(null, null));
+
             var validParcel = Builder<Parcel>.CreateNew()
                .With(p => p.Weight = 3)
                .With(p => p.TrackingId = "PYJRB4HZ6")
                .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
                .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
-               .With(p => p.FutureHops = null)
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                .Build();
 
@@ -187,11 +201,153 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
                 var testResult = sender.SubmitParcel(validParcel);
                 Assert.Fail();
             }
-            catch (ValidatorException)
+            catch (LogicDataNotFoundException)
             {
                 Assert.Pass();
             }
 
+        }
+
+        [Test]
+        public void SubmitParcel_DataNotFoundExceptionGetHopsByHopType_ThrowLogicDataNotFoundException()
+        {
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+               .Throws(new Exception());
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
+            mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
+                .Throws(new DataNotFoundException(null, null));
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+
+            ISenderLogic sender = new SenderLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+
+            try
+            {
+                var testResult = sender.SubmitParcel(validParcel);
+                Assert.Fail();
+            }
+            catch (LogicDataNotFoundException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
+        public void SubmitParcel_DataExceptionGetHopsByHopType_ThrowLogicDataException()
+        {
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+               .Throws(new Exception());
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
+            mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
+                .Throws(new DataException(null, null));
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+
+            ISenderLogic sender = new SenderLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+
+            try
+            {
+                var testResult = sender.SubmitParcel(validParcel);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
+        public void SubmitParcel_DataExceptionCreate_ThrowLogicDataException()
+        {
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+               .Throws(new Exception());
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
+            var returnTrucks = Builder<DataAccess.Entities.Hop>.CreateListOfSize(3).Build().ToList();
+            mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
+                .Returns(returnTrucks);
+            mockParcelRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
+                 .Throws(new DataException(null, null));
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+
+            ISenderLogic sender = new SenderLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+
+            try
+            {
+                var testResult = sender.SubmitParcel(validParcel);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
+        public void GenerateTrackingId_TrackingIdUniqueException_ReturnTrackingId()
+        {
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+               .Throws(new Exception());
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+
+            ISenderLogic sender = new SenderLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+            var trackingId = sender.GenerateTrackingId();
+
+            Assert.IsNotNull(trackingId);
+        }
+
+        [Test]
+        public void GenerateTrackingId_TrackingIdNotUniqueRetry_ReturnTrackingId()
+        {
+            mockParcelRepo.SetupSequence(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+               .Returns(It.IsAny<DataAccess.Entities.Parcel>())
+               .Throws(new Exception());
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+
+            ISenderLogic sender = new SenderLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+            var trackingId = sender.GenerateTrackingId();
+
+            Assert.IsNotNull(trackingId);
 
         }
 

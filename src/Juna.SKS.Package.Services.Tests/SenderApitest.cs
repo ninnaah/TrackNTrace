@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 
-namespace Juna.SKS.Package.Services.Test.Controllers.Test
+namespace Juna.SKS.Package.Services.Tests
 {
     public class SenderApiTest
     {
@@ -52,7 +52,7 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
         }
 
         [Test]
-        public void SubmitParcel_InvalidParcelZeroWeight_ReturnCode400()
+        public void SubmitParcel_ValidatorExceptionInvalidParcelWeight_ReturnCode400()
         {
             mockLogic.Setup(m => m.SubmitParcel(It.IsAny<BusinessLogic.Entities.Parcel>()))
                .Throws(new ValidatorException(null, null, null));
@@ -60,12 +60,34 @@ namespace Juna.SKS.Package.Services.Test.Controllers.Test
             SenderApiController sender = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var invalidParcel = Builder<DTOs.Models.Parcel>.CreateNew()
-                .With(p => p.Weight = 3)
+                .With(p => p.Weight = 0)
                 .With(p => p.Recipient = Builder<DTOs.Models.Recipient>.CreateNew().Build())
                 .With(p => p.Sender = Builder<DTOs.Models.Recipient>.CreateNew().Build())
                 .Build();
 
             var testResult = sender.SubmitParcel(invalidParcel);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(400, testResultCode.StatusCode);
+
+        }
+
+        [Test]
+        public void SubmitParcel_LogicExceptionInvalidParcelWeight_ReturnCode400()
+        {
+            mockLogic.Setup(m => m.SubmitParcel(It.IsAny<BusinessLogic.Entities.Parcel>()))
+               .Throws(new LogicException(null, null, null));
+
+            SenderApiController sender = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
+
+            var validParcel = Builder<DTOs.Models.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .Build();
+
+            var testResult = sender.SubmitParcel(validParcel);
             Assert.IsInstanceOf<ObjectResult>(testResult);
             var testResultCode = testResult as ObjectResult;
 

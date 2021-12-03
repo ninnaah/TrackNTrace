@@ -16,10 +16,9 @@ namespace Juna.SKS.Package.Services.AutoMapper
     {
         public TransferwarehouseProfile()
         {
-            CreateMap<BusinessLogic.Entities.Transferwarehouse, DTOs.Models.Transferwarehouse>().ReverseMap();
-            //CreateMap<BusinessLogic.Entities.Transferwarehouse, DataAccess.Entities.Transferwarehouse>().ReverseMap();
+            CreateMap<BusinessLogic.Entities.TransferWarehouse, DTOs.Models.TransferWarehouse>().ReverseMap();
 
-            CreateMap<BusinessLogic.Entities.Transferwarehouse, DataAccess.Entities.Transferwarehouse>().BeforeMap((s, d) =>
+            CreateMap<BusinessLogic.Entities.TransferWarehouse, DataAccess.Entities.TransferWarehouse>().BeforeMap((s, d) =>
             {
                 var reader = new GeoJsonReader();
                 Feature g = reader.Read<Feature>(s.RegionGeoJson);
@@ -27,7 +26,7 @@ namespace Juna.SKS.Package.Services.AutoMapper
                     g.Geometry = g.Geometry.Reverse();
                 d.Region = g.Geometry;
             });
-            CreateMap<DataAccess.Entities.Transferwarehouse, BusinessLogic.Entities.Transferwarehouse>().BeforeMap((s, d) =>
+            CreateMap<DataAccess.Entities.TransferWarehouse, BusinessLogic.Entities.TransferWarehouse>().BeforeMap((s, d) =>
             {
                 var writer = new GeoJsonWriter();
                 d.RegionGeoJson = writer.Write(new Feature()

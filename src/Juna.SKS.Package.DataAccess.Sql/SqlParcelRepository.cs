@@ -103,19 +103,6 @@ namespace Juna.SKS.Package.DataAccess.Sql
         }
 
         
-
-        /*public IEnumerable<Parcel> GetParcelsByRecipient(Recipient recipient)
-        {
-            try
-            {
-                return _context.Parcels.Where(p => p.Recipient == recipient).ToList();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Parcels not found exception: " + ex.Message);
-                return null;
-            }
-        }*/
         public Parcel GetSingleParcelById(int id)
         {
             _logger.LogInformation("Trying to get single parcel by id");
@@ -144,6 +131,7 @@ namespace Juna.SKS.Package.DataAccess.Sql
             }
 
         }
+
         public Parcel GetSingleParcelByTrackingId(string trackingid)
         {
             _logger.LogInformation("Trying to get single parcel by tracking id");

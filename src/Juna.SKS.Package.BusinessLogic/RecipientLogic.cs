@@ -31,7 +31,7 @@ namespace Juna.SKS.Package.BusinessLogic
         {
             _logger.LogInformation("Trying to track a parcel");
 
-            Parcel wrapParcel = new Parcel(3, new Recipient(), new Recipient(), trackingId, new List<HopArrival>(), new List<HopArrival>(), Parcel.StateEnum.InTransportEnum);
+            Parcel wrapParcel = new Parcel(3, new (), new (), trackingId, null, null, Parcel.StateEnum.InTransportEnum);
 
             IValidator<Parcel> validator = new ParcelValidator();
             var result = validator.Validate(wrapParcel);
