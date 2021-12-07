@@ -8,8 +8,8 @@ namespace Juna.SKS.Package.BusinessLogic.Interfaces
 {
     public interface IStaffLogic
     {
-        bool ReportParcelDelivery(string trackingId);
+        void ReportParcelDelivery(string trackingId);
 
-        bool ReportParcelHop(string trackingId, string code);
+        void ReportParcelHop(string trackingId, string code);
     }
 }

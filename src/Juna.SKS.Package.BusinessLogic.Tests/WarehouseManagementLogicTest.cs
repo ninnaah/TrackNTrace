@@ -202,7 +202,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
 
         [Test]
-        public void ImportWarehouses_ValidWarehouse_ReturnTrue()
+        public void ImportWarehouses_ValidWarehouse_DontThrowException()
         {
             mockMapper.Setup(m => m.Map<DataAccess.Entities.Warehouse>(It.IsAny<BusinessLogic.Entities.Warehouse>())).Returns(new DataAccess.Entities.Warehouse());
 
@@ -218,9 +218,8 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
-            var testResult = warehouseManagement.ImportWarehouse(validWarehouse);
+            Assert.DoesNotThrow(() => warehouseManagement.ImportWarehouse(validWarehouse));
 
-            Assert.IsTrue(testResult);
         }
 
         [Test]
@@ -237,7 +236,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = warehouseManagement.ImportWarehouse(invalidWarehouse);
+                warehouseManagement.ImportWarehouse(invalidWarehouse);
                 Assert.Fail();
             }
             catch (ValidatorException)
@@ -261,7 +260,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = warehouseManagement.ImportWarehouse(invalidWarehouse);
+                warehouseManagement.ImportWarehouse(invalidWarehouse);
                 Assert.Fail();
             }
             catch (ValidatorException)
@@ -290,7 +289,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = warehouseManagement.ImportWarehouse(validWarehouse);
+                warehouseManagement.ImportWarehouse(validWarehouse);
                 Assert.Fail();
             }
             catch (LogicException)

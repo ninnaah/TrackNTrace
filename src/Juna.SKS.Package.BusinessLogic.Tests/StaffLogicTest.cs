@@ -36,7 +36,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         }
 
         [Test]
-        public void ReportParcelDelivery_ValidTrackingId_ReturnTrue()
+        public void ReportParcelDelivery_ValidTrackingId_DontThrowException()
         {
             mockMapper.Setup(m => m.Map<BusinessLogic.Entities.Parcel>(It.IsAny<DataAccess.Entities.Parcel>())).Returns(new BusinessLogic.Entities.Parcel());
 
@@ -60,9 +60,16 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             string validTrackingId = "PYJRB4HZ6";
 
-            var testResult = staff.ReportParcelDelivery(validTrackingId);
+            try
+            {
+                staff.ReportParcelDelivery(validTrackingId);
+                Assert.Pass();
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
 
-            Assert.IsTrue(testResult);
         }
 
         [Test]
@@ -74,7 +81,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = staff.ReportParcelDelivery(invalidTrackingId);
+                staff.ReportParcelDelivery(invalidTrackingId);
                 Assert.Fail();
             }
             catch (ValidatorException)
@@ -96,7 +103,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = staff.ReportParcelDelivery(validTrackingId);
+                staff.ReportParcelDelivery(validTrackingId);
                 Assert.Fail();
             }
             catch (LogicDataNotFoundException)
@@ -118,7 +125,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = staff.ReportParcelDelivery(validTrackingId);
+                staff.ReportParcelDelivery(validTrackingId);
                 Assert.Fail();
             }
             catch (LogicException)
@@ -155,7 +162,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = staff.ReportParcelDelivery(validTrackingId);
+                staff.ReportParcelDelivery(validTrackingId);
                 Assert.Fail();
             }
             catch (LogicException)
@@ -170,7 +177,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
 
         [Test]
-        public void ReportParcelHop_ValidTrackingId_ReturnTrue()
+        public void ReportParcelHop_ValidTrackingId_DontThrowException()
         {
             mockMapper.Setup(m => m.Map<BusinessLogic.Entities.HopArrival>(It.IsAny<DataAccess.Entities.HopArrival>())).Returns(new BusinessLogic.Entities.HopArrival());
 
@@ -218,9 +225,8 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             string validTrackingId = "PYJRB4HZ6";
             string validCode = "ABCD1234";
 
-            var testResult = staff.ReportParcelHop(validTrackingId, validCode);
+            Assert.DoesNotThrow(() => staff.ReportParcelHop(validTrackingId, validCode));
 
-            Assert.IsTrue(testResult);
         }
 
         [Test]
@@ -233,7 +239,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = staff.ReportParcelHop(invalidTrackingId, validCode);
+                staff.ReportParcelHop(invalidTrackingId, validCode);
                 Assert.Fail();
             }
             catch (ValidatorException)
@@ -253,7 +259,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = staff.ReportParcelHop(validTrackingId, invalidCode);
+                staff.ReportParcelHop(validTrackingId, invalidCode);
                 Assert.Fail();
             }
             catch (ValidatorException)
@@ -277,7 +283,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = staff.ReportParcelHop(validTrackingId, validCode);
+                staff.ReportParcelHop(validTrackingId, validCode);
                 Assert.Fail();
             }
             catch (LogicDataNotFoundException)
@@ -300,7 +306,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = staff.ReportParcelHop(validTrackingId, validCode);
+                staff.ReportParcelHop(validTrackingId, validCode);
                 Assert.Fail();
             }
             catch (LogicException)
@@ -336,7 +342,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = staff.ReportParcelHop(validTrackingId, validCode);
+                staff.ReportParcelHop(validTrackingId, validCode);
                 Assert.Fail();
             }
             catch (LogicDataNotFoundException)
@@ -372,7 +378,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = staff.ReportParcelHop(validTrackingId, validCode);
+                staff.ReportParcelHop(validTrackingId, validCode);
                 Assert.Fail();
             }
             catch (LogicException)
@@ -431,7 +437,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             try
             {
-                var testResult = staff.ReportParcelHop(validTrackingId, validCode);
+                staff.ReportParcelHop(validTrackingId, validCode);
                 Assert.Fail();
             }
             catch (LogicException)

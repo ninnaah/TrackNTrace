@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Juna.SKS.Package.DataAccess.Entities\Juna.SKS.Package.DataAccess.Entities.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.DataAccess.Interfaces\Juna.SKS.Package.DataAccess.Interfaces.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.WebhookManager.Interfaces\Juna.SKS.Package.WebhookManager.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

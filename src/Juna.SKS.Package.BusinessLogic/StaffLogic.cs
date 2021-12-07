@@ -28,7 +28,7 @@ namespace Juna.SKS.Package.BusinessLogic
             _mapper = mapper;
             _logger = logger;
         }
-        public bool ReportParcelDelivery(string trackingId)
+        public void ReportParcelDelivery(string trackingId)
         {
             _logger.LogInformation("Trying to report a parcel delivery");
             Parcel wrapParcel = new Parcel(3, new(), new(), trackingId, null, null, Parcel.StateEnum.InTransportEnum);
@@ -95,11 +95,11 @@ namespace Juna.SKS.Package.BusinessLogic
                 }
                 _logger.LogInformation($"Parcel with trackingId {trackingId} is now delivered");
             }
-            return true;
+            return;
 
         }
 
-        public bool ReportParcelHop(string trackingId, string code)
+        public void ReportParcelHop(string trackingId, string code)
         {
             _logger.LogInformation("Trying to report a parcel hop");
 
@@ -219,7 +219,7 @@ namespace Juna.SKS.Package.BusinessLogic
                 throw new LogicException(nameof(StaffLogic), nameof(ReportParcelHop), errorMessage, ex);
             }
 
-            return true;
+            return;
         }
     }
 }

@@ -34,6 +34,8 @@ using AutoMapper;
 using Juna.SKS.Package.Services.AutoMapper;
 using Juna.SKS.Package.ServiceAgents.Interfaces;
 using Juna.SKS.Package.ServiceAgents;
+using Juna.SKS.Package.WebhookManager.Interfaces;
+using Juna.SKS.Package.WebhookManager;
 
 namespace Juna.SKS.Package.Services
 {
@@ -82,9 +84,9 @@ namespace Juna.SKS.Package.Services
             services
                 .AddSwaggerGen(c =>
                 {
-                    c.SwaggerDoc("1.20.1", new OpenApiInfo
+                    c.SwaggerDoc("1.20.2", new OpenApiInfo
                     {
-                        Version = "1.20.1",
+                        Version = "1.20.2",
                         Title = "Parcel Logistics Service",
                         Description = "Parcel Logistics Service (ASP.NET Core 3.1)",
                         Contact = new OpenApiContact()
@@ -115,12 +117,11 @@ namespace Juna.SKS.Package.Services
                 mc.AddProfile(new WarehouseProfile());
                 mc.AddProfile(new WarehouseNextHopsProfile());
                 mc.AddProfile(new GeoCoordinateProfile());
+                mc.AddProfile(new WebhookResponseProfile());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
-
-            //services.AddAutoMapper(typeof(Startup).Assembly);
 
             services.AddTransient<IValidator<HopArrival>, HopArrivalValidator>();
             services.AddTransient<IValidator<Parcel>, ParcelValidator>();
@@ -132,11 +133,14 @@ namespace Juna.SKS.Package.Services
             services.AddTransient<ISenderLogic, SenderLogic>();
             services.AddTransient<IStaffLogic, StaffLogic>();
             services.AddTransient<IWarehouseManagementLogic, WarehouseManagementLogic>();
+            services.AddTransient<IParcelWebhookLogic, ParcelWebhookLogic>();
 
+            services.AddTransient<IParcelWebhook, ParcelWebhook>();
             services.AddTransient<IGeoEncodingAgent, OpenStreetMapEncodingAgent>();
 
             services.AddScoped<IHopRepository, SqlHopRepository>();
             services.AddScoped<IParcelRepository, SqlParcelRepository>();
+            services.AddScoped<IWebhookRepository, SqlWebhookRepository>();
 
             services.AddDbContext<DBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), options => options.UseNetTopologySuite()));
         }
@@ -160,7 +164,7 @@ namespace Juna.SKS.Package.Services
             app.UseSwaggerUI(c =>
             {
                 //TODO: Either use the SwaggerGen generated Swagger contract (generated from C# classes)
-                c.SwaggerEndpoint("/swagger/1.20.1/swagger.json", "Parcel Logistics Service");
+                c.SwaggerEndpoint("/swagger/1.20.2/swagger.json", "Parcel Logistics Service");
 
                 //TODO: Or alternatively use the original Swagger contract that's included in the static files
                 // c.SwaggerEndpoint("/swagger-original.json", "Parcel Logistics Service Original");

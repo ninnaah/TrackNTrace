@@ -103,7 +103,7 @@ namespace Juna.SKS.Package.BusinessLogic
 
         }
 
-        public bool ImportWarehouse(Warehouse warehouse)
+        public void ImportWarehouse(Warehouse warehouse)
         {
             _logger.LogInformation("Trying to import a warehouse");
 
@@ -136,7 +136,7 @@ namespace Juna.SKS.Package.BusinessLogic
             }
 
             _logger.LogInformation("Imported the warehouse");
-            return true;
+            return ;
         }
     }
 }

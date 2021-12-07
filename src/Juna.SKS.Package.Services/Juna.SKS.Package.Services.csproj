@@ -28,6 +28,8 @@
     <ProjectReference Include="..\Juna.SKS.Package.BusinessLogic\Juna.SKS.Package.BusinessLogic.csproj" />
     <ProjectReference Include="..\Juna.SKS.Package.DataAccess.Sql\Juna.SKS.Package.DataAccess.Sql.csproj" />
     <ProjectReference Include="..\Juna.SKS.Package.Services.AutoMapper\Juna.SKS.Package.Services.AutoMapper.csproj" />
-    <ProjectReference Include="..\Juna.SKS.Package.Services.DTOs\Juna.SKS.Package.Services.DTOs.csproj" /> 
+    <ProjectReference Include="..\Juna.SKS.Package.Services.DTOs\Juna.SKS.Package.Services.DTOs.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.WebhookManager.Interfaces\Juna.SKS.Package.WebhookManager.Interfaces.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.WebhookManager\Juna.SKS.Package.WebhookManager.csproj" /> 
   </ItemGroup>
 </Project>

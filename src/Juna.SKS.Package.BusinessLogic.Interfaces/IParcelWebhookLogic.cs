@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace Juna.SKS.Package.BusinessLogic.Interfaces
 {
-    public interface IWarehouseManagementLogic
+    public interface IParcelWebhookLogic
     {
-        Warehouse ExportWarehouse();
+        WebhookResponses ListParcelWebhooks(string trackingId);
+        WebhookResponse SubscribeParcelWebhook(string trackingId, string url);
+        void UnsubscribeParcelWebhook(long? id);
 
-        Hop GetHop(string code);
-
-        void ImportWarehouse(Warehouse warehouse);
     }
 }

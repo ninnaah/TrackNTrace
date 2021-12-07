@@ -71,7 +71,7 @@ namespace Juna.SKS.Package.Services.Controllers
 
             try
             {
-                bool reported = this._staffLogic.ReportParcelDelivery(trackingId);
+                this._staffLogic.ReportParcelDelivery(trackingId);
 
                 _logger.LogInformation("Respond 200 - Reported parcel delivery");
                 return StatusCode(200);
@@ -120,7 +120,7 @@ namespace Juna.SKS.Package.Services.Controllers
             // return StatusCode(404);
             try
             {
-                bool reported = this._staffLogic.ReportParcelHop(trackingId, code);
+                this._staffLogic.ReportParcelHop(trackingId, code);
                 _logger.LogInformation("Respond 200 - Reported parcel hop");
                 return StatusCode(200);
             }

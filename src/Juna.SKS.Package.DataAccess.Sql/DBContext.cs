@@ -26,6 +26,7 @@ namespace Juna.SKS.Package.DataAccess.Sql
         public virtual DbSet<Parcel> Parcels { get; set; }
         public virtual DbSet<Recipient> Recipients { get; set; }
         public virtual DbSet<HopArrival> HopArrivals { get; set; }
+        public virtual DbSet<WebhookResponse> WebhookResponses { get; set; }
 
 
         protected override void OnModelCreating (ModelBuilder builder)

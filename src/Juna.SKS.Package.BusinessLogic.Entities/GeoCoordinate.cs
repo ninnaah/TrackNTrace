@@ -21,8 +21,6 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
             Lon = lon;
         }
 
-        /*public double? Lat { get; set; }
-        public double? Lon { get; set; }*/
         public double Lat { get; set; }
         public double Lon { get; set; }
     }

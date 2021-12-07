@@ -33,8 +33,7 @@ namespace Juna.SKS.Package.Services.Tests
         [Test]
         public void ReportParcelDelivery_ValidTrackingId_ReturnCode200()
         {
-            mockLogic.Setup(m => m.ReportParcelDelivery(It.IsAny<string>()))
-                .Returns(true);
+            mockLogic.Setup(m => m.ReportParcelDelivery(It.IsAny<string>()));
 
             StaffApiController staff = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
@@ -106,8 +105,7 @@ namespace Juna.SKS.Package.Services.Tests
         [Test]
         public void ReportParcelHop_ValidTrackingIdValidCode_ReturnCode200()
         {
-            mockLogic.Setup(m => m.ReportParcelHop(It.IsAny<string>(), It.IsAny<string>()))
-               .Returns(true);
+            mockLogic.Setup(m => m.ReportParcelHop(It.IsAny<string>(), It.IsAny<string>()));
 
             StaffApiController staff = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 

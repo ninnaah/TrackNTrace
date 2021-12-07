@@ -166,7 +166,7 @@ namespace Juna.SKS.Package.Services.Controllers
             try
             {
                 BusinessLogic.Entities.Warehouse BLwarehouse = this._mapper.Map<BusinessLogic.Entities.Warehouse>(body);
-                bool response = this._warehouseManagementLogic.ImportWarehouse(BLwarehouse);
+                this._warehouseManagementLogic.ImportWarehouse(BLwarehouse);
 
                 _logger.LogInformation("Respond 200 - Imported warehouse");
                 return StatusCode(200);

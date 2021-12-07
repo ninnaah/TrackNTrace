@@ -176,8 +176,7 @@ namespace Juna.SKS.Package.Services.Tests
         [Test]
         public void ImportWarehouse_ValidWarehouseCode_ReturnCode200()
         {
-            mockLogic.Setup(m => m.ImportWarehouse(It.IsAny<BusinessLogic.Entities.Warehouse>()))
-                .Returns(true);
+            mockLogic.Setup(m => m.ImportWarehouse(It.IsAny<BusinessLogic.Entities.Warehouse>()));
 
             WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
