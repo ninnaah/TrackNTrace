@@ -1,3 +1,4 @@
+using Juna.SKS.Package.Services.DTOs.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -50,17 +51,48 @@ namespace Juna.SKS.Package.IntegrationTests
 
             Assert.That(json, Contains.Substring("Warehouse Level 1 - Wien"));
         }
-*/
+
         [Test, Order(1)]
         public async Task GetWarehouse()
         {
+            var response = await _httpClient.GetAsync("/warehouse/WTTA010");
+            var json = await response.Content.ReadAsStringAsync();
 
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("application/json", response.Content.Headers.ContentType.MediaType);
+            Assert.IsNotEmpty(json);
+
+            Assert.That(json, Contains.Substring("Truck in Atzgersdorf"));
         }
 
         [Test, Order(2)]
         public async Task SubmitParcel()
         {
-        }
+            Recipient recipient = new ()
+            {
+                Name = "A",
+                Street = "Höchstädtplatz 3",
+                PostalCode = "1200",
+                City = "Wien",
+                Country ="Österreich"
+            };
+
+            Recipient sender = new()
+            {
+                Name = "B",
+                Street = "Dresdnerstraße 20",
+                PostalCode = "1200",
+                City = "Wien",
+                Country = "Österreich"
+            };
+
+            Parcel parcel = new ()
+            {
+                Weight = 3,
+                Recipient = recipient,
+                Sender = sender
+            };
+        }*/
 
         [Test, Order(3)]
         public async Task TrackParcel_1()
