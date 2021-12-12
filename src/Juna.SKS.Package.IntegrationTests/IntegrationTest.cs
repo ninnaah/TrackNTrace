@@ -1,11 +1,15 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Juna.SKS.Package.IntegrationTests
 {
-    /*public class IntegrationTest
+    public class IntegrationTest
     {
         private string _baseURL;
         private HttpClient _httpClient;
@@ -21,16 +25,23 @@ namespace Juna.SKS.Package.IntegrationTests
             };
         }
 
-        [Test, Order(1)]
+        /*[Test, Order(1)]
         public async Task ImportWarehouse()
         {
-            
+
+            JObject sampleDataset = JObject.Parse(File.ReadAllText(@"../../../../Juna.SKS.Package.IntegrationTests/LightSampleDataset.json"));
+            var jsonDataset = JsonConvert.SerializeObject(sampleDataset);
+            var data = new StringContent(jsonDataset, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("/warehouse", data);
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Test, Order(1)]
         public async Task ExportWarehouse()
         {
-            var response = await _httpClient.GetAsync("/Warehouse");
+            var response = await _httpClient.GetAsync("/warehouse");
             var json = await response.Content.ReadAsStringAsync();
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -39,7 +50,7 @@ namespace Juna.SKS.Package.IntegrationTests
 
             Assert.That(json, Contains.Substring("Warehouse Level 1 - Wien"));
         }
-
+*/
         [Test, Order(1)]
         public async Task GetWarehouse()
         {
@@ -119,5 +130,5 @@ namespace Juna.SKS.Package.IntegrationTests
         public async Task ListParcelWebhooks_2()
         {
         }
-    }*/
+    }
 }

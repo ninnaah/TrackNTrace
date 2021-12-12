@@ -118,7 +118,7 @@ namespace Juna.SKS.Package.BusinessLogic
 
             try
             {
-                _repository.DropDatabase();
+                //_repository.DropDatabase();
                 DataAccess.Entities.Warehouse DAwarehouse = this._mapper.Map<DataAccess.Entities.Warehouse>(warehouse);
                 _repository.Create(DAwarehouse);
             }
