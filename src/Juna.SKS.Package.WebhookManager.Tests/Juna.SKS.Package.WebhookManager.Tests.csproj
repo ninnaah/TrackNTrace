@@ -7,10 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="NBuilder" Version="6.1.0" />
     <PackageReference Include="NUnit" Version="3.13.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
     <PackageReference Include="coverlet.collector" Version="3.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Juna.SKS.Package.DataAccess.Interfaces\Juna.SKS.Package.DataAccess.Interfaces.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.WebhookManager.Interfaces\Juna.SKS.Package.WebhookManager.Interfaces.csproj" />
+    <ProjectReference Include="..\Juna.SKS.Package.WebhookManager\Juna.SKS.Package.WebhookManager.csproj" />
   </ItemGroup>
 
 </Project>

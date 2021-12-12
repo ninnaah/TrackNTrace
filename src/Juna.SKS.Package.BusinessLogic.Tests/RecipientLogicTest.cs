@@ -30,7 +30,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             mockRepo = new Mock<IParcelRepository>();
 
             mockMapper = new Mock<IMapper>();
-            mockMapper.Setup(m => m.Map<BusinessLogic.Entities.Parcel>(It.IsAny<DataAccess.Entities.Parcel>())).Returns(new BusinessLogic.Entities.Parcel());
+            mockMapper.Setup(m => m.Map<Parcel>(It.IsAny<DataAccess.Entities.Parcel>())).Returns(new Parcel());
 
             mockLogger = new Mock<ILogger<RecipientLogic>>();
         }
@@ -40,13 +40,11 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         {
             var returnParcel = Builder<DataAccess.Entities.Parcel>.CreateNew()
                 .With(p => p.Weight = 3)
-                .With(p => p.Id = 1)
                 .With(p => p.Recipient = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
                 .With(p => p.Sender = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
                 .With(p => p.TrackingId = "PYJRB4HZ6")
                 .With(p => p.VisitedHops = Builder<DataAccess.Entities.HopArrival>.CreateListOfSize(3).Build().ToList())
                 .With(p => p.FutureHops = Builder<DataAccess.Entities.HopArrival>.CreateListOfSize(3).Build().ToList())
-                .With(p => p.State = DataAccess.Entities.Parcel.StateEnum.DeliveredEnum)
                 .Build();
 
             mockRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))

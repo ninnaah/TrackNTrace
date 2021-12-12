@@ -34,15 +34,15 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             mockHopRepo = new Mock<IHopRepository>();
 
             mockMapper = new Mock<IMapper>();
-            mockMapper.Setup(m => m.Map<BusinessLogic.Entities.GeoCoordinate>(It.IsAny<DataAccess.Entities.GeoCoordinate>())).Returns(new BusinessLogic.Entities.GeoCoordinate());
-            mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<BusinessLogic.Entities.Parcel>())).Returns(new DataAccess.Entities.Parcel());
+            mockMapper.Setup(m => m.Map<GeoCoordinate>(It.IsAny<DataAccess.Entities.GeoCoordinate>())).Returns(new GeoCoordinate());
+            mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<Parcel>())).Returns(new DataAccess.Entities.Parcel());
 
             mockLogger = new Mock<ILogger<SenderLogic>>();
 
             mockAgent = new Mock<IGeoEncodingAgent>();
         }
 
-        [Test]
+        /*[Test]
         public void SubmitParcel_ValidParcel_ReturnTrackingId()
         {
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
@@ -68,7 +68,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             var testResult = sender.SubmitParcel(validParcel);
 
             Assert.AreEqual(validParcel.TrackingId, testResult);
-        }
+        }*/
 
         [Test]
         public void SubmitParcel_InvalidParcelInvalidTrackingId_ThrowValidatorException()
@@ -272,7 +272,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
         }
 
-        [Test]
+        /*[Test]
         public void SubmitParcel_DataExceptionCreate_ThrowLogicDataException()
         {
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
@@ -305,7 +305,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
                 Assert.Pass();
             }
 
-        }
+        }*/
 
         [Test]
         public void GenerateTrackingId_TrackingIdUniqueException_ReturnTrackingId()

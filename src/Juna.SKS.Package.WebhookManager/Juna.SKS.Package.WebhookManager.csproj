@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Juna.SKS.Package.DataAccess.Entities\Juna.SKS.Package.DataAccess.Entities.csproj" />
     <ProjectReference Include="..\Juna.SKS.Package.DataAccess.Interfaces\Juna.SKS.Package.DataAccess.Interfaces.csproj" />
     <ProjectReference Include="..\Juna.SKS.Package.WebhookManager.Interfaces\Juna.SKS.Package.WebhookManager.Interfaces.csproj" />

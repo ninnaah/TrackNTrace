@@ -1,18 +1,18 @@
-﻿using Juna.SKS.Package.BusinessLogic.Entities;
+﻿using Juna.SKS.Package.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Juna.SKS.Package.BusinessLogic.Interfaces
+namespace Juna.SKS.Package.WebhookManager.Interfaces
 {
-    public interface IParcelWebhookLogic
+    public interface IParcelWebhookManager
     {
         WebhookResponses ListParcelWebhooks(string trackingId);
         WebhookResponse SubscribeParcelWebhook(string trackingId, string url);
         void UnsubscribeParcelWebhook(long? id);
-        public void NotifySubscribers(Parcel parcel);
+        void NotifySubscribers(Parcel parcel);
 
     }
 }

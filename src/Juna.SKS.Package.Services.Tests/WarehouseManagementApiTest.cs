@@ -34,8 +34,6 @@ namespace Juna.SKS.Package.Services.Tests
         public void ExportWarehouse_ValidWarehouse_ReturnCode200()
         {
             var returnWarehouse = Builder<BusinessLogic.Entities.Warehouse>.CreateNew()
-                .With(p => p.Code = "ABCD1234")
-                .With(p => p.Level = 1)
                 .With(p => p.Description = "Hauptlager 27-12")
                 .With(p => p.NextHops = Builder<BusinessLogic.Entities.WarehouseNextHops> .CreateListOfSize(3).Build().ToList())
                 .Build();
@@ -93,8 +91,6 @@ namespace Juna.SKS.Package.Services.Tests
         public void GetWarehouse_ValidWarehouseCode_ReturnCode200()
         {
             var returnWarehouse = Builder<BusinessLogic.Entities.Warehouse>.CreateNew()
-                .With(p => p.Code = "ABCD1234")
-                .With(p => p.Level = 1)
                 .With(p => p.Description = "Hauptlager 27-12")
                 .With(p => p.NextHops = Builder<BusinessLogic.Entities.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
                 .Build();
@@ -181,8 +177,6 @@ namespace Juna.SKS.Package.Services.Tests
             WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var validWarehouse = Builder<DTOs.Models.Warehouse>.CreateNew()
-                .With(p => p.Code = "ABCD1234")
-                .With(p => p.Level = 1)
                 .With(p => p.Description = "Hauptlager 27-12")
                 .With(p => p.NextHops = Builder<DTOs.Models.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
                 .Build();
@@ -205,8 +199,6 @@ namespace Juna.SKS.Package.Services.Tests
             WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var invalidWarehouse = Builder<DTOs.Models.Warehouse>.CreateNew()
-                .With(p => p.Code = "12")
-                .With(p => p.Level = 1)
                 .With(p => p.Description = "Hauptlager 27-12")
                 .With(p => p.NextHops = Builder<DTOs.Models.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
                 .Build();
@@ -228,8 +220,6 @@ namespace Juna.SKS.Package.Services.Tests
             WarehouseManagementApiController warehouseManagement = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
 
             var invalidWarehouse = Builder<DTOs.Models.Warehouse>.CreateNew()
-                .With(p => p.Code = "ABCD1234")
-                .With(p => p.Level = 1)
                 .With(p => p.Description = "Hauptlager 27-12")
                 .With(p => p.NextHops = Builder<DTOs.Models.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
                 .Build();

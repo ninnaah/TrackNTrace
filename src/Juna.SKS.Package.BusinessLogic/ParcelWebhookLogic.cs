@@ -4,6 +4,7 @@ using Juna.SKS.Package.BusinessLogic.Interfaces;
 using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 using Juna.SKS.Package.DataAccess.Interfaces;
 using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
+using Juna.SKS.Package.WebhookManager.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,16 +17,14 @@ namespace Juna.SKS.Package.BusinessLogic
     public class ParcelWebhookLogic : IParcelWebhookLogic
     {
         private readonly IMapper _mapper;
-        private readonly IWebhookRepository _webhookRepo;
-        private readonly IParcelRepository _parcelRepo;
         private readonly ILogger<ParcelWebhookLogic> _logger;
+        private readonly IParcelWebhookManager _webhookManager;
 
-        public ParcelWebhookLogic(IMapper mapper, IWebhookRepository webhookRepo, IParcelRepository parcelRepo, ILogger<ParcelWebhookLogic> logger)
+        public ParcelWebhookLogic(IMapper mapper, ILogger<ParcelWebhookLogic> logger, IParcelWebhookManager webhookManager)
         {
             _mapper = mapper;
             _logger = logger;
-            _webhookRepo = webhookRepo;
-            _parcelRepo = parcelRepo;
+            _webhookManager = webhookManager;
         }
 
         public WebhookResponses ListParcelWebhooks(string trackingId)
@@ -35,7 +34,7 @@ namespace Juna.SKS.Package.BusinessLogic
             WebhookResponses webhooks;
             try
             {
-                DataAccess.Entities.WebhookResponses DAwebhooks = _webhookRepo.GetWebhookResponsesByTrackingId(trackingId);
+                DataAccess.Entities.WebhookResponses DAwebhooks = _webhookManager.ListParcelWebhooks(trackingId);
                 webhooks = this._mapper.Map<WebhookResponses>(DAwebhooks);
             }
             catch (DataNotFoundException ex)
@@ -46,13 +45,13 @@ namespace Juna.SKS.Package.BusinessLogic
             }
             catch (DataException ex)
             {
-                string errorMessage = $"An error occurred fetching webhooks with trackingid {trackingId}";
+                string errorMessage = $"An error occurred listing webhooks with trackingid {trackingId}";
                 _logger.LogError(errorMessage, ex);
                 throw new LogicException(nameof(ParcelWebhookLogic), nameof(ListParcelWebhooks), errorMessage, ex);
             }
             catch (Exception ex)
             {
-                string errorMessage = $"An unknown error occurred fetching webhooks with trackingid {trackingId}";
+                string errorMessage = $"An unknown error occurred listing webhooks with trackingid {trackingId}";
                 _logger.LogError(errorMessage, ex);
                 throw new LogicException(nameof(ParcelWebhookLogic), nameof(ListParcelWebhooks), errorMessage, ex);
             }
@@ -65,10 +64,11 @@ namespace Juna.SKS.Package.BusinessLogic
         {
             _logger.LogInformation("Trying to subscribe a parcel webhook");
 
-
+            WebhookResponse webhook;
             try
             {
-                var parcel = _parcelRepo.GetSingleParcelByTrackingId(trackingId);
+                DataAccess.Entities.WebhookResponse DAwebhook = _webhookManager.SubscribeParcelWebhook(trackingId, url);
+                webhook = this._mapper.Map<WebhookResponse>(DAwebhook);
             }
             catch (DataNotFoundException ex)
             {
@@ -78,34 +78,13 @@ namespace Juna.SKS.Package.BusinessLogic
             }
             catch (DataException ex)
             {
-                string errorMessage = $"An error occurred fetching a parcel with trackingId {trackingId}";
+                string errorMessage = $"An error occurred subscribing for a parcel with trackingId {trackingId}";
                 _logger.LogError(errorMessage, ex);
                 throw new LogicException(nameof(ParcelWebhookLogic), nameof(SubscribeParcelWebhook), errorMessage, ex);
             }
             catch (Exception ex)
             {
-                string errorMessage = $"An unknown error occurred fetching a parcel with trackingId {trackingId}";
-                _logger.LogError(errorMessage, ex);
-                throw new LogicException(nameof(ParcelWebhookLogic), nameof(SubscribeParcelWebhook), errorMessage, ex);
-            }
-
-            WebhookResponse webhook = new(trackingId, url, DateTime.Now);
-
-            try
-            {
-                DataAccess.Entities.WebhookResponse DAwebhook = this._mapper.Map<DataAccess.Entities.WebhookResponse>(webhook);
-                var webhookId = _webhookRepo.Create(DAwebhook);
-                webhook.Id = webhookId;
-            }
-            catch (DataException ex)
-            {
-                string errorMessage = $"An error occurred fetching a parcel with trackingId {trackingId}";
-                _logger.LogError(errorMessage, ex);
-                throw new LogicException(nameof(ParcelWebhookLogic), nameof(SubscribeParcelWebhook), errorMessage, ex);
-            }
-            catch (Exception ex)
-            {
-                string errorMessage = $"An unknown error occurred fetching a parcel with trackingId {trackingId}";
+                string errorMessage = $"An unknown error occurred subscribing for a parcel with trackingId {trackingId}";
                 _logger.LogError(errorMessage, ex);
                 throw new LogicException(nameof(ParcelWebhookLogic), nameof(SubscribeParcelWebhook), errorMessage, ex);
             }
@@ -120,7 +99,7 @@ namespace Juna.SKS.Package.BusinessLogic
 
             try
             {
-                _webhookRepo.Delete(id);
+                _webhookManager.UnsubscribeParcelWebhook(id);
             }
             catch (DataNotFoundException ex)
             {
@@ -130,18 +109,50 @@ namespace Juna.SKS.Package.BusinessLogic
             }
             catch (DataException ex)
             {
-                string errorMessage = $"An error occurred deleting a webhook with id {id}";
+                string errorMessage = $"An error occurred unsubscribing a webhook with id {id}";
                 _logger.LogError(errorMessage, ex);
                 throw new LogicException(nameof(ParcelWebhookLogic), nameof(UnsubscribeParcelWebhook), errorMessage, ex);
             }
             catch (Exception ex)
             {
-                string errorMessage = $"An unknown error occurred deliting a webhook with id {id}";
+                string errorMessage = $"An unknown error occurred unsubscribing a webhook with id {id}";
                 _logger.LogError(errorMessage, ex);
                 throw new LogicException(nameof(ParcelWebhookLogic), nameof(UnsubscribeParcelWebhook), errorMessage, ex);
             }
             
             _logger.LogInformation("Unubscribed a parcel webhook");
+            return;
+        }
+
+        public void NotifySubscribers(Parcel parcel)
+        {
+            _logger.LogInformation("Trying to notify subscribers");
+
+            try
+            {
+                DataAccess.Entities.Parcel DAparcel = this._mapper.Map<DataAccess.Entities.Parcel>(parcel);
+                _webhookManager.NotifySubscribers(DAparcel);
+            }
+            catch (DataNotFoundException ex)
+            {
+                string errorMessage = $"Webhook cannot be found";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicDataNotFoundException(nameof(ParcelWebhookLogic), nameof(NotifySubscribers), errorMessage);
+            }
+            catch (DataException ex)
+            {
+                string errorMessage = $"An error occurred notifying webhooks with trackingid {parcel.TrackingId}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(ParcelWebhookLogic), nameof(NotifySubscribers), errorMessage, ex);
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = $"An unknown error occurred notifying webhooks with trackingid {parcel.TrackingId}";
+                _logger.LogError(errorMessage, ex);
+                throw new LogicException(nameof(ParcelWebhookLogic), nameof(UnsubscribeParcelWebhook), errorMessage, ex);
+            }
+
+            _logger.LogInformation("Notified subscribers");
             return;
         }
     }

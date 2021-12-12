@@ -15,6 +15,24 @@ namespace Juna.SKS.Package.DataAccess.Entities
     [ExcludeFromCodeCoverage]
     public class WebhookResponse
     {
+        public WebhookResponse()
+        {
+
+        }
+        public WebhookResponse(string trackingId, string url, DateTime createdAt)
+        {
+            TrackingId = trackingId;
+            Url = url;
+            CreatedAt = createdAt;
+        }
+
+        public WebhookResponse(long id, string trackingId, string url, DateTime createdAt)
+        {
+            Id = id;
+            TrackingId = trackingId;
+            Url = url;
+            CreatedAt = createdAt;
+        }
         public long Id { get; set; }
 
         public string TrackingId { get; set; }

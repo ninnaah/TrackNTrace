@@ -106,7 +106,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         [Test]
         public void GetHop_ValidCode_ReturnWarehouse()
         {
-            mockMapper.Setup(m => m.Map<BusinessLogic.Entities.Hop>(It.IsAny<DataAccess.Entities.Hop>())).Returns(new BusinessLogic.Entities.Hop());
+            mockMapper.Setup(m => m.Map<Hop>(It.IsAny<DataAccess.Entities.Hop>())).Returns(new Hop());
 
             var returnWarehouse = Builder<DataAccess.Entities.Hop>.CreateNew()
                 .With(p => p.Code = "ABCD1234")
@@ -204,16 +204,16 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         [Test]
         public void ImportWarehouses_ValidWarehouse_DontThrowException()
         {
-            mockMapper.Setup(m => m.Map<DataAccess.Entities.Warehouse>(It.IsAny<BusinessLogic.Entities.Warehouse>())).Returns(new DataAccess.Entities.Warehouse());
+            mockMapper.Setup(m => m.Map<DataAccess.Entities.Warehouse>(It.IsAny<Warehouse>())).Returns(new DataAccess.Entities.Warehouse());
 
             mockRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Hop>()))
                 .Returns(1);
 
-            var validWarehouse = Builder<BusinessLogic.Entities.Warehouse>.CreateNew()
+            var validWarehouse = Builder<Warehouse>.CreateNew()
                 .With(p => p.Code = "ABCD1234")
                 .With(p => p.Level = 1)
                 .With(p => p.Description = "Hauptlager 27-12")
-                .With(p => p.NextHops = Builder<BusinessLogic.Entities.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
+                .With(p => p.NextHops = Builder<WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
                 .Build();
 
             IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
@@ -225,11 +225,11 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         [Test]
         public void ImportWarehouses_InvalidWarehouseDescription_ThrowValidatorException()
         {
-            var invalidWarehouse = Builder<BusinessLogic.Entities.Warehouse>.CreateNew()
+            var invalidWarehouse = Builder<Warehouse>.CreateNew()
                 .With(p => p.Code = "ABCD1234")
                 .With(p => p.Level = 1)
                 .With(p => p.Description = "..,")
-                .With(p => p.NextHops = Builder<BusinessLogic.Entities.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
+                .With(p => p.NextHops = Builder<WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
                 .Build();
 
             IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
@@ -249,7 +249,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         [Test]
         public void ImportWarehouses_InvalidWarehouseNextHopsIsNull_ThrowValidatorException()
         {
-            var invalidWarehouse = Builder<BusinessLogic.Entities.Warehouse>.CreateNew()
+            var invalidWarehouse = Builder<Warehouse>.CreateNew()
                 .With(p => p.Code = "ABCD1234")
                 .With(p => p.Level = 1)
                 .With(p => p.Description = "Hauptlager 27-12")
@@ -273,16 +273,16 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         [Test]
         public void ImportWarehouses_DataExceptionCreate_ThrowLogicException()
         {
-            mockMapper.Setup(m => m.Map<DataAccess.Entities.Warehouse>(It.IsAny<BusinessLogic.Entities.Warehouse>())).Returns(new DataAccess.Entities.Warehouse());
+            mockMapper.Setup(m => m.Map<DataAccess.Entities.Warehouse>(It.IsAny<Warehouse>())).Returns(new DataAccess.Entities.Warehouse());
 
             mockRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Hop>()))
                 .Throws(new DataException(null, null));
 
-            var validWarehouse = Builder<BusinessLogic.Entities.Warehouse>.CreateNew()
+            var validWarehouse = Builder<Warehouse>.CreateNew()
                 .With(p => p.Code = "ABCD1234")
                 .With(p => p.Level = 1)
                 .With(p => p.Description = "Hauptlager 27-12")
-                .With(p => p.NextHops = Builder<BusinessLogic.Entities.WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
+                .With(p => p.NextHops = Builder<WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
                 .Build();
 
             IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);

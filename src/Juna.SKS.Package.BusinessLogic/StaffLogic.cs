@@ -21,12 +21,14 @@ namespace Juna.SKS.Package.BusinessLogic
         private readonly IParcelRepository _parcelRepo;
         private readonly IHopRepository _hopRepo;
         private readonly ILogger<StaffLogic> _logger;
-        public StaffLogic(IParcelRepository parcelRepo, IHopRepository hopRepo, IMapper mapper, ILogger<StaffLogic> logger)
+        private readonly IParcelWebhookLogic _webhookLogic;
+        public StaffLogic(IParcelRepository parcelRepo, IHopRepository hopRepo, IMapper mapper, ILogger<StaffLogic> logger, IParcelWebhookLogic webhookLogic)
         {
             _parcelRepo = parcelRepo;
             _hopRepo = hopRepo;
             _mapper = mapper;
             _logger = logger;
+            _webhookLogic = webhookLogic;
         }
         public void ReportParcelDelivery(string trackingId)
         {
@@ -78,8 +80,20 @@ namespace Juna.SKS.Package.BusinessLogic
                 parcel.State = Parcel.StateEnum.DeliveredEnum;
                 try
                 {
+                    var webhooks = _webhookLogic.ListParcelWebhooks(parcel.TrackingId);
+                    foreach (WebhookResponse webhook in webhooks)
+                    {
+                        _webhookLogic.UnsubscribeParcelWebhook(webhook.Id);
+                    }
+
                     DataAccess.Entities.Parcel DAparcel = this._mapper.Map<DataAccess.Entities.Parcel>(parcel);
                     _parcelRepo.Update(DAparcel);
+                }
+                catch (LogicDataNotFoundException ex)
+                {
+                    string errorMessage = $"Webhooks with trackingId {trackingId} cannot be found";
+                    _logger.LogError(errorMessage, ex);
+                    throw new LogicDataNotFoundException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage);
                 }
                 catch (DataException ex)
                 {
@@ -93,6 +107,7 @@ namespace Juna.SKS.Package.BusinessLogic
                     _logger.LogError(errorMessage, ex);
                     throw new LogicException(nameof(StaffLogic), nameof(ReportParcelDelivery), errorMessage, ex);
                 }
+
                 _logger.LogInformation($"Parcel with trackingId {trackingId} is now delivered");
             }
             return;
@@ -203,8 +218,16 @@ namespace Juna.SKS.Package.BusinessLogic
 
             try
             {
+                _webhookLogic.NotifySubscribers(parcel);
+
                 DataAccess.Entities.Parcel DAparcel = this._mapper.Map<DataAccess.Entities.Parcel>(parcel);
                 _parcelRepo.Update(DAparcel);
+            }
+            catch (LogicDataNotFoundException ex)
+            {
+                string errorMessage = $"Webhooks with trackingId {parcel.TrackingId} cannot be found";
+                _logger.LogError(errorMessage);
+                throw new LogicDataNotFoundException(nameof(StaffLogic), nameof(ReportParcelHop), errorMessage);
             }
             catch (DataException ex)
             {
