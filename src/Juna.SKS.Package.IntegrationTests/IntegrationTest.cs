@@ -16,24 +16,27 @@ namespace Juna.SKS.Package.IntegrationTests
         private string _baseURL;
         private HttpClient _httpClient;
 
+        NewParcelInfo parcelInfo;
+
         [SetUp]
         public void Setup()
         {
-            _baseURL = "https://juna-trackntrace.azurewebsites.net/";
-
+            //_baseURL = "https://juna-trackntrace.azurewebsites.net/";
+            _baseURL = "https://localhost:5001/";
+        
             _httpClient = new HttpClient()
             {
                 BaseAddress = new System.Uri(_baseURL)
             };
         }
 
-        /*[Test, Order(1)]
+        [Test, Order(1)]
         public async Task ImportWarehouse()
         {
 
-            JObject sampleDataset = JObject.Parse(File.ReadAllText(@"../../../../Juna.SKS.Package.IntegrationTests/LightSampleDataset.json"));
-            var jsonDataset = JsonConvert.SerializeObject(sampleDataset);
-            var data = new StringContent(jsonDataset, Encoding.UTF8, "application/json");
+            var sampleDataset = File.ReadAllText(@"../../../../Juna.SKS.Package.IntegrationTests/LightSampleDataset.json", Encoding.Default);
+            //var jsonDataset = JsonConvert.SerializeObject(sampleDataset);
+            var data = new StringContent(sampleDataset, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync("/warehouse", data);
 
@@ -49,7 +52,6 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json", response.Content.Headers.ContentType.MediaType);
             Assert.IsNotEmpty(json);
-
             Assert.That(json, Contains.Substring("Warehouse Level 1 - Wien"));
         }
 
@@ -62,7 +64,6 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json", response.Content.Headers.ContentType.MediaType);
             Assert.IsNotEmpty(json);
-
             Assert.That(json, Contains.Substring("Truck in Atzgersdorf"));
         }
 
@@ -71,7 +72,7 @@ namespace Juna.SKS.Package.IntegrationTests
         {
             Recipient recipient = new ()
             {
-                Name = "A",
+                Name = "Anna",
                 Street = "Höchstädtplatz 3",
                 PostalCode = "1200",
                 City = "Wien",
@@ -80,7 +81,7 @@ namespace Juna.SKS.Package.IntegrationTests
 
             Recipient sender = new()
             {
-                Name = "B",
+                Name = "Berta",
                 Street = "Dresdnerstraße 20",
                 PostalCode = "1200",
                 City = "Wien",
@@ -93,7 +94,21 @@ namespace Juna.SKS.Package.IntegrationTests
                 Recipient = recipient,
                 Sender = sender
             };
-        }*/
+
+            var dataJson = JsonConvert.SerializeObject(parcel);
+            var data = new StringContent(dataJson, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("/parcel", data);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+            Assert.AreEqual("application/json", response.Content.Headers.ContentType.MediaType);
+            Assert.IsNotEmpty(json);
+            Assert.That(json, Contains.Substring("trackingId"));
+
+            parcelInfo = JsonConvert.DeserializeObject<NewParcelInfo>(json);
+
+        }
 
         [Test, Order(3)]
         public async Task TrackParcel_1()

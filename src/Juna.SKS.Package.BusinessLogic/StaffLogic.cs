@@ -223,7 +223,7 @@ namespace Juna.SKS.Package.BusinessLogic
                 DataAccess.Entities.Parcel DAparcel = this._mapper.Map<DataAccess.Entities.Parcel>(parcel);
                 _parcelRepo.Update(DAparcel);
             }
-            catch (LogicDataNotFoundException ex)
+            catch (LogicDataNotFoundException)
             {
                 string errorMessage = $"Webhooks with trackingId {parcel.TrackingId} cannot be found";
                 _logger.LogError(errorMessage);
