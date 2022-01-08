@@ -46,9 +46,33 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         [Test]
         public void ReportParcelDelivery_ValidTrackingId_DontThrowException()
         {
-            mockMapper.Setup(m => m.Map<Parcel>(It.IsAny<DataAccess.Entities.Parcel>())).Returns(new BusinessLogic.Entities.Parcel());
+            var BLreturnFutureHops = new List<BusinessLogic.Entities.HopArrival>()
+            {
+                new BusinessLogic.Entities.HopArrival("ABCD1232", "aDescription", DateTime.Now),
+                new BusinessLogic.Entities.HopArrival("ABCD1233", "anotherDescription", DateTime.Now),
+                new BusinessLogic.Entities.HopArrival("ABCD1234", "stillDescription", DateTime.Now)
+            };
+
+            var BLreturnParcel = Builder<BusinessLogic.Entities.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = Builder<BusinessLogic.Entities.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<BusinessLogic.Entities.Recipient>.CreateNew().Build())
+                .With(p => p.TrackingId = "PYJRB4HZ6")
+                .With(p => p.VisitedHops = new())
+                .With(p => p.FutureHops = BLreturnFutureHops)
+                .With(p => p.State = BusinessLogic.Entities.Parcel.StateEnum.InTransportEnum)
+                .Build();
+
+            mockMapper.Setup(m => m.Map<Parcel>(It.IsAny<DataAccess.Entities.Parcel>())).Returns(BLreturnParcel);
 
             mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<Parcel>())).Returns(new DataAccess.Entities.Parcel());
+
+            var returnFutureHops = new List<DataAccess.Entities.HopArrival>()
+            {
+                new DataAccess.Entities.HopArrival(1, "ABCD1232", "aDescription", DateTime.Now),
+                new DataAccess.Entities.HopArrival(2, "ABCD1233", "anotherDescription", DateTime.Now),
+                new DataAccess.Entities.HopArrival(3, "ABCD1234", "stillDescription", DateTime.Now)
+            };
 
             var returnParcel = Builder<DataAccess.Entities.Parcel>.CreateNew()
                 .With(p => p.Weight = 3)
@@ -56,8 +80,8 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
                 .With(p => p.Recipient = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
                 .With(p => p.Sender = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
                 .With(p => p.TrackingId = "PYJRB4HZ6")
-                .With(p => p.VisitedHops = Builder<DataAccess.Entities.HopArrival>.CreateListOfSize(3).Build().ToList())
-                .With(p => p.FutureHops = Builder<DataAccess.Entities.HopArrival>.CreateListOfSize(3).Build().ToList())
+                .With(p => p.VisitedHops = new())
+                .With(p => p.FutureHops = returnFutureHops)
                 .With(p => p.State = DataAccess.Entities.Parcel.StateEnum.InTransportEnum)
                 .Build();
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
@@ -178,7 +202,24 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         {
             mockWebhookLogic.Setup(m => m.ListParcelWebhooks(It.IsAny<string>())).Throws(new LogicDataNotFoundException(null, null, null));
 
-            mockMapper.Setup(m => m.Map<Parcel>(It.IsAny<DataAccess.Entities.Parcel>())).Returns(new Parcel());
+            var BLreturnFutureHops = new List<BusinessLogic.Entities.HopArrival>()
+            {
+                new BusinessLogic.Entities.HopArrival("ABCD1232", "aDescription", DateTime.Now),
+                new BusinessLogic.Entities.HopArrival("ABCD1233", "anotherDescription", DateTime.Now),
+                new BusinessLogic.Entities.HopArrival("ABCD1234", "stillDescription", DateTime.Now)
+            };
+
+            var BLreturnParcel = Builder<BusinessLogic.Entities.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = Builder<BusinessLogic.Entities.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<BusinessLogic.Entities.Recipient>.CreateNew().Build())
+                .With(p => p.TrackingId = "PYJRB4HZ6")
+                .With(p => p.VisitedHops = new())
+                .With(p => p.FutureHops = BLreturnFutureHops)
+                .With(p => p.State = BusinessLogic.Entities.Parcel.StateEnum.InTransportEnum)
+                .Build();
+
+            mockMapper.Setup(m => m.Map<Parcel>(It.IsAny<DataAccess.Entities.Parcel>())).Returns(BLreturnParcel);
 
             mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<Parcel>())).Returns(new DataAccess.Entities.Parcel());
 

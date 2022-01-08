@@ -2,6 +2,8 @@ using Juna.SKS.Package.Services.DTOs.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -21,8 +23,7 @@ namespace Juna.SKS.Package.IntegrationTests
         [SetUp]
         public void Setup()
         {
-            //_baseURL = "https://juna-trackntrace.azurewebsites.net/";
-            _baseURL = "https://localhost:5001/";
+            _baseURL = "https://juna-trackntrace.azurewebsites.net/";
         
             _httpClient = new HttpClient()
             {
@@ -34,8 +35,9 @@ namespace Juna.SKS.Package.IntegrationTests
         public async Task ImportWarehouse()
         {
 
-            var sampleDataset = File.ReadAllText(@"../../../../Juna.SKS.Package.IntegrationTests/LightSampleDataset.json", Encoding.Default);
-            //var jsonDataset = JsonConvert.SerializeObject(sampleDataset);
+            var sampleDataset = File.ReadAllText(@"../../../../Juna.SKS.Package.IntegrationTests/SampleDataset.json");
+            Debug.WriteLine(sampleDataset);
+
             var data = new StringContent(sampleDataset, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync("/warehouse", data);
@@ -67,7 +69,7 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.That(json, Contains.Substring("Truck in Atzgersdorf"));
         }
 
-        [Test, Order(2)]
+        /*[Test, Order(2)]
         public async Task SubmitParcel()
         {
             Recipient recipient = new ()
@@ -108,7 +110,7 @@ namespace Juna.SKS.Package.IntegrationTests
 
             parcelInfo = JsonConvert.DeserializeObject<NewParcelInfo>(json);
 
-        }
+        }*/
 
         [Test, Order(3)]
         public async Task TrackParcel_1()

@@ -10,7 +10,6 @@ namespace Juna.SKS.Package.DataAccess.Interfaces
     public interface IHopRepository
     {
         int Create(Hop hop);
-        void Update(Hop hop);
         void Delete(int id);
         void DropDatabase();
 

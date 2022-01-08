@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 using Juna.SKS.Package.ServiceAgents.Interfaces;
 using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
+using NetTopologySuite.Geometries;
 
 namespace Juna.SKS.Package.BusinessLogic.Tests
 {
@@ -40,6 +41,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             mockLogger = new Mock<ILogger<SenderLogic>>();
 
             mockAgent = new Mock<IGeoEncodingAgent>();
+
         }
 
         /*[Test]
@@ -47,10 +49,27 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         {
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
                .Throws(new Exception());
-            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 5,5));
             mockParcelRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
                .Returns(1);
-            var returnTrucks = Builder<DataAccess.Entities.Hop>.CreateListOfSize(3).Build().ToList();
+
+            Coordinate[] coords = new Coordinate[]{
+                new Coordinate(0,0),
+                new Coordinate(0,10),
+                new Coordinate(10,10),
+                new Coordinate(10,0),
+                new Coordinate(0,0) 
+			};
+            GeometryFactory geometryFactory = new GeometryFactory();
+            Polygon poly = geometryFactory.CreatePolygon(coords);
+
+            var returnTrucks = new List<DataAccess.Entities.Hop>()
+            {
+                new DataAccess.Entities.Truck(1, poly, "something", "Truck", "ABCD12345", "a description", 1, "Location1", null),
+                new DataAccess.Entities.Truck(2, poly, "something", "Truck", "ABCD12346", "another description", 2, "Location2", null),
+                new DataAccess.Entities.Truck(3, poly, "something", "Truck", "ABCD12347", "still a description", 3, "Location3", null)
+            };
+
             mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
                 .Returns(returnTrucks);
 

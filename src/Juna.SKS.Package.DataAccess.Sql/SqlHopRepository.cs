@@ -45,31 +45,6 @@ namespace Juna.SKS.Package.DataAccess.Sql
             }
         }
 
-        public void Update(Hop hop)
-        {
-            _logger.LogInformation("Trying to update hop");
-            try
-            {
-                _context.Update(hop);
-                _context.SaveChanges();
-                _logger.LogInformation("Updated hop");
-                return;
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex)
-            {
-                string errorMessage = $"An error occured while updating a hop with code {hop.Code}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(Update), errorMessage, ex);
-            }
-            catch (Exception ex)
-            {
-                string errorMessage = $"An unknown error occured while updating a hop with code {hop.Code}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(Update), errorMessage, ex);
-            }
-
-        }
-
         public void Delete(int id)
         {
             _logger.LogInformation("Trying to delete hop");

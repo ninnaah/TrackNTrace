@@ -51,7 +51,26 @@ namespace Juna.SKS.Package.DataAccess.Sql
             _logger.LogInformation("Trying to update parcel");
             try
             {
-                _context.Update(parcel);
+                Parcel oldParcel = GetSingleParcelByTrackingId(parcel.TrackingId);
+
+                if (oldParcel == null)
+                {
+                    _logger.LogError($"Cannot update parcel with id {parcel.Id} - not found");
+                    throw new DataNotFoundException(nameof(SqlParcelRepository), nameof(Update));
+                }
+                _context.Remove(oldParcel.Recipient);
+                _context.Remove(oldParcel.Sender);
+
+                foreach(HopArrival hop in oldParcel.FutureHops)
+                    _context.Remove(hop);
+
+                foreach (HopArrival hop in oldParcel.VisitedHops)
+                    _context.Remove(hop);
+
+                _context.Remove(oldParcel);
+                _context.SaveChanges();
+
+                _context.Add(parcel);
                 _context.SaveChanges();
                 _logger.LogInformation("Updated parcel");
                 return;
@@ -70,67 +89,6 @@ namespace Juna.SKS.Package.DataAccess.Sql
             }
         }
 
-        public void Delete(int id)
-        {
-            _logger.LogInformation("Trying to delete parcel");
-            try
-            {
-                Parcel parcel = GetSingleParcelById(id);
-
-                if (parcel == null)
-                {
-                    _logger.LogError($"Cannot delete parcel with id {id} - already deleted");
-                    throw new DataNotFoundException(nameof(SqlParcelRepository), nameof(Delete));
-                }
-
-                _context.Remove(parcel);
-                _context.SaveChanges();
-                _logger.LogInformation("Deleted parcel");
-                return;
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex)
-            {
-                string errorMessage = $"An error occured while deleting a parcel with id {id}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlParcelRepository), nameof(Delete), errorMessage, ex);
-            }
-            catch (Exception ex)
-            {
-                string errorMessage = $"An unknown error occured while deleting a parcel with id {id}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlParcelRepository), nameof(Delete), errorMessage, ex);
-            }
-        }
-
-        
-        public Parcel GetSingleParcelById(int id)
-        {
-            _logger.LogInformation("Trying to get single parcel by id");
-            try
-            {
-                var parcel =  _context.Parcels.Single(p => p.Id == id);
-                if (parcel == null)
-                {
-                    _logger.LogError($"Parcel with id {id} not found");
-                    throw new DataNotFoundException(nameof(SqlParcelRepository), nameof(GetSingleParcelById));
-                }
-                _logger.LogInformation("Got parcel by id");
-                return parcel;
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex)
-            {
-                string errorMessage = $"An error occured while fetching a parcel with id {id}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlParcelRepository), nameof(GetSingleParcelById), errorMessage, ex);
-            }
-            catch (Exception ex)
-            {
-                string errorMessage = $"An unknown error occured while fetching a parcel with id {id}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlParcelRepository), nameof(GetSingleParcelById), errorMessage, ex);
-            }
-
-        }
 
         public Parcel GetSingleParcelByTrackingId(string trackingid)
         {

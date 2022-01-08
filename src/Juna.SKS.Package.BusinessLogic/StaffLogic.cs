@@ -80,6 +80,11 @@ namespace Juna.SKS.Package.BusinessLogic
                 parcel.State = Parcel.StateEnum.DeliveredEnum;
                 try
                 {
+                    foreach(HopArrival hop in parcel.FutureHops)
+                    {
+                        parcel.VisitedHops.Add(hop);
+                    }
+                    parcel.FutureHops.Clear();
                     var webhooks = _webhookLogic.ListParcelWebhooks(parcel.TrackingId);
                     foreach (WebhookResponse webhook in webhooks)
                     {

@@ -133,8 +133,8 @@ namespace Juna.SKS.Package.Services
             services.AddTransient<ISenderLogic, SenderLogic>();
             services.AddTransient<IStaffLogic, StaffLogic>();
             services.AddTransient<IWarehouseManagementLogic, WarehouseManagementLogic>();
-            services.AddTransient<IParcelWebhookManager, ParcelWebhookManager>();
 
+            services.AddTransient<IParcelWebhookLogic, ParcelWebhookLogic>();
             services.AddTransient<IParcelWebhookManager, ParcelWebhookManager>();
             services.AddTransient<IGeoEncodingAgent, OpenStreetMapEncodingAgent>();
 
