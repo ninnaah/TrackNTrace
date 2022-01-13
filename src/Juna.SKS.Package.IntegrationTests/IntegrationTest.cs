@@ -20,7 +20,7 @@ namespace Juna.SKS.Package.IntegrationTests
 
         string trackingId;
 
-        [SetUp]
+        /*[SetUp]
         public void Setup()
         {
             _baseURL = "https://testing-juna-trackntrace.azurewebsites.net/";
@@ -214,7 +214,7 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.IsNotEmpty(json);
             Assert.That(json, Contains.Substring("\"trackingId\":\"ABCD12345\""));
 
-        }
+        }*/
         
 
 

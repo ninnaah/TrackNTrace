@@ -142,7 +142,7 @@ namespace Juna.SKS.Package.Services
             services.AddScoped<IParcelRepository, SqlParcelRepository>();
             services.AddScoped<IWebhookRepository, SqlWebhookRepository>();
 
-            services.AddDbContext<DBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), options => options.UseNetTopologySuite()));
+            services.AddDbContext<DBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Testing"), options => options.UseNetTopologySuite()));
         }
 
         /// <summary>
