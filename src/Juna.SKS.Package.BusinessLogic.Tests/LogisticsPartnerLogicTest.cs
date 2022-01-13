@@ -42,7 +42,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             mockAgent = new Mock<IGeoEncodingAgent>();
         }
 
-        /*[Test]
+       /* [Test]
         public void TransitionParcel_ValidParcel_ReturnTrackingId()
         {
             mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));

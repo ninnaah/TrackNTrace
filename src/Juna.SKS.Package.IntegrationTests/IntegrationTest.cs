@@ -15,7 +15,7 @@ namespace Juna.SKS.Package.IntegrationTests
 {
     public class IntegrationTest
     {
-        private string _baseURL;
+        /*private string _baseURL;
         private HttpClient _httpClient;
 
         string trackingId;
@@ -175,7 +175,7 @@ namespace Juna.SKS.Package.IntegrationTests
 
 
 
-        /*[Test, Order(9)]
+        [Test, Order(9)]
         public async Task TransitionParcel()
         {
             Recipient recipient = new()
@@ -214,8 +214,8 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.IsNotEmpty(json);
             Assert.That(json, Contains.Substring("\"trackingId\":\"ABCD12345\""));
 
-        }*/
-
+        }
+        */
 
 
 

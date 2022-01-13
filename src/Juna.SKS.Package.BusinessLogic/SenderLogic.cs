@@ -102,7 +102,7 @@ namespace Juna.SKS.Package.BusinessLogic
                 throw new LogicException(nameof(WarehouseManagementLogic), nameof(SubmitParcel), errorMessage, ex);
             }
 
-            if (parcel.Recipient.Country != "Austria" || parcel.Recipient.Country != "Österreich")
+            if (parcel.Recipient.Country != "Austria" && parcel.Recipient.Country != "Österreich")
             {
 
                 DataAccess.Entities.Truck senderTruck = new();
