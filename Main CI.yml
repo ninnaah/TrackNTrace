@@ -65,5 +65,5 @@ steps:
 - task: PublishPipelineArtifact@1
   displayName: Publish Integration Tests
   inputs:
-    TargetPath: '$(Build.SourcesDirectory)/Juna.SKS.Package.IntegrationTests/bin/Release/net5.0/'
+    TargetPath: '$(Build.SourcesDirectory)/src/Juna.SKS.Package.IntegrationTests/bin/Release/net5.0/'
     artifact: 'IntegrationTests' 
