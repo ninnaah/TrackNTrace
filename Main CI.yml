@@ -62,8 +62,8 @@ steps:
     projects: '**/*.IntegrationTests.csproj'
 
 
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   displayName: Publish Integration Tests
   inputs:
     TargetPath: '$(Build.SourcesDirectory)/Juna.SKS.Package.IntegrationTests/bin/Release/net5.0/'
-    ArtifactName: 'IntegrationTests' 
+    artifact: 'IntegrationTests' 
