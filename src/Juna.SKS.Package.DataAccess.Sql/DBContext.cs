@@ -37,6 +37,9 @@ namespace Juna.SKS.Package.DataAccess.Sql
             builder.Entity<TransferWarehouse>().HasBaseType<Hop>();
             builder.Entity<Warehouse>().HasBaseType<Hop>();
 
+            builder.Entity<Warehouse>().Navigation(p => p.NextHops).AutoInclude();
+            builder.Entity<Warehouse>().Navigation(p => p.LocationCoordinates).AutoInclude();
+
             builder.Entity<Parcel>().Navigation(p => p.FutureHops).AutoInclude();
             builder.Entity<Parcel>().Navigation(p => p.VisitedHops).AutoInclude();
             builder.Entity<Parcel>().Navigation(p => p.Recipient).AutoInclude();

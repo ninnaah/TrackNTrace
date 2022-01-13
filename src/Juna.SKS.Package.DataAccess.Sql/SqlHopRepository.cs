@@ -179,6 +179,12 @@ namespace Juna.SKS.Package.DataAccess.Sql
                     _logger.LogError($"Hop with code {code} not found");
                     throw new DataNotFoundException(nameof(SqlHopRepository), nameof(GetSingleHopByCode));
                 }
+                if(hop.HopType == "Warehouse")
+                {
+                    var hierarchy = _context.Warehouses.Include(w => w.NextHops).ThenInclude(nh => nh.Hop).ThenInclude(nh => nh.LocationCoordinates);
+                    var warehouse = hierarchy.ToList().SingleOrDefault(w => w.Code == code);
+                    return warehouse;
+                }
                 _logger.LogInformation($"Got hop with code {code}");
                 return hop;
             }

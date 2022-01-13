@@ -281,12 +281,11 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<Parcel>())).Returns(new DataAccess.Entities.Parcel());
 
-            var BLreturnHopArrival = Builder<HopArrival>.CreateNew()
+            var BLreturnHop = Builder<Hop>.CreateNew()
                 .With(p => p.Code = "ABCD1234")
                 .With(p => p.Description = "Hauptlager 27-12")
-                .With(p => p.DateTime = Builder<DateTime>.CreateNew().Build())
                 .Build();
-            mockMapper.Setup(m => m.Map<HopArrival>(It.IsAny<DataAccess.Entities.HopArrival>())).Returns(BLreturnHopArrival);
+            mockMapper.Setup(m => m.Map<Hop>(It.IsAny<DataAccess.Entities.Hop>())).Returns(BLreturnHop);
 
             var returnFutureHops = new List<DataAccess.Entities.HopArrival>()
             {
@@ -308,14 +307,13 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
                 .Returns(returnParcel);
 
 
-            var returnHopArrival = Builder<DataAccess.Entities.HopArrival>.CreateNew()
+            var returnHop = Builder<DataAccess.Entities.Hop>.CreateNew()
                 .With(p => p.Id = 1)
                 .With(p => p.Code = "ABCD1234")
                 .With(p => p.Description = "Hauptlager 27-12")
-                .With(p => p.DateTime = Builder<DateTime>.CreateNew().Build())
                 .Build();
-            mockHopRepo.Setup(m => m.GetSingleHopArrivalByCode(It.IsAny<string>()))
-                .Returns(returnHopArrival);
+            mockHopRepo.Setup(m => m.GetSingleHopByCode(It.IsAny<string>()))
+                .Returns(returnHop);
 
             mockParcelRepo.Setup(m => m.Update(It.IsAny<DataAccess.Entities.Parcel>()));
 
@@ -432,7 +430,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
                 .Returns(returnParcel);
 
-            mockHopRepo.Setup(m => m.GetSingleHopArrivalByCode(It.IsAny<string>()))
+            mockHopRepo.Setup(m => m.GetSingleHopByCode(It.IsAny<string>()))
                 .Throws(new DataNotFoundException(null, null));
 
             IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockWebhookLogic.Object);
@@ -468,7 +466,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
                 .Returns(returnParcel);
 
-            mockHopRepo.Setup(m => m.GetSingleHopArrivalByCode(It.IsAny<string>()))
+            mockHopRepo.Setup(m => m.GetSingleHopByCode(It.IsAny<string>()))
                 .Throws(new DataException(null, null));
 
             IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockWebhookLogic.Object);
@@ -504,7 +502,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<Parcel>())).Returns(new DataAccess.Entities.Parcel());
 
-            mockMapper.Setup(m => m.Map<HopArrival>(It.IsAny<DataAccess.Entities.HopArrival>())).Returns(new HopArrival());
+            mockMapper.Setup(m => m.Map<Hop>(It.IsAny<DataAccess.Entities.Hop>())).Returns(new Hop());
 
             var returnParcel = Builder<DataAccess.Entities.Parcel>.CreateNew()
                .With(p => p.Weight = 3)
@@ -519,14 +517,13 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
                 .Returns(returnParcel);
 
-            var returnHopArrival = Builder<DataAccess.Entities.HopArrival>.CreateNew()
+            var returnHop = Builder<DataAccess.Entities.Hop>.CreateNew()
                 .With(p => p.Id = 1)
                 .With(p => p.Code = "ABCD1234")
                 .With(p => p.Description = "Hauptlager 27-12")
-                .With(p => p.DateTime = Builder<DateTime>.CreateNew().Build())
                 .Build();
-            mockHopRepo.Setup(m => m.GetSingleHopArrivalByCode(It.IsAny<string>()))
-                .Returns(returnHopArrival);
+            mockHopRepo.Setup(m => m.GetSingleHopByCode(It.IsAny<string>()))
+                .Returns(returnHop);
 
             mockParcelRepo.Setup(m => m.Update(It.IsAny<DataAccess.Entities.Parcel>())).Throws(new DataException(null, null));
 
@@ -573,12 +570,11 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<Parcel>())).Returns(new DataAccess.Entities.Parcel());
 
-            var BLreturnHopArrival = Builder<HopArrival>.CreateNew()
+            var BLreturnHop = Builder<Hop>.CreateNew()
                 .With(p => p.Code = "ABCD1234")
                 .With(p => p.Description = "Hauptlager 27-12")
-                .With(p => p.DateTime = Builder<DateTime>.CreateNew().Build())
                 .Build();
-            mockMapper.Setup(m => m.Map<HopArrival>(It.IsAny<DataAccess.Entities.HopArrival>())).Returns(BLreturnHopArrival);
+            mockMapper.Setup(m => m.Map<Hop>(It.IsAny<DataAccess.Entities.Hop>())).Returns(BLreturnHop);
 
             var returnFutureHops = new List<DataAccess.Entities.HopArrival>()
             {
@@ -600,14 +596,15 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
                 .Returns(returnParcel);
 
-            var returnHopArrival = Builder<DataAccess.Entities.HopArrival>.CreateNew()
+
+
+            var returnHop = Builder<DataAccess.Entities.Hop>.CreateNew()
                 .With(p => p.Id = 1)
                 .With(p => p.Code = "ABCD1234")
                 .With(p => p.Description = "Hauptlager 27-12")
-                .With(p => p.DateTime = Builder<DateTime>.CreateNew().Build())
                 .Build();
-            mockHopRepo.Setup(m => m.GetSingleHopArrivalByCode(It.IsAny<string>()))
-                .Returns(returnHopArrival);
+            mockHopRepo.Setup(m => m.GetSingleHopByCode(It.IsAny<string>()))
+                .Returns(returnHop);
 
             mockParcelRepo.Setup(m => m.Update(It.IsAny<DataAccess.Entities.Parcel>()));
 

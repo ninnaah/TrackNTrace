@@ -12,7 +12,8 @@ namespace Juna.SKS.Package.BusinessLogic.Entities
     {
         public Parcel()
         {
-
+            VisitedHops = new();
+            FutureHops = new();
         }
         public Parcel(float weight, Recipient recipient, Recipient sender, string trackingId, List<HopArrival> visitedHops, List<HopArrival> futureHops, StateEnum state)
         {

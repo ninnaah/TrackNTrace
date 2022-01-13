@@ -7,9 +7,12 @@ using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 using Juna.SKS.Package.DataAccess.Interfaces;
 using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -80,7 +83,7 @@ namespace Juna.SKS.Package.BusinessLogic
                 parcel.State = Parcel.StateEnum.DeliveredEnum;
                 try
                 {
-                    foreach(HopArrival hop in parcel.FutureHops)
+                    foreach (HopArrival hop in parcel.FutureHops)
                     {
                         parcel.VisitedHops.Add(hop);
                     }
@@ -146,15 +149,15 @@ namespace Juna.SKS.Package.BusinessLogic
             }
 
             Parcel parcel = new();
-            HopArrival hop = new();
+            Hop hop = new();
 
             try
             {
                 DataAccess.Entities.Parcel DAparcel = _parcelRepo.GetSingleParcelByTrackingId(trackingId);
                 parcel = this._mapper.Map<BusinessLogic.Entities.Parcel>(DAparcel);
 
-                DataAccess.Entities.HopArrival DAhop = _hopRepo.GetSingleHopArrivalByCode(code);
-                hop = this._mapper.Map<BusinessLogic.Entities.HopArrival>(DAhop);
+                DataAccess.Entities.Hop DAhop = _hopRepo.GetSingleHopByCode(code);
+                hop = this._mapper.Map<BusinessLogic.Entities.Hop>(DAhop);
             }
             catch (DataNotFoundException ex)
             {
@@ -162,11 +165,12 @@ namespace Juna.SKS.Package.BusinessLogic
                 if (ex.Method == "GetSingleParcelByTrackingId")
                 {
                     errorMessage = $"Parcel with trackingid {trackingId} cannot be found";
-                }else if(ex.Method == "GetSingleHopArrivalByCode")
+                }
+                else if (ex.Method == "GetSingleHopArrivalByCode")
                 {
                     errorMessage = $"Hop with code {code} cannot be found";
                 }
-                
+
                 _logger.LogError(errorMessage);
                 throw new LogicDataNotFoundException(nameof(StaffLogic), nameof(ReportParcelHop), errorMessage);
             }
@@ -210,13 +214,15 @@ namespace Juna.SKS.Package.BusinessLogic
             if (hop.GetType() == typeof(Warehouse))
             {
                 parcel.State = Parcel.StateEnum.InTransportEnum;
-            }else if(hop.GetType() == typeof(Truck))
+            }
+            else if (hop.GetType() == typeof(Truck))
             {
                 parcel.State = Parcel.StateEnum.InTruckDeliveryEnum;
             }
             else if (hop.GetType() == typeof(TransferWarehouse))
             {
-                //MISSING CALL TO API
+                TransferWarehouse warehouse = (TransferWarehouse)hop;
+                //CallLogisticsPartnerAPI(warehouse, parcel);
 
                 parcel.State = Parcel.StateEnum.TransferredEnum;
             }
@@ -248,6 +254,14 @@ namespace Juna.SKS.Package.BusinessLogic
             }
 
             return;
+        }
+
+        public async void CallLogisticsPartnerAPI(TransferWarehouse warehouse, Parcel parcel)
+        {
+            HttpClient httpClient = new();
+            var dataJson = JsonConvert.SerializeObject(parcel);
+            var data = new StringContent(dataJson, Encoding.UTF8, "application/json");
+            await httpClient.PostAsync($"{warehouse.LogisticsPartnerUrl}/parcel/{parcel.TrackingId}/", data);
         }
     }
 }

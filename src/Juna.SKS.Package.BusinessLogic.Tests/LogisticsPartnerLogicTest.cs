@@ -55,8 +55,8 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             var validParcel = Builder<Parcel>.CreateNew()
                 .With(p => p.Weight = 3)
                 .With(p => p.TrackingId = "PYJRB4HZ6")
-                .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
-                .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+                .With(p => p.Recipient = Builder<Recipient>.CreateNew().With(x => x.Country = "Österreich").Build())
+                .With(p => p.Sender = Builder<Recipient>.CreateNew().With(x => x.Country = "Deutschland").Build())
                 .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                 .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                 .Build();
@@ -281,8 +281,8 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             var validParcel = Builder<Parcel>.CreateNew()
                .With(p => p.Weight = 3)
                .With(p => p.TrackingId = "PYJRB4HZ6")
-               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
-               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().With(x => x.Country = "Österreich").Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().With(x => x.Country = "Deutschland").Build())
                .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
                .Build();

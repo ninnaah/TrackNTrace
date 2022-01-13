@@ -77,9 +77,11 @@ namespace Juna.SKS.Package.BusinessLogic
             _logger.LogInformation("Find out trucks of sender and recipient");
 
             IEnumerable<DataAccess.Entities.Hop> DAtrucks = new List<DataAccess.Entities.Hop>();
+            IEnumerable<DataAccess.Entities.Hop> DAtransferWarehouses = new List<DataAccess.Entities.Hop>();
             try
             {
                 DAtrucks = _hopRepo.GetHopsByHopType("Truck");
+                DAtransferWarehouses = _hopRepo.GetHopsByHopType("TransferWarehouse");
             }
             catch (DataNotFoundException ex)
             {
@@ -100,39 +102,33 @@ namespace Juna.SKS.Package.BusinessLogic
                 throw new LogicException(nameof(WarehouseManagementLogic), nameof(SubmitParcel), errorMessage, ex);
             }
 
-
-            DataAccess.Entities.Truck senderTruck = new();
-            DataAccess.Entities.Truck recipientTruck = new();
-
-            foreach (DataAccess.Entities.Truck truck in DAtrucks)
+            if (parcel.Recipient.Country != "Austria" || parcel.Recipient.Country != "Österreich")
             {
-                if (truck.Region.Contains(Geometry.DefaultFactory.CreatePoint(new Coordinate(senderCoordinates.Lon, senderCoordinates.Lat))))
-                    senderTruck = truck;
 
-                if (truck.Region.Contains(Geometry.DefaultFactory.CreatePoint(new Coordinate(recipientCoordinates.Lon, recipientCoordinates.Lat))))
-                    recipientTruck = truck;
-            }
-            if (senderTruck == recipientTruck)
-            {
-                _logger.LogInformation("Sender and recipient are in the same region");
-                parcel.FutureHops.Add(new HopArrival(recipientTruck.Code, recipientTruck.Description, DateTime.Now));
+                DataAccess.Entities.Truck senderTruck = new();
+                DataAccess.Entities.TransferWarehouse recipientTransferwarehouse = new();
 
-                _logger.LogInformation("Set parcel state to inTruckDelivery");
-                parcel.State = Parcel.StateEnum.InTruckDeliveryEnum;
-            }
-                
-            else
-            {
+                foreach (DataAccess.Entities.TransferWarehouse warehouse in DAtransferWarehouses)
+                {
+                    if (warehouse.Region.Contains(Geometry.DefaultFactory.CreatePoint(new Coordinate(recipientCoordinates.Lon, recipientCoordinates.Lat))))
+                        recipientTransferwarehouse = warehouse;
+                }
+
+                foreach (DataAccess.Entities.Truck truck in DAtrucks)
+                {
+                    if (truck.Region.Contains(Geometry.DefaultFactory.CreatePoint(new Coordinate(senderCoordinates.Lon, senderCoordinates.Lat))))
+                        senderTruck = truck;
+                }
+
                 _logger.LogInformation("Predicting future hops - stepping through hierarchy");
 
                 parcel.FutureHops = new List<HopArrival>
                 {
-                    new HopArrival(senderTruck.Parent.Hop.Code, senderTruck.Parent.Hop.Description, DateTime.Now),
-                    new HopArrival(recipientTruck.Parent.Hop.Code, recipientTruck.Parent.Hop.Description, DateTime.Now)
+                    new HopArrival(senderTruck.Parent.Hop.Code, senderTruck.Parent.Hop.Description, DateTime.Now)
                 };
 
                 DataAccess.Entities.Warehouse currentSenderHop = senderTruck.Parent.Parent;
-                DataAccess.Entities.Warehouse currentRecipientHop = recipientTruck.Parent.Parent;
+                DataAccess.Entities.Warehouse currentRecipientHop = recipientTransferwarehouse.Parent.Parent;
 
                 while (currentSenderHop != currentRecipientHop)
                 {
@@ -143,13 +139,63 @@ namespace Juna.SKS.Package.BusinessLogic
                 }
 
                 parcel.FutureHops.Add(new HopArrival(currentSenderHop.Code, currentSenderHop.Description, DateTime.Now));
+                parcel.FutureHops.Add(new HopArrival(recipientTransferwarehouse.Parent.Hop.Code, recipientTransferwarehouse.Parent.Hop.Description, DateTime.Now));
                 _logger.LogInformation("Predicted future hops");
 
                 _logger.LogInformation("Set parcel state to pickup");
                 parcel.State = Parcel.StateEnum.PickupEnum;
 
             }
+            else { 
+                DataAccess.Entities.Truck senderTruck = new();
+                DataAccess.Entities.Truck recipientTruck = new();
 
+                foreach (DataAccess.Entities.Truck truck in DAtrucks)
+                {
+                    if (truck.Region.Contains(Geometry.DefaultFactory.CreatePoint(new Coordinate(senderCoordinates.Lon, senderCoordinates.Lat))))
+                        senderTruck = truck;
+
+                    if (truck.Region.Contains(Geometry.DefaultFactory.CreatePoint(new Coordinate(recipientCoordinates.Lon, recipientCoordinates.Lat))))
+                        recipientTruck = truck;
+                }
+                if (senderTruck == recipientTruck)
+                {
+                    _logger.LogInformation("Sender and recipient are in the same region");
+                    parcel.FutureHops.Add(new HopArrival(recipientTruck.Code, recipientTruck.Description, DateTime.Now));
+
+                    _logger.LogInformation("Set parcel state to inTruckDelivery");
+                    parcel.State = Parcel.StateEnum.InTruckDeliveryEnum;
+                }
+
+                else
+                {
+                    _logger.LogInformation("Predicting future hops - stepping through hierarchy");
+
+                    parcel.FutureHops = new List<HopArrival>
+                    {
+                        new HopArrival(senderTruck.Parent.Hop.Code, senderTruck.Parent.Hop.Description, DateTime.Now)
+                    };
+
+                    DataAccess.Entities.Warehouse currentSenderHop = senderTruck.Parent.Parent;
+                    DataAccess.Entities.Warehouse currentRecipientHop = recipientTruck.Parent.Parent;
+
+                    while (currentSenderHop != currentRecipientHop)
+                    {
+                        currentSenderHop = currentSenderHop.Parent.Parent;
+                        currentRecipientHop = currentRecipientHop.Parent.Parent;
+                        parcel.FutureHops.Add(new HopArrival(currentSenderHop.Code, currentSenderHop.Description, DateTime.Now));
+                        parcel.FutureHops.Add(new HopArrival(currentRecipientHop.Code, currentRecipientHop.Description, DateTime.Now));
+                    }
+
+                    parcel.FutureHops.Add(new HopArrival(currentSenderHop.Code, currentSenderHop.Description, DateTime.Now));
+                    parcel.FutureHops.Add(new HopArrival(recipientTruck.Parent.Hop.Code, recipientTruck.Parent.Hop.Description, DateTime.Now));
+                    _logger.LogInformation("Predicted future hops");
+
+                    _logger.LogInformation("Set parcel state to pickup");
+                    parcel.State = Parcel.StateEnum.PickupEnum;
+
+                }
+            }
             DataAccess.Entities.Parcel DAparcel = this._mapper.Map<DataAccess.Entities.Parcel>(parcel);
             try
             {
