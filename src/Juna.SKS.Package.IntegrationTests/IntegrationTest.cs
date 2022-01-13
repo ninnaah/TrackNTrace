@@ -15,7 +15,7 @@ namespace Juna.SKS.Package.IntegrationTests
 {
     public class IntegrationTest
     {
-        /*private string _baseURL;
+        private string _baseURL;
         private HttpClient _httpClient;
 
         string trackingId;
@@ -23,7 +23,7 @@ namespace Juna.SKS.Package.IntegrationTests
         [SetUp]
         public void Setup()
         {
-            _baseURL = "https://juna-trackntrace.azurewebsites.net/";
+            _baseURL = "https://testing-juna-trackntrace.azurewebsites.net/";
         
             _httpClient = new HttpClient()
             {
@@ -209,13 +209,13 @@ namespace Juna.SKS.Package.IntegrationTests
 
             var json = await response.Content.ReadAsStringAsync();
 
-            Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json", response.Content.Headers.ContentType.MediaType);
             Assert.IsNotEmpty(json);
             Assert.That(json, Contains.Substring("\"trackingId\":\"ABCD12345\""));
 
         }
-        */
+        
 
 
 
