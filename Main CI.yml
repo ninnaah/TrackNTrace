@@ -58,3 +58,4 @@ steps:
   displayName: Publish Integration Tests
   inputs:
     TargetPath: '$(Build.SourcesDirectory)/src/Juna.SKS.Package.IntegrationTests/bin/$(BuildConfiguration)/net5.0/'
+    ArtifactName: 'IntegrationTests'
