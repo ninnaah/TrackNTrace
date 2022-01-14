@@ -54,7 +54,7 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.That(json, Contains.Substring("Warehouse Level 1 - Wien"));
         }
 
-        [Test, Order(1)]
+        [Test, Order(2)]
         public async Task GetWarehouse()
         {
             var response = await _httpClient.GetAsync("/warehouse/WTTA010");
@@ -66,7 +66,7 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.That(json, Contains.Substring("Truck in Atzgersdorf"));
         }
 
-        [Test, Order(2)]
+        [Test, Order(3)]
         public async Task SubmitParcel()
         {
             Recipient recipient = new ()
@@ -110,7 +110,7 @@ namespace Juna.SKS.Package.IntegrationTests
 
         }
 
-        [Test, Order(3)]
+        [Test, Order(4)]
         public async Task TrackParcel_1()
         {
             var response = await _httpClient.GetAsync($"/parcel/{trackingId}");
@@ -122,7 +122,7 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.That(json, Contains.Substring("Truck in Brigittenau"));
         }
 
-        [Test, Order(4)]
+        [Test, Order(5)]
         public async Task ReportParcelHop_1()
         {
             var response = await _httpClient.PostAsync($"/parcel/{trackingId}/reportHop/WTTA086", null);
@@ -130,7 +130,7 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [Test, Order(5)]
+        [Test, Order(6)]
         public async Task TrackParcel_2()
         {
             var response = await _httpClient.GetAsync($"/parcel/{trackingId}");
@@ -143,7 +143,7 @@ namespace Juna.SKS.Package.IntegrationTests
             
         }
 
-        [Test, Order(6)]
+        [Test, Order(7)]
         public async Task ReportParcelHop_2()
         {
             var response = await _httpClient.PostAsync($"/parcel/{trackingId}/reportHop/WENB01", null);
@@ -151,7 +151,7 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [Test, Order(7)]
+        [Test, Order(8)]
         public async Task ReportParcelDelivery()
         {
             var response = await _httpClient.PostAsync($"/parcel/{trackingId}/reportDelivery", null);
@@ -159,7 +159,7 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [Test, Order(8)]
+        [Test, Order(9)]
         public async Task TrackParcel_3()
         {
             var response = await _httpClient.GetAsync($"/parcel/{trackingId}");
@@ -175,7 +175,7 @@ namespace Juna.SKS.Package.IntegrationTests
 
 
 
-        [Test, Order(9)]
+        [Test, Order(10)]
         public async Task TransitionParcel()
         {
             Recipient recipient = new()
