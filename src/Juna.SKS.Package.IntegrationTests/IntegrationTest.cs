@@ -43,10 +43,7 @@ namespace Juna.SKS.Package.IntegrationTests
         [Test, Order(1)]
         public async Task ImportWarehouse()
         {
-            //var sampleDataset = File.ReadAllText(@"../../../../Juna.SKS.Package.IntegrationTests/SampleDataset.json");
-            var config = InitConfiguration();
-
-            var sampleDataset = File.ReadAllText(config["IntegrationTestFilePath:Default"]);
+            var sampleDataset = File.ReadAllText(@"C:\Users\ninah\Desktop\TrackNTrace\src\Juna.SKS.Package.IntegrationTests\SampleDataset.json");
             var data = new StringContent(sampleDataset, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync("/warehouse", data);
