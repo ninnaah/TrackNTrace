@@ -20,15 +20,6 @@ namespace Juna.SKS.Package.IntegrationTests
         private HttpClient _httpClient;
         string trackingId;
 
-        public static IConfiguration InitConfiguration()
-        {
-            var config = new ConfigurationBuilder()
-               .AddJsonFile("appsettings.test.json")
-                .AddEnvironmentVariables()
-                .Build();
-            return config;
-        }
-
         [SetUp]
         public void Setup()
         {
@@ -40,16 +31,16 @@ namespace Juna.SKS.Package.IntegrationTests
             };
         }
 
-        [Test, Order(1)]
+        /*[Test, Order(1)]
         public async Task ImportWarehouse()
         {
-            var sampleDataset = File.ReadAllText(@"C:\Users\ninah\Desktop\TrackNTrace\src\Juna.SKS.Package.IntegrationTests\SampleDataset.json");
+            var sampleDataset = File.ReadAllText(@"../../../../Juna.SKS.Package.IntegrationTests/SampleDataset.json");
             var data = new StringContent(sampleDataset, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync("/warehouse", data);
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-        }
+        }*/
 
         [Test, Order(1)]
         public async Task ExportWarehouse()
