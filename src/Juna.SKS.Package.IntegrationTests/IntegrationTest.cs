@@ -1,4 +1,5 @@
 using Juna.SKS.Package.Services.DTOs.Models;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -17,8 +18,16 @@ namespace Juna.SKS.Package.IntegrationTests
     {
         private string _baseURL;
         private HttpClient _httpClient;
-
         string trackingId;
+
+        public static IConfiguration InitConfiguration()
+        {
+            var config = new ConfigurationBuilder()
+               .AddJsonFile("appsettings.test.json")
+                .AddEnvironmentVariables()
+                .Build();
+            return config;
+        }
 
         [SetUp]
         public void Setup()
@@ -34,7 +43,10 @@ namespace Juna.SKS.Package.IntegrationTests
         [Test, Order(1)]
         public async Task ImportWarehouse()
         {
-            var sampleDataset = File.ReadAllText(@"../../../../Juna.SKS.Package.IntegrationTests/SampleDataset.json");
+            //var sampleDataset = File.ReadAllText(@"../../../../Juna.SKS.Package.IntegrationTests/SampleDataset.json");
+            var config = InitConfiguration();
+
+            var sampleDataset = File.ReadAllText(config["IntegrationTestFilePath:Default"]);
             var data = new StringContent(sampleDataset, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync("/warehouse", data);
