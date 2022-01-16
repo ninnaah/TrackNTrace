@@ -1,0 +1,34 @@
+﻿@model Juna.SKS.Package.Website.Models.Parcel
+
+@{
+    ViewData["Title"] = "Submit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Submit</h1>
+
+<h4>Parcel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Submit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Weight" class="control-label"></label>
+                <input asp-for="Weight" class="form-control" />
+                <span asp-validation-for="Weight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

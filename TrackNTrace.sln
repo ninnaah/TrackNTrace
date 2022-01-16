@@ -47,7 +47,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.WebhookMan
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.WebhookManager.Tests", "src\Juna.SKS.Package.WebhookManager.Tests\Juna.SKS.Package.WebhookManager.Tests.csproj", "{FD8215D0-1B8B-4EDE-8ED8-7D23213E56B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.IntegrationTests", "src\Juna.SKS.Package.IntegrationTests\Juna.SKS.Package.IntegrationTests.csproj", "{3456D070-78B0-4D21-9C14-093AE3864870}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.IntegrationTests", "src\Juna.SKS.Package.IntegrationTests\Juna.SKS.Package.IntegrationTests.csproj", "{3456D070-78B0-4D21-9C14-093AE3864870}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.Website", "src\Juna.SKS.Package.Website\Juna.SKS.Package.Website.csproj", "{08DDC1D6-DE7B-4BD3-9CBB-33448B85C96B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -135,6 +137,10 @@ Global
 		{3456D070-78B0-4D21-9C14-093AE3864870}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3456D070-78B0-4D21-9C14-093AE3864870}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3456D070-78B0-4D21-9C14-093AE3864870}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08DDC1D6-DE7B-4BD3-9CBB-33448B85C96B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08DDC1D6-DE7B-4BD3-9CBB-33448B85C96B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08DDC1D6-DE7B-4BD3-9CBB-33448B85C96B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08DDC1D6-DE7B-4BD3-9CBB-33448B85C96B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
