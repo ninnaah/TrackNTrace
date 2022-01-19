@@ -42,7 +42,7 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }*/
 
-        /*[Test, Order(1)]
+        [Test, Order(1)]
         public async Task ExportWarehouse()
         {
             var response = await _httpClient.GetAsync("/warehouse");
@@ -214,7 +214,7 @@ namespace Juna.SKS.Package.IntegrationTests
             Assert.IsNotEmpty(json);
             Assert.That(json, Contains.Substring("\"trackingId\":\"ABCD12345\""));
 
-        }*/
+        }
         
 
 
