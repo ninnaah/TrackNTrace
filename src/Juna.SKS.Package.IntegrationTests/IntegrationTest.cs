@@ -31,7 +31,7 @@ namespace Juna.SKS.Package.IntegrationTests
             };
         }
 
-        /*[Test, Order(1)]
+        /*[Test, Order(0)]
         public async Task ImportWarehouse()
         {
             var sampleDataset = File.ReadAllText(@"../../../../Juna.SKS.Package.IntegrationTests/SampleDataset.json");

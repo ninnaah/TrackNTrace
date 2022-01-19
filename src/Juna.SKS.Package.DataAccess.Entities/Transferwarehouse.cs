@@ -37,21 +37,6 @@ namespace Juna.SKS.Package.DataAccess.Entities
             LocationName = locationName;
             LocationCoordinates = locationCoordinates;
         }
-        public TransferWarehouse(int id, Geometry region, string logisticsPartner, string logisticsPartnerUrl, string hopType, string code,
-            string description, int processingDelayMins, string locationName, GeoCoordinate locationCoordinates, WarehouseNextHops parent)
-        {
-            Id = id;
-            Region = region;
-            LogisticsPartner = logisticsPartner;
-            LogisticsPartnerUrl = logisticsPartnerUrl;
-            HopType = hopType;
-            Code = code;
-            Description = description;
-            ProcessingDelayMins = processingDelayMins;
-            LocationName = locationName;
-            LocationCoordinates = locationCoordinates;
-            Parent = parent;
-        }
         public virtual Geometry Region { get; set; }
 
         public string LogisticsPartner { get; set; }

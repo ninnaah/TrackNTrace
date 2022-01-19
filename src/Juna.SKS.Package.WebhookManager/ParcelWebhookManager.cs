@@ -27,6 +27,14 @@ namespace Juna.SKS.Package.WebhookManager
             _client = client;
         }
 
+        public ParcelWebhookManager(IWebhookRepository webhookRepo, IParcelRepository parcelRepo, ILogger<ParcelWebhookManager> logger)
+        {
+            _logger = logger;
+            _webhookRepo = webhookRepo;
+            _parcelRepo = parcelRepo;
+            _client = new HttpClient();
+        }
+
         public WebhookResponses ListParcelWebhooks(string trackingId)
         {
             _logger.LogInformation("Trying to list parcel webhooks");
