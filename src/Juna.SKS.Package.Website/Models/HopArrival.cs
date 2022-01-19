@@ -22,7 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Juna.SKS.Package.Website.Models
 { 
     [ExcludeFromCodeCoverage]
-    public partial class HopArrival
+    public class HopArrival
     { 
         public string Code { get; set; }
 

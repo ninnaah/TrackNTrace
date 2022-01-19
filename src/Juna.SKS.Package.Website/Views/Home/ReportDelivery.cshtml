@@ -1,0 +1,33 @@
+﻿@model Juna.SKS.Package.Website.Models.NewParcelInfo
+
+@{
+    ViewData["Title"] = "ReportDelivery";
+}
+
+<h1>Report Parcel Delivery</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="ReportDelivery">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="TrackingId" class="control-label"></label>
+                <input asp-for="TrackingId" class="form-control" />
+                <span asp-validation-for="TrackingId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<hr />
+<div>
+    <a asp-action="Index">Back to Home Page</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

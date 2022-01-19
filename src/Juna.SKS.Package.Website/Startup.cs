@@ -44,6 +44,7 @@ namespace Juna.SKS.Package.Website
 
             app.UseRouting();
 
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

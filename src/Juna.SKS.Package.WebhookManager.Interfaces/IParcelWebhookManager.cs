@@ -13,6 +13,5 @@ namespace Juna.SKS.Package.WebhookManager.Interfaces
         WebhookResponse SubscribeParcelWebhook(string trackingId, string url);
         void UnsubscribeParcelWebhook(long? id);
         void NotifySubscribers(Parcel parcel);
-
     }
 }

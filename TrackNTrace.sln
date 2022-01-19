@@ -49,7 +49,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.WebhookMan
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.IntegrationTests", "src\Juna.SKS.Package.IntegrationTests\Juna.SKS.Package.IntegrationTests.csproj", "{3456D070-78B0-4D21-9C14-093AE3864870}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Juna.SKS.Package.Website", "src\Juna.SKS.Package.Website\Juna.SKS.Package.Website.csproj", "{08DDC1D6-DE7B-4BD3-9CBB-33448B85C96B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Juna.SKS.Package.Website", "src\Juna.SKS.Package.Website\Juna.SKS.Package.Website.csproj", "{08DDC1D6-DE7B-4BD3-9CBB-33448B85C96B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

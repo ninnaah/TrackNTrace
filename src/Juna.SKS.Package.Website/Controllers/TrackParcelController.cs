@@ -21,22 +21,6 @@ namespace Juna.SKS.Package.Website.Controllers
 
         }
 
-        [HttpGet]
-        public ActionResult Track(string trackingId)
-        {
-            //read id from user
-
-            TrackingInformation parcelInfo = new TrackingInformation();
-            HttpResponseMessage response = _client.GetAsync($"{_client.BaseAddress}/parcel/{trackingId}").Result;
-           
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                parcelInfo = JsonConvert.DeserializeObject<TrackingInformation>(data);
-                
-            }
-            return View(parcelInfo);
-
-        }
+        
     }
 }

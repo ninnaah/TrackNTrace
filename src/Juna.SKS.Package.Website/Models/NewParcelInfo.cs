@@ -22,7 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Juna.SKS.Package.Website.Models
 { 
     [ExcludeFromCodeCoverage]
-    public partial class NewParcelInfo
+    public class NewParcelInfo
     { 
         public string TrackingId { get; set; }
 

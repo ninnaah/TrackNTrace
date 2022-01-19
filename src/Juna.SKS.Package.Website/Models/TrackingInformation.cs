@@ -23,7 +23,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Juna.SKS.Package.Website.Models
 { 
     [ExcludeFromCodeCoverage]
-    public partial class TrackingInformation
+    public class TrackingInformation
     { 
         [JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public enum StateEnum

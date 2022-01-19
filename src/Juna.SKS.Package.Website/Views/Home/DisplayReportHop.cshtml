@@ -1,0 +1,18 @@
+﻿@model Juna.SKS.Package.Website.Models.NewParcelInfo
+
+@{
+    ViewData["Title"] = "DisplayReportHop";
+}
+
+<h1>Reported Hop</h1>
+
+<div>
+    <hr />
+    <p>
+       @Html.DisplayFor(model => model.TrackingId)
+    </p>
+</div>
+<hr />
+<div>
+    <a asp-action="Index">Back to Home Page</a>
+</div>

@@ -1,0 +1,46 @@
+﻿@model Juna.SKS.Package.Website.Models.TrackingInformation
+
+@{
+    ViewData["Title"] = "DisplayTrack";
+}
+
+<h1>Display Tracking Information</h1>
+
+<div>
+    <hr />
+    <h3>State</h3>
+    @if (Model.State == TrackingInformation.StateEnum.PickupEnum)
+    {
+        <p>The parcel is picked up!</p>
+    }
+    @if (Model.State == TrackingInformation.StateEnum.InTransportEnum)
+    {
+        <p>The parcel is in transport!</p>
+    }
+    @if (Model.State == TrackingInformation.StateEnum.InTruckDeliveryEnum)
+    {
+        <p>The parcel is in truck delivery!</p>
+    }
+    @if (Model.State == TrackingInformation.StateEnum.TransferredEnum)
+    {
+        <p>The parcel is transferred!</p>
+    }
+    @if (Model.State == TrackingInformation.StateEnum.DeliveredEnum)
+    {
+        <p>The parcel is delivered!</p>
+    }
+    <h3>Visited Hops</h3>
+    @foreach (var element in Model.VisitedHops)
+    {
+        <p>@Html.DisplayFor(m => element.Description) - @Html.DisplayFor(m => element.Code)</p>
+    }
+    <h3>Future Hops</h3>
+    @foreach (var element in Model.FutureHops)
+    {
+        <p>@Html.DisplayFor(m => element.Description) - @Html.DisplayFor(m => element.Code)</p>
+    }
+</div>
+<hr />
+<div>
+    <a asp-action="Index">Back to Home Page</a>
+</div>
