@@ -161,6 +161,28 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         }
 
         [Test]
+        public void ReportParcelDelivery_ExceptionGetParcel_ThrowLogicException()
+        {
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+                .Throws(new Exception(null, null));
+
+            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockWebhookLogic.Object);
+
+            string validTrackingId = "PYJRB4HZ6";
+
+            try
+            {
+                staff.ReportParcelDelivery(validTrackingId);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
         public void ReportParcelDelivery_DataExceptionUpdate_ThrowLogicException()
         {
             mockMapper.Setup(m => m.Map<Parcel>(It.IsAny<DataAccess.Entities.Parcel>())).Returns(new Parcel());
@@ -180,6 +202,43 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
                 .Returns(returnParcel);
             mockParcelRepo.Setup(m => m.Update(It.IsAny<DataAccess.Entities.Parcel>())).Throws(new DataException(null, null));
+
+            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockWebhookLogic.Object);
+
+            string validTrackingId = "PYJRB4HZ6";
+
+            try
+            {
+                staff.ReportParcelDelivery(validTrackingId);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
+        public void ReportParcelDelivery_ExceptionUpdate_ThrowLogicException()
+        {
+            mockMapper.Setup(m => m.Map<Parcel>(It.IsAny<DataAccess.Entities.Parcel>())).Returns(new Parcel());
+
+            mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<Parcel>())).Returns(new DataAccess.Entities.Parcel());
+
+            var returnParcel = Builder<DataAccess.Entities.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Id = 1)
+                .With(p => p.Recipient = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
+                .With(p => p.TrackingId = "PYJRB4HZ6")
+                .With(p => p.VisitedHops = Builder<DataAccess.Entities.HopArrival>.CreateListOfSize(3).Build().ToList())
+                .With(p => p.FutureHops = Builder<DataAccess.Entities.HopArrival>.CreateListOfSize(3).Build().ToList())
+                .With(p => p.State = DataAccess.Entities.Parcel.StateEnum.InTransportEnum)
+                .Build();
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+                .Returns(returnParcel);
+            mockParcelRepo.Setup(m => m.Update(It.IsAny<DataAccess.Entities.Parcel>())).Throws(new Exception(null, null));
 
             IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockWebhookLogic.Object);
 
@@ -413,6 +472,28 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             }
 
         }
+        [Test]
+        public void ReportParcelHop_ExceptionGetParcel_ThrowLogicException()
+        {
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+                .Throws(new Exception(null, null));
+
+            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockWebhookLogic.Object);
+
+            string validTrackingId = "PYJRB4HZ6";
+            string validCode = "ABCD1234";
+
+            try
+            {
+                staff.ReportParcelHop(validTrackingId, validCode);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
 
         [Test]
         public void ReportParcelHop_DataNotFoundExceptionGetHop_ThrowLogicDataNotFoundException()
@@ -526,6 +607,64 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
                 .Returns(returnHop);
 
             mockParcelRepo.Setup(m => m.Update(It.IsAny<DataAccess.Entities.Parcel>())).Throws(new DataException(null, null));
+
+            IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockWebhookLogic.Object);
+
+            string validTrackingId = "PYJRB4HZ6";
+            string validCode = "ABCD1234";
+
+            try
+            {
+                staff.ReportParcelHop(validTrackingId, validCode);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
+        public void ReportParcelHop_ExceptionUpdate_ThrowLogicException()
+        {
+            var BLreturnParcel = Builder<Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+                .With(p => p.TrackingId = "PYJRB4HZ6")
+                .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+                .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+                .With(p => p.State = Parcel.StateEnum.InTransportEnum)
+                .Build();
+            mockMapper.Setup(m => m.Map<Parcel>(It.IsAny<DataAccess.Entities.Parcel>())).Returns(BLreturnParcel);
+
+            mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<Parcel>())).Returns(new DataAccess.Entities.Parcel());
+
+            mockMapper.Setup(m => m.Map<Hop>(It.IsAny<DataAccess.Entities.Hop>())).Returns(new Hop());
+
+            var returnParcel = Builder<DataAccess.Entities.Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.Id = 1)
+               .With(p => p.Recipient = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.VisitedHops = Builder<DataAccess.Entities.HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.FutureHops = Builder<DataAccess.Entities.HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.State = DataAccess.Entities.Parcel.StateEnum.InTransportEnum)
+               .Build();
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+                .Returns(returnParcel);
+
+            var returnHop = Builder<DataAccess.Entities.Hop>.CreateNew()
+                .With(p => p.Id = 1)
+                .With(p => p.Code = "ABCD1234")
+                .With(p => p.Description = "Hauptlager 27-12")
+                .Build();
+            mockHopRepo.Setup(m => m.GetSingleHopByCode(It.IsAny<string>()))
+                .Returns(returnHop);
+
+            mockParcelRepo.Setup(m => m.Update(It.IsAny<DataAccess.Entities.Parcel>())).Throws(new Exception(null, null));
 
             IStaffLogic staff = new StaffLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockWebhookLogic.Object);
 

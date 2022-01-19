@@ -99,6 +99,25 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             }
         }
 
+        [Test]
+        public void ExportWarehouses_Exception_ThrowLogicException()
+        {
+            mockRepo.Setup(m => m.GetWarehouseHierarchy())
+                .Throws(new Exception(null, null));
+
+            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+
+            try
+            {
+                var testResult = warehouseManagement.ExportWarehouse();
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+        }
+
 
 
 
@@ -176,6 +195,26 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         {
             mockRepo.Setup(m => m.GetSingleHopByCode(It.IsAny<string>()))
                 .Throws(new DataException(null, null));
+
+            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+
+            string validCode = "ABCD1234";
+
+            try
+            {
+                var testResult = warehouseManagement.GetHop(validCode);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+        }
+        [Test]
+        public void GetHop_Exception_ThrowLogicException()
+        {
+            mockRepo.Setup(m => m.GetSingleHopByCode(It.IsAny<string>()))
+                .Throws(new Exception(null, null));
 
             IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
 
@@ -277,6 +316,35 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
             mockRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Hop>()))
                 .Throws(new DataException(null, null));
+
+            var validWarehouse = Builder<Warehouse>.CreateNew()
+                .With(p => p.Code = "ABCD1234")
+                .With(p => p.Level = 1)
+                .With(p => p.Description = "Hauptlager 27-12")
+                .With(p => p.NextHops = Builder<WarehouseNextHops>.CreateListOfSize(3).Build().ToList())
+                .Build();
+
+            IWarehouseManagementLogic warehouseManagement = new WarehouseManagementLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+
+            try
+            {
+                warehouseManagement.ImportWarehouse(validWarehouse);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
+        public void ImportWarehouses_ExceptionCreate_ThrowLogicException()
+        {
+            mockMapper.Setup(m => m.Map<DataAccess.Entities.Warehouse>(It.IsAny<Warehouse>())).Returns(new DataAccess.Entities.Warehouse());
+
+            mockRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Hop>()))
+                .Throws(new Exception(null, null));
 
             var validWarehouse = Builder<Warehouse>.CreateNew()
                 .With(p => p.Code = "ABCD1234")

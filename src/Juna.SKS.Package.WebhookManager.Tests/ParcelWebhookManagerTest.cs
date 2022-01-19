@@ -2,13 +2,19 @@
 using FizzWare.NBuilder;
 using Juna.SKS.Package.DataAccess.Entities;
 using Juna.SKS.Package.DataAccess.Interfaces;
-using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
 using Juna.SKS.Package.WebhookManager.Interfaces;
+using Juna.SKS.Package.WebhookManager.Interfaces.Exceptions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Moq.Protected;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Juna.SKS.Package.WebhookManager.Tests
 {
@@ -17,8 +23,7 @@ namespace Juna.SKS.Package.WebhookManager.Tests
         Mock<IParcelRepository> mockParcelRepo;
         Mock<IWebhookRepository> mockWebhookRepo;
         Mock<ILogger<ParcelWebhookManager>> mockLogger;
-        Mock<IParcelWebhookManager> mockWebhookManager;
-        Mock<HttpClient> mockHttpClient;
+        Mock<HttpMessageHandler> mockHttpHandler;
 
         [SetUp]
         public void Setup()
@@ -28,9 +33,20 @@ namespace Juna.SKS.Package.WebhookManager.Tests
 
             mockLogger = new Mock<ILogger<ParcelWebhookManager>>();
 
-            mockWebhookManager = new Mock<IParcelWebhookManager>();
 
-            mockHttpClient = new Mock<HttpClient>();
+            var response = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK
+            };
+
+            mockHttpHandler = new Mock<HttpMessageHandler>();
+            mockHttpHandler
+               .Protected()
+               .Setup<Task<HttpResponseMessage>>(
+                  "SendAsync",
+                  ItExpr.IsAny<HttpRequestMessage>(),
+                  ItExpr.IsAny<CancellationToken>())
+               .ReturnsAsync(response);
         }
 
         [Test]
@@ -44,7 +60,7 @@ namespace Juna.SKS.Package.WebhookManager.Tests
             string validTrackingId = "PYJRB4HZ6";
 
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
 
             var testResult = webhookLogic.ListParcelWebhooks(validTrackingId);
 
@@ -56,10 +72,10 @@ namespace Juna.SKS.Package.WebhookManager.Tests
         public void ListParcelWebhooks_DataNotFoundException_ThrowDataNotFoundException()
         {
             mockWebhookRepo.Setup(m => m.GetWebhookResponsesByTrackingId(It.IsAny<string>()))
-                .Throws(new DataNotFoundException(null, null));
+                .Throws(new DataAccess.Interfaces.Exceptions.DataNotFoundException(null, null));
 
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
             string validTrackingId = "PYJRB4HZ6";
 
             try
@@ -77,10 +93,30 @@ namespace Juna.SKS.Package.WebhookManager.Tests
         public void ListParcelWebhooks_DataException_ThrowDataException()
         {
             mockWebhookRepo.Setup(m => m.GetWebhookResponsesByTrackingId(It.IsAny<string>()))
-                .Throws(new DataException(null, null));
+                .Throws(new DataAccess.Interfaces.Exceptions.DataException(null, null));
 
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
+            string validTrackingId = "PYJRB4HZ6";
+
+            try
+            {
+                webhookLogic.ListParcelWebhooks(validTrackingId);
+                Assert.Fail();
+            }
+            catch (DataException)
+            {
+                Assert.Pass();
+            }
+        }
+        [Test]
+        public void ListParcelWebhooks_Exception_ThrowDataException()
+        {
+            mockWebhookRepo.Setup(m => m.GetWebhookResponsesByTrackingId(It.IsAny<string>()))
+                .Throws(new Exception(null,null));
+
+
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
             string validTrackingId = "PYJRB4HZ6";
 
             try
@@ -109,7 +145,7 @@ namespace Juna.SKS.Package.WebhookManager.Tests
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
                 .Returns(returnParcel);
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
 
             string validTrackingId = "PYJRB4HZ6";
             string validUrl = "aURL";
@@ -125,9 +161,9 @@ namespace Juna.SKS.Package.WebhookManager.Tests
         public void SubscribeParcelWebhook_DataNotFoundExceptionGetParcel_ThrowDataNotFoundException()
         {
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
-                .Throws(new DataNotFoundException(null, null));
+                .Throws(new DataAccess.Interfaces.Exceptions.DataNotFoundException(null, null));
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
 
             string invalidTrackingId = "PYJRB4HZ6";
             string validUrl = "aURL";
@@ -147,9 +183,30 @@ namespace Juna.SKS.Package.WebhookManager.Tests
         public void SubscribeParcelWebhook_DataExceptionGetParcel_ThrowDataException()
         {
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
-                .Throws(new DataException(null, null));
+                .Throws(new DataAccess.Interfaces.Exceptions.DataException(null, null));
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
+
+            string invalidTrackingId = "PYJRB4HZ6";
+            string validUrl = "aURL";
+
+            try
+            {
+                webhookLogic.SubscribeParcelWebhook(invalidTrackingId, validUrl);
+                Assert.Fail();
+            }
+            catch (DataException)
+            {
+                Assert.Pass();
+            }
+        }
+        [Test]
+        public void SubscribeParcelWebhook_ExceptionGetParcel_ThrowDataException()
+        {
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+                .Throws(new Exception(null, null));
+
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
 
             string invalidTrackingId = "PYJRB4HZ6";
             string validUrl = "aURL";
@@ -170,14 +227,40 @@ namespace Juna.SKS.Package.WebhookManager.Tests
         public void SubscribeParcelWebhook_DataExceptionCreate_ThrowDataException()
         {
             mockWebhookRepo.Setup(m => m.Create(It.IsAny<WebhookResponse>()))
-                .Throws(new DataException(null, null));
+                .Throws(new DataAccess.Interfaces.Exceptions.DataException(null, null));
 
             var returnParcel = Builder<Parcel>.CreateNew().Build();
 
             mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
                 .Returns(returnParcel);
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
+
+            string invalidTrackingId = "PYJRB4HZ6";
+            string validUrl = "aURL";
+
+            try
+            {
+                webhookLogic.SubscribeParcelWebhook(invalidTrackingId, validUrl);
+                Assert.Fail();
+            }
+            catch (DataException)
+            {
+                Assert.Pass();
+            }
+        }
+        [Test]
+        public void SubscribeParcelWebhook_ExceptionCreate_ThrowDataException()
+        {
+            mockWebhookRepo.Setup(m => m.Create(It.IsAny<WebhookResponse>()))
+                .Throws(new Exception(null, null));
+
+            var returnParcel = Builder<Parcel>.CreateNew().Build();
+
+            mockParcelRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+                .Returns(returnParcel);
+
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
 
             string invalidTrackingId = "PYJRB4HZ6";
             string validUrl = "aURL";
@@ -203,7 +286,7 @@ namespace Juna.SKS.Package.WebhookManager.Tests
         {
             mockWebhookRepo.Setup(m => m.Delete(It.IsAny<long>()));
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
 
             long validId = 1;
 
@@ -215,10 +298,10 @@ namespace Juna.SKS.Package.WebhookManager.Tests
         public void UnsubscribeParcelWebhook_DataNotFoundException_ThrowDataNotFoundException()
         {
             mockWebhookRepo.Setup(m => m.Delete(It.IsAny<long>()))
-                .Throws(new DataNotFoundException(null, null));
+                .Throws(new DataAccess.Interfaces.Exceptions.DataNotFoundException(null, null));
 
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
             long invalidId = 1;
 
             try
@@ -236,10 +319,31 @@ namespace Juna.SKS.Package.WebhookManager.Tests
         public void UnsubscribeParcelWebhook_DataException_ThrowDataException()
         {
             mockWebhookRepo.Setup(m => m.Delete(It.IsAny<long>()))
-                .Throws(new DataException(null, null));
+                .Throws(new DataAccess.Interfaces.Exceptions.DataException(null, null));
 
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
+            long invalidId = 1;
+
+            try
+            {
+                webhookLogic.UnsubscribeParcelWebhook(invalidId);
+                Assert.Fail();
+            }
+            catch (DataException)
+            {
+                Assert.Pass();
+            }
+        }
+
+        [Test]
+        public void UnsubscribeParcelWebhook_Exception_ThrowDataException()
+        {
+            mockWebhookRepo.Setup(m => m.Delete(It.IsAny<long>()))
+                .Throws(new Exception(null, null));
+
+
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, null);
             long invalidId = 1;
 
             try
@@ -255,13 +359,29 @@ namespace Juna.SKS.Package.WebhookManager.Tests
 
 
 
-        /*[Test]
+
+        [Test]
         public void NotifySubscribers_NoException_DontThrowException()
         {
-            var webhooks = Builder<DataAccess.Entities.WebhookResponses>.CreateNew().Build();
-            mockWebhookManager.Setup(m => m.ListParcelWebhooks(It.IsAny<string>())).Returns(webhooks);
+            var httpClient = new HttpClient(mockHttpHandler.Object);
+            List<WebhookResponse> webhooks = new List<WebhookResponse>()
+            {
+                new WebhookResponse("ABC", "http://example.com", DateTime.Now),
+                new WebhookResponse("ABC", "http://example.com", DateTime.Now),
+                new WebhookResponse("ABC", "http://example.com", DateTime.Now)
+            };
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            DataAccess.Entities.WebhookResponses webhookResponses = new();
+
+            foreach(WebhookResponse webhook in webhooks)
+            {
+                webhookResponses.Add(webhook);
+            }
+
+            mockWebhookRepo.Setup(m => m.GetWebhookResponsesByTrackingId(It.IsAny<string>()))
+               .Returns(webhookResponses);
+
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, httpClient);
 
             var parcel = Builder<DataAccess.Entities.Parcel>.CreateNew()
                 .With(p => p.Weight = 3)
@@ -273,17 +393,24 @@ namespace Juna.SKS.Package.WebhookManager.Tests
                 .Build();
 
             Assert.DoesNotThrow(() => webhookLogic.NotifySubscribers(parcel));
+            mockHttpHandler.Protected().Verify(
+              "SendAsync",
+              Times.Exactly(3),
+              ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post),
+              ItExpr.IsAny<CancellationToken>());
 
         }
 
         [Test]
         public void NotifySubscribers_DataNotFoundException_ThrowDataNotFoundException()
         {
-            mockWebhookManager.Setup(m => m.ListParcelWebhooks(It.IsAny<string>()))
-                .Throws(new DataNotFoundException(null, null));
+            var httpClient = new HttpClient(mockHttpHandler.Object);
+
+            mockWebhookRepo.Setup(m => m.GetWebhookResponsesByTrackingId(It.IsAny<string>()))
+                .Throws(new DataAccess.Interfaces.Exceptions.DataNotFoundException(null, null));
 
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, httpClient);
             var parcel = Builder<DataAccess.Entities.Parcel>.CreateNew()
                 .With(p => p.Weight = 3)
                 .With(p => p.Recipient = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
@@ -307,11 +434,13 @@ namespace Juna.SKS.Package.WebhookManager.Tests
         [Test]
         public void NotifySubscribers_DataException_ThrowDataException()
         {
-            mockWebhookManager.Setup(m => m.ListParcelWebhooks(It.IsAny<string>()))
-                .Throws(new DataException(null, null));
+            var httpClient = new HttpClient(mockHttpHandler.Object);
+
+            mockWebhookRepo.Setup(m => m.GetWebhookResponsesByTrackingId(It.IsAny<string>()))
+                .Throws(new DataAccess.Interfaces.Exceptions.DataException(null, null));
 
 
-            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object);
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, httpClient);
             var parcel = Builder<DataAccess.Entities.Parcel>.CreateNew()
                 .With(p => p.Weight = 3)
                 .With(p => p.Recipient = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
@@ -330,6 +459,36 @@ namespace Juna.SKS.Package.WebhookManager.Tests
             {
                 Assert.Pass();
             }
-        }*/
+        }
+
+        [Test]
+        public void NotifySubscribers_Exception_ThrowDataException()
+        {
+            var httpClient = new HttpClient(mockHttpHandler.Object);
+
+            mockWebhookRepo.Setup(m => m.GetWebhookResponsesByTrackingId(It.IsAny<string>()))
+                .Throws(new Exception(null, null));
+
+
+            IParcelWebhookManager webhookLogic = new ParcelWebhookManager(mockWebhookRepo.Object, mockParcelRepo.Object, mockLogger.Object, httpClient);
+            var parcel = Builder<DataAccess.Entities.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<DataAccess.Entities.Recipient>.CreateNew().Build())
+                .With(p => p.TrackingId = "PYJRB4HZ6")
+                .With(p => p.VisitedHops = Builder<DataAccess.Entities.HopArrival>.CreateListOfSize(3).Build().ToList())
+                .With(p => p.FutureHops = Builder<DataAccess.Entities.HopArrival>.CreateListOfSize(3).Build().ToList())
+                .Build();
+
+            try
+            {
+                webhookLogic.NotifySubscribers(parcel);
+                Assert.Fail();
+            }
+            catch (DataException)
+            {
+                Assert.Pass();
+            }
+        }
     }
 }

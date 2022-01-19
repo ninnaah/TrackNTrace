@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace Juna.SKS.Package.ServiceAgents.Tests
 {
-    public class OpenStreetMapEncodingAgentTest
+    /*public class OpenStreetMapEncodingAgentTest
     {
         Mock<ILogger<OpenStreetMapEncodingAgent>> mockLogger;
         Mock<ForwardGeocoder> mockCoder;
@@ -24,7 +24,7 @@ namespace Juna.SKS.Package.ServiceAgents.Tests
         [Test]
         public void EncodeAddress_ValidInput_ReturnGeoCoordinate()
         {
-            /*var response = new GeocodeResponse[2]
+            var response = new GeocodeResponse[2]
             {
                 new GeocodeResponse(),
                 new GeocodeResponse()
@@ -41,7 +41,7 @@ namespace Juna.SKS.Package.ServiceAgents.Tests
                 PostalCode = "Austria"
             };
 
-            mockCoder.Setup(g => g.Geocode(It.IsAny<ForwardGeocodeRequest>())).ReturnsAsync(response);*/
+            mockCoder.Setup(g => g.Geocode(It.IsAny<ForwardGeocodeRequest>())).ReturnsAsync(response);
 
             IGeoEncodingAgent osm = new OpenStreetMapEncodingAgent(mockLogger.Object);
             GeoCoordinate geoCoordinate = osm.EncodeAddress("Höchstädtplatz", "1200", "Wien", "Austria");
@@ -113,5 +113,5 @@ namespace Juna.SKS.Package.ServiceAgents.Tests
                 Assert.Pass();
             }
         }
-    }
+    }*/
 }

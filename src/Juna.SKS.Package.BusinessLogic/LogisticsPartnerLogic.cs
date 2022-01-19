@@ -71,7 +71,6 @@ namespace Juna.SKS.Package.BusinessLogic
             }
 
             _logger.LogInformation("Trying to predict future hops");
-            _logger.LogInformation("Find out trucks of sender and recipient");
 
             IEnumerable<DataAccess.Entities.Hop> DAtrucks = new List<DataAccess.Entities.Hop>();
             IEnumerable<DataAccess.Entities.Hop> DAtransferWarehouses = new List<DataAccess.Entities.Hop>();
@@ -82,19 +81,19 @@ namespace Juna.SKS.Package.BusinessLogic
             }
             catch (DataNotFoundException ex)
             {
-                string errorMessage = $"Trucks cannot be found";
+                string errorMessage = $"Trucks or Transferwarehouse cannot be found";
                 _logger.LogError(errorMessage, ex);
                 throw new LogicDataNotFoundException(nameof(LogisticsPartnerLogic), nameof(TransitionParcel), errorMessage);
             }
             catch (DataException ex)
             {
-                string errorMessage = $"An error occurred getting trucks";
+                string errorMessage = $"An error occurred getting trucks or transferwarehouse";
                 _logger.LogError(errorMessage, ex);
                 throw new LogicException(nameof(LogisticsPartnerLogic), nameof(TransitionParcel), errorMessage, ex);
             }
             catch (Exception ex)
             {
-                string errorMessage = $"An error occurred getting trucks";
+                string errorMessage = $"An error occurred getting trucks or transferwarehouse";
                 _logger.LogError(errorMessage, ex);
                 throw new LogicException(nameof(LogisticsPartnerLogic), nameof(TransitionParcel), errorMessage, ex);
             }
@@ -116,28 +115,30 @@ namespace Juna.SKS.Package.BusinessLogic
 
             _logger.LogInformation("Predicting future hops - stepping through hierarchy");
 
-                parcel.FutureHops = new List<HopArrival>
-                {
-                    new HopArrival(transferWarehouse.Code, transferWarehouse.Description, DateTime.Now)
-                };
+            parcel.FutureHops = new List<HopArrival>
+            {
+                new HopArrival(transferWarehouse.Code, transferWarehouse.Description, DateTime.Now)
+            };
 
-                DataAccess.Entities.Warehouse currentSenderHop = transferWarehouse.Parent.Parent;
-                DataAccess.Entities.Warehouse currentRecipientHop = recipientTruck.Parent.Parent;
+            DataAccess.Entities.Warehouse currentSenderHop = transferWarehouse.Parent.Parent;
+            DataAccess.Entities.Warehouse currentRecipientHop = recipientTruck.Parent.Parent;
 
-                while (currentSenderHop != currentRecipientHop)
-                {
-                    currentSenderHop = currentSenderHop.Parent.Parent;
-                    currentRecipientHop = currentRecipientHop.Parent.Parent;
-                    parcel.FutureHops.Add(new HopArrival(currentSenderHop.Code, currentSenderHop.Description, DateTime.Now));
-                    parcel.FutureHops.Add(new HopArrival(currentRecipientHop.Code, currentRecipientHop.Description, DateTime.Now));
-                }
 
+
+            while (currentSenderHop != currentRecipientHop)
+            {
+                currentSenderHop = currentSenderHop.Parent.Parent;
+                currentRecipientHop = currentRecipientHop.Parent.Parent;
                 parcel.FutureHops.Add(new HopArrival(currentSenderHop.Code, currentSenderHop.Description, DateTime.Now));
-                parcel.FutureHops.Add(new HopArrival(recipientTruck.Parent.Hop.Code, recipientTruck.Parent.Hop.Description, DateTime.Now));
-                _logger.LogInformation("Predicted future hops");
+                parcel.FutureHops.Add(new HopArrival(currentRecipientHop.Code, currentRecipientHop.Description, DateTime.Now));
+            }
 
-                _logger.LogInformation("Set parcel state to pickup");
-                parcel.State = Parcel.StateEnum.PickupEnum;
+            parcel.FutureHops.Add(new HopArrival(currentSenderHop.Code, currentSenderHop.Description, DateTime.Now));
+            parcel.FutureHops.Add(new HopArrival(recipientTruck.Parent.Hop.Code, recipientTruck.Parent.Hop.Description, DateTime.Now));
+            _logger.LogInformation("Predicted future hops");
+
+            _logger.LogInformation("Set parcel state to pickup");
+            parcel.State = Parcel.StateEnum.PickupEnum;
 
             
 
@@ -163,5 +164,6 @@ namespace Juna.SKS.Package.BusinessLogic
             _logger.LogInformation("Transitioned the parcel");
             return trackingId;
         }
+
     }
 }

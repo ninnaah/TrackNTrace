@@ -1,5 +1,6 @@
 ﻿using Juna.SKS.Package.DataAccess.Entities;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Juna.SKS.Package.ServiceAgents.Interfaces
 {

@@ -27,6 +27,13 @@ namespace Juna.SKS.Package.DataAccess.Entities
             LocationName = locationName;
             LocationCoordinates = locationCoordinates;
         }
+        public Warehouse(WarehouseNextHops parent, string code, string description)
+        {
+            Parent = parent;
+            Code = code;
+            Description = description;
+
+        }
         public int? Level { get; set; }
 
         public List<WarehouseNextHops> NextHops { get; set; }

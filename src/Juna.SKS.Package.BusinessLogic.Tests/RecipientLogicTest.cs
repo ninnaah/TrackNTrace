@@ -123,5 +123,27 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
         }
 
+        [Test]
+        public void TrackParcel_Exception_ThrowLogicException()
+        {
+            mockRepo.Setup(m => m.GetSingleParcelByTrackingId(It.IsAny<string>()))
+               .Throws(new Exception(null, null));
+
+            IRecipientLogic recipient = new RecipientLogic(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+
+            string validTrackingId = "PYJRB4HZ6";
+
+            try
+            {
+                var testResult = recipient.TrackParcel(validTrackingId);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
     }
 }

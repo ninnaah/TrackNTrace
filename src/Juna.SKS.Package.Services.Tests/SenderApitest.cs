@@ -72,9 +72,30 @@ namespace Juna.SKS.Package.Services.Tests
             Assert.AreEqual(400, testResultCode.StatusCode);
 
         }
+        [Test]
+        public void SubmitParcel_LogicDataNotFoundException_ReturnCode400()
+        {
+            mockLogic.Setup(m => m.SubmitParcel(It.IsAny<BusinessLogic.Entities.Parcel>()))
+               .Throws(new LogicDataNotFoundException(null, null, null));
+
+            SenderApiController sender = new(mockLogic.Object, mockMapper.Object, mockLogger.Object);
+
+            var validParcel = Builder<DTOs.Models.Parcel>.CreateNew()
+                .With(p => p.Weight = 3)
+                .With(p => p.Recipient = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .With(p => p.Sender = Builder<DTOs.Models.Recipient>.CreateNew().Build())
+                .Build();
+
+            var testResult = sender.SubmitParcel(validParcel);
+            Assert.IsInstanceOf<ObjectResult>(testResult);
+            var testResultCode = testResult as ObjectResult;
+
+            Assert.AreEqual(400, testResultCode.StatusCode);
+
+        }
 
         [Test]
-        public void SubmitParcel_LogicExceptionInvalidParcelWeight_ReturnCode400()
+        public void SubmitParcel_LogicException_ReturnCode400()
         {
             mockLogic.Setup(m => m.SubmitParcel(It.IsAny<BusinessLogic.Entities.Parcel>()))
                .Throws(new LogicException(null, null, null));

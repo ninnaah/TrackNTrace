@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Juna.SKS.Package.BusinessLogic.Interfaces.Exceptions;
 using Juna.SKS.Package.ServiceAgents.Interfaces;
 using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
+using NetTopologySuite.Geometries;
 
 namespace Juna.SKS.Package.BusinessLogic.Tests
 {
@@ -34,7 +35,7 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             mockHopRepo = new Mock<IHopRepository>();
 
             mockMapper = new Mock<IMapper>();
-            mockMapper.Setup(m => m.Map<GeoCoordinate>(It.IsAny<DataAccess.Entities.GeoCoordinate>())).Returns(new GeoCoordinate());
+            mockMapper.Setup(m => m.Map<GeoCoordinate>(It.IsAny<DataAccess.Entities.GeoCoordinate>())).Returns(new GeoCoordinate(5, 5));
             mockMapper.Setup(m => m.Map<DataAccess.Entities.Parcel>(It.IsAny<Parcel>())).Returns(new DataAccess.Entities.Parcel());
 
             mockLogger = new Mock<ILogger<LogisticsPartnerLogic>>();
@@ -42,13 +43,42 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
             mockAgent = new Mock<IGeoEncodingAgent>();
         }
 
-       /* [Test]
+        /*[Test]
         public void TransitionParcel_ValidParcel_ReturnTrackingId()
         {
-            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
-            var returnTrucks = Builder<DataAccess.Entities.Hop>.CreateListOfSize(3).Build().ToList();
-            mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 5,5));
+
+            Coordinate[] coords = new Coordinate[]{
+                new Coordinate(0,0),
+                new Coordinate(0,10),
+                new Coordinate(10,10),
+                new Coordinate(10,0),
+                new Coordinate(0,0)
+            };
+            GeometryFactory geometryFactory = new GeometryFactory();
+            Polygon poly = geometryFactory.CreatePolygon(coords);
+
+            DataAccess.Entities.Warehouse warehouse = new();
+
+            List<DataAccess.Entities.Hop> returnTransferwarehouses = new List<DataAccess.Entities.Hop>
+            {
+                new DataAccess.Entities.TransferWarehouse(1, poly, "partner", "url", "TransferWarehouse", "ABCD123", "description", 2, "Deutschland", null, new()),
+                new DataAccess.Entities.TransferWarehouse(2, poly, "partner", "url", "TransferWarehouse", "ABCD123", "description", 2, "Deutschland", null, new(warehouse))
+            };
+
+            mockHopRepo.Setup(m => m.GetHopsByHopType("TransferWarehouse"))
+                .Returns(returnTransferwarehouses);
+
+            var returnTrucks = new List<DataAccess.Entities.Hop>()
+            {
+                new DataAccess.Entities.Truck(1, poly, "something", "Truck", "ABCD12345", "a description", 1, "Location1", null, new()),
+                new DataAccess.Entities.Truck(2, poly, "something", "Truck", "ABCD12346", "another description", 2, "Location2", null, new(warehouse))
+            };
+
+            mockHopRepo.Setup(m => m.GetHopsByHopType("Truck"))
                 .Returns(returnTrucks);
+
+
             mockParcelRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
                 .Returns(1);
 
@@ -207,6 +237,35 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
         }
 
         [Test]
+        public void TransitionParcel_ExceptionEncodeAdress_ThrowLogicException()
+        {
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Throws(new Exception(null, null));
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+            string validTrackingId = "PYJRB4HZ6";
+
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+
+            try
+            {
+                var testResult = logisticsPartner.TransitionParcel(validParcel, validTrackingId);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+        [Test]
         public void TransitionParcel_DataNotFoundExceptionGetHopsByHopType_ThrowLogicDataNotFoundException()
         {
             mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
@@ -268,6 +327,37 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
 
         }
 
+        [Test]
+        public void TransitionParcel_ExceptionGetHopsByHopType_ThrowLogicException()
+        {
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
+            mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
+                .Throws(new Exception(null, null));
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+            string validTrackingId = "PYJRB4HZ6";
+
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+
+            try
+            {
+                var testResult = logisticsPartner.TransitionParcel(validParcel, validTrackingId);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
         /*[Test]
         public void TransitionParcel_DataExceptionCreate_ThrowLogicException()
         {
@@ -277,6 +367,39 @@ namespace Juna.SKS.Package.BusinessLogic.Tests
                 .Returns(returnTrucks);
             mockParcelRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
                  .Throws(new DataException(null, null));
+
+            var validParcel = Builder<Parcel>.CreateNew()
+               .With(p => p.Weight = 3)
+               .With(p => p.TrackingId = "PYJRB4HZ6")
+               .With(p => p.Recipient = Builder<Recipient>.CreateNew().With(x => x.Country = "Österreich").Build())
+               .With(p => p.Sender = Builder<Recipient>.CreateNew().With(x => x.Country = "Deutschland").Build())
+               .With(p => p.FutureHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .With(p => p.VisitedHops = Builder<HopArrival>.CreateListOfSize(3).Build().ToList())
+               .Build();
+            string validTrackingId = "PYJRB4HZ6";
+
+            ILogisticsPartnerLogic logisticsPartner = new LogisticsPartnerLogic(mockParcelRepo.Object, mockHopRepo.Object, mockMapper.Object, mockLogger.Object, mockAgent.Object);
+
+            try
+            {
+                var testResult = logisticsPartner.TransitionParcel(validParcel, validTrackingId);
+                Assert.Fail();
+            }
+            catch (LogicException)
+            {
+                Assert.Pass();
+            }
+
+        }*/
+        /*[Test]
+        public void TransitionParcel_ExceptionCreate_ThrowLogicException()
+        {
+            mockAgent.Setup(m => m.EncodeAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new DataAccess.Entities.GeoCoordinate(1, 8.354502800000091, 54.912746486000046));
+            var returnTrucks = Builder<DataAccess.Entities.Hop>.CreateListOfSize(3).Build().ToList();
+            mockHopRepo.Setup(m => m.GetHopsByHopType(It.IsAny<string>()))
+                .Returns(returnTrucks);
+            mockParcelRepo.Setup(m => m.Create(It.IsAny<DataAccess.Entities.Parcel>()))
+                 .Throws(new Exception(null, null));
 
             var validParcel = Builder<Parcel>.CreateNew()
                .With(p => p.Weight = 3)
