@@ -34,7 +34,7 @@ steps:
   inputs:
     command: 'test'
     projects: '**/**/*.csproj'
-    arguments: '--configuration $(buildConfiguration) --collect "XPlat Code coverage"'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
 
 - task: PublishCodeCoverageResults@1
   displayName: Publish Code Coverage
