@@ -17,7 +17,7 @@ namespace Juna.SKS.Package.Website.Controllers
         private readonly ILogger<HomeController> _logger;
 
         private HttpClient _client;
-        private Uri _baseAdress = new Uri("https://localhost:5001/");
+        private Uri _baseAdress = new Uri("https://juna-trackntrace.azurewebsites.net/");
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -61,11 +61,11 @@ namespace Juna.SKS.Package.Website.Controllers
             }
             return View("DisplaySubmit", parcelInfo);
         }
-        /*[HttpGet]
+        [HttpGet]
         public ActionResult DisplaySubmit(NewParcelInfo parcelInfo)
         {
             return View(parcelInfo);
-        }*/
+        }
 
 
 
