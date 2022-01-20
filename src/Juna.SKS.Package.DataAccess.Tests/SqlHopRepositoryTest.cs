@@ -1,7 +1,10 @@
 ﻿using FizzWare.NBuilder;
 using Juna.SKS.Package.DataAccess.Entities;
+using Juna.SKS.Package.DataAccess.Interfaces;
+using Juna.SKS.Package.DataAccess.Interfaces.Exceptions;
 using Juna.SKS.Package.DataAccess.Sql;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -12,119 +15,213 @@ using System.Threading.Tasks;
 
 namespace Juna.SKS.Package.DataAccess.Tests
 {
-    /*public class SqlHopRepositoryTest
+    public class SqlHopRepositoryTest
     {
-        Mock<DBContext> mockDBContext;
-
-        List<Hop> hops;
-        List<GeoCoordinate> geoCoordinates;
-        List<Warehouse> warehouses; 
-        List<Truck> trucks;
-        List<Transferwarehouse> transferwarehouses;
-        List<WarehouseNextHops> warehouseNextHops;
+        Mock<ILogger<SqlHopRepository>> mockLogger;
 
         [SetUp]
         public void Setup()
         {
-            mockDBContext = new Mock<DBContext>();
-
-
-            hops = new List<Hop>();
-            geoCoordinates = new List<GeoCoordinate>();
-            warehouseNextHops = new List<WarehouseNextHops>();
-
-            mockDBContext.Setup(p => p.Hops).Returns(DbContextMock.GetQueryableMockDbSet<Hop>(hops));
-            mockDBContext.Setup(p => p.GeoCoordinates).Returns(DbContextMock.GetQueryableMockDbSet<GeoCoordinate>(geoCoordinates));
-            mockDBContext.Setup(p => p.Warehouses).Returns(DbContextMock.GetQueryableMockDbSet<Warehouse>(warehouses));
-            mockDBContext.Setup(p => p.Trucks).Returns(DbContextMock.GetQueryableMockDbSet<Truck>(trucks));
-            mockDBContext.Setup(p => p.Transferwarehouses).Returns(DbContextMock.GetQueryableMockDbSet<Transferwarehouse>(transferwarehouses)); 
-            mockDBContext.Setup(p => p.WarehouseNextHops).Returns(DbContextMock.GetQueryableMockDbSet<WarehouseNextHops>(warehouseNextHops));
-
-            mockDBContext.Setup(p => p.SaveChanges()).Returns(1);
-
+            mockLogger = new Mock<ILogger<SqlHopRepository>>();
         }
 
-        [Test]
+
+        [Test, Order(1)]
         public void Create_ValidHop_ReturnIdAndCreateHop()
         {
+            var options = new DbContextOptionsBuilder<DBContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
 
-            SqlHopRepository repo = new SqlHopRepository(mockDBContext.Object);
+            using (var context = new DBContext(options))
+            {
+                context.Warehouses.Add(new Warehouse { Id = 1, HopType = "Warehouse", Code="ABCD", Description ="Description", ProcessingDelayMins = 2, LocationName="Wien", LocationCoordinates = new(), Parent = new()});
+                context.Warehouses.Add(new Warehouse { Id = 2, Level = 0, HopType = "Warehouse", Code = "ABCD", Description = "Description", ProcessingDelayMins = 2, LocationName = "Wien", LocationCoordinates = new(), Parent = new(), NextHops = new() });
 
-            var validHop = Builder<Hop>.CreateNew()
-                .With(p => p.Code = "ABCD1234")
-                .With(p => p.HopType = "truck")
-                .With(p => p.ProcessingDelayMins = 2)
-                .With(p => p.Id = 1)
-                .With(p => p.Description = "Hauptlager 27-12")
-                .Build();
+                context.Trucks.Add(new Truck { Id = 3, HopType = "Truck", Code = "DCBA", Description = "Description", ProcessingDelayMins = 2, LocationName = "Wien", LocationCoordinates = new(), Parent = new() });
+                context.Trucks.Add(new Truck { Id = 4, HopType = "Truck", Code = "BACD", Description = "Description", ProcessingDelayMins = 2, LocationName = "Wien", LocationCoordinates = new(), Parent = new() });
 
-            int id = repo.Create(validHop);
+                context.SaveChanges();
+            }
 
-            Assert.NotNull(id);
-            Assert.NotNull(hops);
-            Assert.AreEqual(hops.First().Id, id);
+            using (var context = new DBContext(options))
+            {
+                IHopRepository repo = new SqlHopRepository(context, mockLogger.Object);
+                var validHop = Builder<Warehouse>.CreateNew()
+                 .With(p => p.Id = 5)
+                 .With(p => p.HopType = "Warehouse")
+                 .Build();
+
+                int id = repo.Create(validHop);
+
+                Assert.NotNull(id);
+                Assert.NotNull(context.Hops);
+                Assert.AreEqual(context.Hops.Count(), id);
+
+            }
+
         }
-
-        [Test]
-        public void Update_ValidHop_UpdateHop()
+        [Test, Order(2)]
+        public void Create_SqlException_ThrowDataException()
         {
+            var options = new DbContextOptionsBuilder<DBContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
+
+
+            using (var context = new DBContext(options))
+            {
+                IHopRepository repo = new SqlHopRepository(context, mockLogger.Object);
+                var invalidHop = Builder<Warehouse>.CreateNew()
+                 .With(p => p.Id = 1)
+                 .Build();
+
+                int expectedCountHops = 5;
+
+                try
+                {
+                    int id = repo.Create(invalidHop);
+                    Assert.Fail();
+                }
+                catch (DataException)
+                {
+                    Assert.AreEqual(context.Hops.Count(), expectedCountHops);
+                }
+            }
 
         }
-
-        [Test]
-        public void Update_InvalidHop_DontUpdateHop()
+        [Test, Order(3)]
+        public void Create_Exception_ThrowDataException()
         {
+            var options = new DbContextOptionsBuilder<DBContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
+
+
+            using (var context = new DBContext(options))
+            {
+                IHopRepository repo = new SqlHopRepository(context, mockLogger.Object);
+                var invalidHop = Builder<Warehouse>.CreateNew()
+                 .With(p => p.Id = 1)
+                 .Build();
+
+                int expectedCountHops = 5;
+
+                try
+                {
+                    int id = repo.Create(invalidHop);
+                    Assert.Fail();
+                }
+                catch (DataException)
+                {
+                    Assert.AreEqual(context.Hops.Count(), expectedCountHops);
+                }
+            }
 
         }
 
-        [Test]
-        public void Delete_ValidId_DeleteHop()
+
+
+
+        [Test, Order(4)]
+        public void GetHopsByHopType_NoException_ReturnHops()
         {
+            var options = new DbContextOptionsBuilder<DBContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
 
+            using (var context = new DBContext(options))
+            {
+                IHopRepository repo = new SqlHopRepository(context, mockLogger.Object);
+
+                IEnumerable<Hop> hops = repo.GetHopsByHopType("Truck");
+
+                Assert.NotNull(hops);
+                Assert.AreEqual(hops.Count(), 2);
+            }
         }
-
-        [Test]
-        public void Delete_InvalidId_DontDeleteHop()
+        /*[Test, Order(5)]
+        public void GetHopsByHopType_DataNotFound_ThrowDataNotFoundException()
         {
+            var options = new DbContextOptionsBuilder<DBContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
 
-        }
+            using (var context = new DBContext(options))
+            {
+                IHopRepository repo = new SqlHopRepository(context, mockLogger.Object);
 
-        [Test]
-        public void GetSingleHopArrivalByCode_ValidCode_ReturnHopArrival()
+                try
+                {
+                    IEnumerable<Hop> hops = repo.GetHopsByHopType("TransferWarehouse");
+                    Assert.Fail();
+                }
+                catch (DataNotFoundException)
+                {
+                    Assert.Pass();
+                }
+            }
+        }*/
+
+
+
+
+
+        [Test, Order(6)]
+        public void GetSingleHopByCode_NoException_ReturnHop()
         {
+            var options = new DbContextOptionsBuilder<DBContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
 
+            using (var context = new DBContext(options))
+            {
+                IHopRepository repo = new SqlHopRepository(context, mockLogger.Object);
+
+                Hop hop = repo.GetSingleHopByCode("BACD");
+
+                Assert.NotNull(hop);
+                Assert.AreEqual(hop.Code, "BACD");
+            }
         }
-
-        [Test]
-        public void GetSingleHopArrivalByCode_InvalidCode_ReturnNull()
+        [Test, Order(7)]
+        public void GetSingleHopByCode_DataNotFound_ThrowDataException()
         {
+            var options = new DbContextOptionsBuilder<DBContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
 
+            using (var context = new DBContext(options))
+            {
+                IHopRepository repo = new SqlHopRepository(context, mockLogger.Object);
+
+                try
+                {
+                    Hop hop = repo.GetSingleHopByCode("123");
+                    Assert.Fail();
+                }
+                catch (DataException)
+                {
+                    Assert.Pass();
+                }
+            }
         }
 
-        [Test]
-        public void GetSingleWarehouseByCode_ValidCode_ReturnWarehouse()
+        [Test, Order(8)]
+        public void GetWarehouseHierarchy_NoException_ReturnWarehouse()
         {
+            var options = new DbContextOptionsBuilder<DBContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
 
+            using (var context = new DBContext(options))
+            {
+                IHopRepository repo = new SqlHopRepository(context, mockLogger.Object);
+
+                Warehouse warehouse = repo.GetWarehouseHierarchy();
+
+                Assert.NotNull(warehouse);
+            }
         }
-
-        [Test]
-        public void GetSingleWarehouseByCode_InvalidCode_ReturnNull()
-        {
-
-        }
-
-        [Test]
-        public void GetSingleHopById_ValidId_ReturnWarehouse()
-        {
-
-        }
-
-        [Test]
-        public void GetSingleHopById_InvalidId_ReturnNull()
-        {
-
-        }
-
-
-    }*/
+    }
 }

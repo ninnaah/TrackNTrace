@@ -113,11 +113,6 @@ namespace Juna.SKS.Package.DataAccess.Sql
             }
         }
 
-        public void Update(WebhookResponse response)
-        {
-            throw new NotImplementedException();
-        }
-
         public WebhookResponse GetSingleWebhookResponseById(long? id)
         {
             _logger.LogInformation("Trying to get single webhook by id");

@@ -10,13 +10,10 @@ namespace Juna.SKS.Package.DataAccess.Interfaces
     public interface IHopRepository
     {
         int Create(Hop hop);
-        void Delete(int id);
         void DropDatabase();
 
         IEnumerable<Hop> GetHopsByHopType(string hopType);
-        HopArrival GetSingleHopArrivalByCode(string code);
         Hop GetSingleHopByCode(string code);
-        Hop GetSingleHopById(int id);
         Warehouse GetWarehouseHierarchy();
     }
 }

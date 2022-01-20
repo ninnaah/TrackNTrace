@@ -45,38 +45,6 @@ namespace Juna.SKS.Package.DataAccess.Sql
             }
         }
 
-        public void Delete(int id)
-        {
-            _logger.LogInformation("Trying to delete hop");
-            try
-            {
-                Hop hop = GetSingleHopById(id);
-
-                if (hop == null)
-                {
-                    _logger.LogError($"Cannot delete hop with id {id} - already deleted");
-                    throw new DataNotFoundException(nameof(SqlHopRepository), nameof(Delete));
-                }
-
-                _context.Remove(hop);
-                _context.SaveChanges();
-                _logger.LogInformation("Deleted hop");
-                return;
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex)
-            {
-                string errorMessage = $"An error occured while deleting a hop with id {id}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(Delete), errorMessage, ex);
-            }
-            catch (Exception ex)
-            {
-                string errorMessage = $"An unknown error occured while deleting a hop with id {id}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(Delete), errorMessage, ex);
-            }
-        }
-
         public void DropDatabase()
         {
             _logger.LogInformation("Trying to drop database");
@@ -117,7 +85,7 @@ namespace Juna.SKS.Package.DataAccess.Sql
             { 
                 var hops = _context.Hops.Include(w => w.Parent).ThenInclude(nh => nh.Hop).ThenInclude(nh => nh.LocationCoordinates);
 
-                if (hops == null)
+                if (hops.Count() == 0)
                 {
                     _logger.LogError($"Hops with hoptype {hopType} not found");
                     throw new DataNotFoundException(nameof(SqlHopRepository), nameof(GetHopsByHopType));
@@ -137,34 +105,6 @@ namespace Juna.SKS.Package.DataAccess.Sql
                 string errorMessage = $"An unknown error occured while fetching  hops by hoptype {hopType}";
                 _logger.LogError(errorMessage, ex);
                 throw new DataException(nameof(SqlHopRepository), nameof(GetHopsByHopType), errorMessage, ex);
-            }
-        }
-
-        public HopArrival GetSingleHopArrivalByCode(string code)
-        {
-            _logger.LogInformation("Trying to get single hop by code");
-            try
-            {
-                var hop =  _context.HopArrivals.Single(p => p.Code == code);
-                if(hop == null)
-                {
-                    _logger.LogError($"Hop with code {code} not found");
-                    throw new DataNotFoundException(nameof(SqlHopRepository), nameof(GetSingleHopArrivalByCode));
-                }
-                _logger.LogInformation("Got hop by code");
-                return hop;
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex)
-            {
-                string errorMessage = $"An error occured while fetching a hop with code {code}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(GetSingleHopArrivalByCode), errorMessage, ex);
-            }
-            catch (Exception ex)
-            {
-                string errorMessage = $"An unknown error occured while fetching a hop with code {code}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(GetSingleHopArrivalByCode), errorMessage, ex);
             }
         }
 
@@ -199,34 +139,6 @@ namespace Juna.SKS.Package.DataAccess.Sql
                 string errorMessage = $"An unknown error occured while fetching a hop with code {code}";
                 _logger.LogError(errorMessage, ex);
                 throw new DataException(nameof(SqlHopRepository), nameof(GetSingleHopByCode), errorMessage, ex);
-            }
-        }
-
-        public Hop GetSingleHopById(int id)
-        {
-            _logger.LogInformation("Trying to get single hop by id");
-            try
-            {
-                var hop =  _context.Hops.Single(p => p.Id == id);
-                if (hop == null)
-                {
-                    _logger.LogError($"Hop with id {id} not found");
-                    throw new DataNotFoundException(nameof(SqlHopRepository), nameof(GetSingleHopById));
-                }
-                _logger.LogInformation("Got hop by id");
-                return hop;
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex)
-            {
-                string errorMessage = $"An error occured while fetching a hop with id {id}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(GetSingleHopById), errorMessage, ex);
-            }
-            catch (Exception ex)
-            {
-                string errorMessage = $"An unknown error occured while fetching a hop with id {id}";
-                _logger.LogError(errorMessage, ex);
-                throw new DataException(nameof(SqlHopRepository), nameof(GetSingleHopById), errorMessage, ex);
             }
         }
 

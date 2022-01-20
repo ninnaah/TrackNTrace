@@ -10,7 +10,6 @@ namespace Juna.SKS.Package.DataAccess.Interfaces
     public interface IWebhookRepository
     {
         long Create(WebhookResponse response);
-        void Update(WebhookResponse response);
         void Delete(long? id);
         WebhookResponses GetWebhookResponsesByTrackingId(string trackingId);
         WebhookResponse GetSingleWebhookResponseById(long? id);
